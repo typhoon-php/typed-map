@@ -58,6 +58,7 @@
                 <referencedFunction name="ReflectionClass::__construct"/>
             </errorLevel>
         </ArgumentTypeCoercion>
+        <DeprecatedConstant errorLevel="suppress"/>
         <ImpureMethodCall>
             <errorLevel type="suppress">
                 <directory name="src/Type"/>
