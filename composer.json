@@ -16,6 +16,7 @@
         "symfony/deprecation-contracts": "^3.4"
     },
     "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.8",
         "dragon-code/benchmark": "^2.6",
         "ergebnis/composer-normalize": "^2.42.0",
         "friendsofphp/php-cs-fixer": "^3.51.0",
@@ -25,11 +26,9 @@
         "phpstan/phpstan": "^1.11@dev",
         "phpunit/phpunit": "^10.5.12",
         "phpyh/coding-standard": "^2.6.1",
-        "psalm/plugin-phpunit": "^0.18.4",
         "qossmic/deptrac-shim": "^1.0.2",
         "symfony/var-dumper": "^6.4.4 || ^7.0.4",
-        "typhoon/opcache": "^0.2.1",
-        "vimeo/psalm": "^5.23.0"
+        "typhoon/opcache": "^0.2.1"
     },
     "autoload": {
         "psr-4": {
@@ -42,17 +41,22 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Typhoon\\": [
-                "dev/",
-                "tests/"
-            ]
+            "Typhoon\\": "tests/"
         }
     },
     "config": {
         "allow-plugins": {
-            "ergebnis/composer-normalize": true
+            "ergebnis/composer-normalize": true,
+            "bamarni/composer-bin-plugin": true
         },
         "sort-packages": true
+    },
+    "extra": {
+        "bamarni-bin": {
+            "bin-links": false,
+            "forward-command": true,
+            "target-directory": "tools"
+        }
     },
     "scripts": {
         "deptract": "deptrac analyse --cache-file=var/.deptrac.cache",
@@ -62,7 +66,7 @@
         ],
         "phpstan": "phpstan -v",
         "pre-command-run": "mkdir -p var",
-        "psalm": "psalm --show-info --no-diff",
+        "psalm": "tools/psalm/vendor/bin/psalm --show-info --no-diff",
         "test": "phpunit"
     }
 }

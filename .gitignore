@@ -1,3 +1,4 @@
+/tools/**/vendor/
 /var/
 /vendor/
 /.php-cs-fixer.php
