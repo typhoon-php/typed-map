@@ -46,8 +46,8 @@
     },
     "config": {
         "allow-plugins": {
-            "ergebnis/composer-normalize": true,
-            "bamarni/composer-bin-plugin": true
+            "bamarni/composer-bin-plugin": true,
+            "ergebnis/composer-normalize": true
         },
         "sort-packages": true
     },
