@@ -24,7 +24,7 @@
         "mikey179/vfsstream": "^1.6.11",
         "mockery/mockery": "^1.6.11",
         "phpstan/phpstan": "^1.11@dev",
-        "phpunit/phpunit": "^10.5.17",
+        "phpunit/phpunit": "^11.1.1",
         "phpyh/coding-standard": "^2.6.1",
         "qossmic/deptrac-shim": "^1.0.2",
         "symfony/var-dumper": "^6.4.4 || ^7.0.6",
