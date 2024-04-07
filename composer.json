@@ -16,18 +16,18 @@
         "symfony/deprecation-contracts": "^3.4"
     },
     "require-dev": {
-        "bamarni/composer-bin-plugin": "^1.8",
-        "dragon-code/benchmark": "^2.6",
+        "bamarni/composer-bin-plugin": "^1.8.2",
+        "dragon-code/benchmark": "^3",
         "ergebnis/composer-normalize": "^2.42.0",
-        "friendsofphp/php-cs-fixer": "^3.51.0",
+        "friendsofphp/php-cs-fixer": "^3.52.1",
         "jetbrains/phpstorm-stubs": "^2023.3",
         "mikey179/vfsstream": "^1.6.11",
-        "mockery/mockery": "^1.6.7",
+        "mockery/mockery": "^1.6.11",
         "phpstan/phpstan": "^1.11@dev",
-        "phpunit/phpunit": "^10.5.12",
+        "phpunit/phpunit": "^10.5.17",
         "phpyh/coding-standard": "^2.6.1",
         "qossmic/deptrac-shim": "^1.0.2",
-        "symfony/var-dumper": "^6.4.4 || ^7.0.4",
+        "symfony/var-dumper": "^6.4.4 || ^7.0.6",
         "typhoon/opcache": "^0.2.1"
     },
     "autoload": {
