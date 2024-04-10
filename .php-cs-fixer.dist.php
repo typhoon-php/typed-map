@@ -10,7 +10,7 @@ $config = (new Config())
     ->setFinder(
         Finder::create()
             ->in(__DIR__ . '/src')
-            ->in(__DIR__ . '/dev')
+            ->in(__DIR__ . '/tools/psalm/src')
             ->append([__FILE__])
             ->append(
                 Finder::create()

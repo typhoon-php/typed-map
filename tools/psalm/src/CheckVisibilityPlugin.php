@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Psalm;
+namespace Typhoon\Tools\Psalm;
 
 use PhpParser\Node\Stmt\Function_;
 use Psalm\CodeLocation;

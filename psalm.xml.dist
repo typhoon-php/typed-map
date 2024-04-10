@@ -23,9 +23,9 @@
     </enableExtensions>
 
     <projectFiles>
-        <directory name="dev"/>
         <directory name="src"/>
         <directory name="tests"/>
+        <directory name="tools/psalm/src"/>
         <ignoreFiles>
             <directory name="tests/Reflection/NameContext/functional"/>
             <directory name="tests/Reflection/Fixtures"/>
@@ -36,7 +36,7 @@
 
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
-        <pluginClass class="Typhoon\Psalm\CheckVisibilityPlugin"/>
+        <pluginClass class="Typhoon\Tools\Psalm\CheckVisibilityPlugin"/>
     </plugins>
 
     <ignoreExceptions>
@@ -49,8 +49,8 @@
     <issueHandlers>
         <PluginIssue name="UnspecifiedVisibility">
             <errorLevel type="suppress">
-                <directory name="dev"/>
                 <directory name="tests"/>
+                <directory name="tools/psalm/src"/>
             </errorLevel>
         </PluginIssue>
         <ArgumentTypeCoercion>
@@ -58,6 +58,7 @@
                 <referencedFunction name="ReflectionClass::__construct"/>
             </errorLevel>
         </ArgumentTypeCoercion>
+        <DeprecatedConstant errorLevel="suppress"/>
         <ImpureMethodCall>
             <errorLevel type="suppress">
                 <directory name="src/Type"/>

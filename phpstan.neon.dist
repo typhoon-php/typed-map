@@ -12,4 +12,6 @@ parameters:
     checkGenericClassInNonGenericObjectType: false
     tmpDir: var/phpstan
     ignoreErrors:
+        - { identifier: possiblyImpure.methodCall }
+        - { identifier: possiblyImpure.new }
         - { identifier: return.unusedType }
