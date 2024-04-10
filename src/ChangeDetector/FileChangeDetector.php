@@ -24,17 +24,13 @@ final class FileChangeDetector implements ChangeDetector
      */
     public static function fromFileAndContents(string $file, string $contents): self
     {
-        $mtime = filemtime($file);
+        $mtime = @filemtime($file);
 
         if ($mtime === false) {
             throw new \RuntimeException(sprintf('File "%s" does not exist or is not readable', $file));
         }
 
-        return new self(
-            file: $file,
-            mtime: filemtime($file),
-            hash: md5($contents),
-        );
+        return new self(file: $file, mtime: $mtime, hash: md5($contents));
     }
 
     public function changed(): bool
