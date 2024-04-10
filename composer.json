@@ -62,7 +62,7 @@
         }
     },
     "scripts": {
-        "deptract": "deptrac analyse --cache-file=var/.deptrac.cache",
+        "deptrac": "deptrac analyse --cache-file=var/.deptrac.cache",
         "fixcs": [
             "php-cs-fixer fix -v",
             "php-cs-fixer fix --config=.sort.php-cs-fixer.dist.php -v"
