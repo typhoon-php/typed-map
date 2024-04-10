@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Typhoon\ChangeDetector;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
@@ -21,7 +22,7 @@ final class PackageChangeDetectorTest extends TestCase
         (new Filesystem())->mkdir(self::TEMP_DIR);
     }
 
-    public function testItCannotBeCreateForNonInstalledPackage(): void
+    public function testFromPackageReturnsNullForNonInstalledPackage(): void
     {
         $detector = PackageChangeDetector::tryFromPackage('a/b');
 
@@ -42,6 +43,7 @@ final class PackageChangeDetectorTest extends TestCase
         self::assertTrue($changed);
     }
 
+    #[Depends('testItDetectsPackageCommitChange')]
     public function testItReturnsDeduplicatedDetectors(): void
     {
         $detector = ChangeDetectors::from([
