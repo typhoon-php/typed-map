@@ -27,7 +27,7 @@ final class IsInt extends Comparator
         return false;
     }
 
-    public function int(Type $self, ?int $min = null, ?int $max = null): mixed
+    public function int(Type $self, ?int $min, ?int $max): mixed
     {
         return ($this->min === null || ($min !== null && $min >= $this->min))
             && ($this->max === null || ($max !== null && $max <= $this->max));

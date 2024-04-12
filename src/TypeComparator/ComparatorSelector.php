@@ -30,7 +30,7 @@ final class ComparatorSelector extends DefaultTypeVisitor
         return new IsIntersection($types);
     }
 
-    public function int(Type $self, ?int $min = null, ?int $max = null): mixed
+    public function int(Type $self, ?int $min, ?int $max): mixed
     {
         return new IsInt($min, $max);
     }
