@@ -5,54 +5,53 @@ declare(strict_types=1);
 namespace Typhoon\TypeComparator;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use Typhoon\Type\Type;
 use Typhoon\Type\types;
 
 #[CoversClass(IsInt::class)]
 #[CoversClass(ComparatorSelector::class)]
-final class IntTest extends AtomicRelationTestCase
+final class IntTest extends RelationTestCase
 {
-    protected static function type(): Type
+    protected static function xSubtypeOfY(): iterable
     {
-        return types::int;
+        yield [types::never, types::intRange(-9, 10)];
+        yield [types::int, types::int];
+        yield [types::intRange(-9, 10), types::intRange(-9, 10)];
+        yield [types::intRange(-9, 10), types::intRange(-100, 100)];
+        yield [types::intRange(-9, 10), types::intRange(max: 100)];
+        yield [types::intRange(max: 100), types::intRange(max: 100)];
+        yield [types::intRange(max: 99), types::intRange(max: 100)];
+        yield [types::intRange(-9, 10), types::intRange(min: -100)];
+        yield [types::intRange(min: -100), types::intRange(min: -100)];
+        yield [types::intRange(min: -9), types::intRange(min: -100)];
+        yield [types::literalValue(1), types::intRange(0, 1)];
     }
 
-    protected static function subtypes(): iterable
+    protected static function xNotSubtypeOfY(): iterable
     {
-        yield types::int;
-        yield types::never;
-        yield types::positiveInt;
-        yield types::negativeInt;
-        yield types::nonPositiveInt;
-        yield types::nonNegativeInt;
-        yield types::literalInt;
-        yield types::union(types::literalValue(0), types::literalValue(1));
-        yield types::intersection(types::int, types::scalar);
-        yield types::intMask(types::literalValue(0));
-        yield types::intRange(-100, 99);
-    }
-
-    protected static function nonSubtypes(): iterable
-    {
-        yield types::true;
-        yield types::false;
-        yield types::bool;
-        yield types::arrayKey;
-        yield types::float;
-        yield types::string;
-        yield types::nonEmptyString;
-        yield types::classString;
-        yield types::literalString;
-        yield types::truthyString;
-        yield types::numericString;
-        yield types::array;
-        yield types::iterable;
-        yield types::object;
-        yield types::callable;
-        yield types::closure;
-        yield types::resource;
-        yield types::intersection(types::callable, types::string);
-        yield types::mixed;
-        yield types::union(types::void, types::string);
+        yield [types::void, types::intRange(-1, 1)];
+        yield [types::true, types::intRange(-1, 1)];
+        yield [types::false, types::intRange(-1, 1)];
+        yield [types::bool, types::intRange(-1, 1)];
+        yield [types::int, types::intRange(-1, 1)];
+        yield [types::literalInt, types::intRange(-1, 1)];
+        yield [types::positiveInt, types::intRange(-1, 1)];
+        yield [types::negativeInt, types::intRange(-1, 1)];
+        yield [types::intMask(types::literalValue(0)), types::intRange(-1, 1)];
+        yield [types::arrayKey, types::intRange(-1, 1)];
+        yield [types::float, types::intRange(-1, 1)];
+        yield [types::string, types::intRange(-1, 1)];
+        yield [types::nonEmptyString, types::intRange(-1, 1)];
+        yield [types::classString, types::intRange(-1, 1)];
+        yield [types::literalString, types::intRange(-1, 1)];
+        yield [types::truthyString, types::intRange(-1, 1)];
+        yield [types::numericString, types::intRange(-1, 1)];
+        yield [types::array, types::intRange(-1, 1)];
+        yield [types::iterable, types::intRange(-1, 1)];
+        yield [types::object, types::intRange(-1, 1)];
+        yield [types::callable, types::intRange(-1, 1)];
+        yield [types::closure, types::intRange(-1, 1)];
+        yield [types::resource, types::intRange(-1, 1)];
+        yield [types::intersection(types::callable, types::string), types::intRange(-1, 1)];
+        yield [types::mixed, types::intRange(-1, 1)];
     }
 }

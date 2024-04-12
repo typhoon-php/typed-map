@@ -12,23 +12,31 @@ use Typhoon\Type\Type;
  */
 final class IsInt extends Comparator
 {
-    public function int(Type $self): mixed
-    {
-        return true;
-    }
+    public function __construct(
+        private readonly ?int $min,
+        private readonly ?int $max,
+    ) {}
 
     public function intMask(Type $self, Type $type): mixed
     {
-        return true;
+        if ($this->min === null && $this->max === null) {
+            return true;
+        }
+
+        // TODO
+        return false;
     }
 
-    public function intRange(Type $self, ?int $min, ?int $max): mixed
+    public function int(Type $self, ?int $min = null, ?int $max = null): mixed
     {
-        return true;
+        return ($this->min === null || ($min !== null && $min >= $this->min))
+            && ($this->max === null || ($max !== null && $max <= $this->max));
     }
 
     public function literalValue(Type $self, float|bool|int|string $value): mixed
     {
-        return \is_int($value);
+        return \is_int($value)
+            && ($this->min === null || $value >= $this->min)
+            && ($this->max === null || $value <= $this->max);
     }
 }

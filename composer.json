@@ -26,7 +26,6 @@
         "phpstan/phpstan": "^1.11@dev",
         "phpunit/phpunit": "^10.5.17",
         "phpyh/coding-standard": "^2.6.1",
-        "qossmic/deptrac-shim": "^1.0.2",
         "symfony/process": "^6.4.4 || ^7.0.4",
         "symfony/var-dumper": "^6.4.6 || ^7.0.6",
         "typhoon/opcache": "^0.2.1"
@@ -50,9 +49,7 @@
             "bamarni/composer-bin-plugin": true,
             "ergebnis/composer-normalize": true
         },
-        "platform": {
-            "php": "8.1"
-        },
+        "lock": false,
         "sort-packages": true
     },
     "extra": {
@@ -63,14 +60,35 @@
         }
     },
     "scripts": {
-        "deptract": "deptrac analyse --cache-file=var/.deptrac.cache",
+        "check-require": [
+            "@composer install --working-dir=src/Reflection",
+            "tools/composer-require-checker/vendor/bin/composer-require-checker check src/Reflection/composer.json --config-file=src/Reflection/composer-require-checker.json",
+            "@composer install --working-dir=src/Type",
+            "tools/composer-require-checker/vendor/bin/composer-require-checker check src/Type/composer.json",
+            "@composer install --working-dir=src/TypeStringifier",
+            "tools/composer-require-checker/vendor/bin/composer-require-checker check src/TypeStringifier/composer.json"
+        ],
         "fixcs": [
             "php-cs-fixer fix -v",
             "php-cs-fixer fix --config=.sort.php-cs-fixer.dist.php -v"
         ],
+        "normalize-all": [
+            "@composer normalize --diff",
+            "@composer normalize --diff src/Reflection/composer.json",
+            "@composer normalize --diff src/Type/composer.json",
+            "@composer normalize --diff src/TypeStringifier/composer.json",
+            "@composer normalize --diff tools/composer-require-checker/composer.json",
+            "@composer normalize --diff tools/psalm/composer.json"
+        ],
         "phpstan": "phpstan -v",
         "pre-command-run": "mkdir -p var",
         "psalm": "tools/psalm/vendor/bin/psalm --show-info --no-diff",
-        "test": "phpunit"
+        "test": "phpunit",
+        "validate-all": [
+            "@composer validate --strict --no-check-publish",
+            "@composer validate --strict src/Reflection/composer.json",
+            "@composer validate --strict src/Type/composer.json",
+            "@composer validate --strict src/TypeStringifier/composer.json"
+        ]
     }
 }
