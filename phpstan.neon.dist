@@ -9,9 +9,9 @@ parameters:
         - src/TypeStringifier
         - tests/TypeComparator
         - tests/TypeStringifier
-    checkGenericClassInNonGenericObjectType: false
     tmpDir: var/phpstan
     ignoreErrors:
+        - { identifier: missingType.generics }
         - { identifier: possiblyImpure.methodCall }
         - { identifier: possiblyImpure.new }
         - { identifier: return.unusedType }
