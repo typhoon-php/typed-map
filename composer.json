@@ -48,6 +48,7 @@
             "bamarni/composer-bin-plugin": true,
             "ergebnis/composer-normalize": true
         },
+        "lock": false,
         "sort-packages": true
     },
     "extra": {

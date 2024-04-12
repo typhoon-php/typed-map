@@ -1,5 +1,4 @@
 /**/vendor/
-/**/composer.lock
 /var/
 /.php-cs-fixer.php
 /phpstan.neon

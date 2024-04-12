@@ -1,11 +1,14 @@
 {
+    "require-dev": {
+        "psalm/plugin-phpunit": "^0.18.4",
+        "vimeo/psalm": "^5.23.1"
+    },
     "autoload-dev": {
         "psr-4": {
             "Typhoon\\Tools\\Psalm\\": "src/"
         }
     },
-    "require-dev": {
-        "psalm/plugin-phpunit": "^0.18.4",
-        "vimeo/psalm": "^5.23.1"
+    "config": {
+        "lock": false
     }
 }
