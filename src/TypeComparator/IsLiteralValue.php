@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeComparator;
 
+use Typhoon\DeclarationId\AnonymousClassId;
+use Typhoon\DeclarationId\ClassId;
 use Typhoon\Type\Type;
 use Typhoon\Type\Visitor\DefaultTypeVisitor;
 
@@ -22,9 +24,9 @@ final class IsLiteralValue extends Comparator
         // TODO full class constant support.
         return $name === 'class' && \is_string($this->value) && $this->value === $class->accept(
             new /** @extends DefaultTypeVisitor<?string> */ class () extends DefaultTypeVisitor {
-                public function namedObject(Type $self, string $class, array $arguments): mixed
+                public function namedObject(Type $self, ClassId|AnonymousClassId $class, array $arguments): mixed
                 {
-                    return $class;
+                    return $class->name;
                 }
 
                 protected function default(Type $self): mixed

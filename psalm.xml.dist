@@ -27,8 +27,7 @@
         <directory name="tests"/>
         <directory name="tools/psalm/src"/>
         <ignoreFiles>
-            <directory name="tests/Reflection/NameContext/functional"/>
-            <directory name="tests/Reflection/Fixtures"/>
+            <directory name="tests/Reflection/Internal/NativeAdapter/Fixtures"/>
             <directory name="var"/>
             <directory name="vendor"/>
         </ignoreFiles>
@@ -93,8 +92,9 @@
     </forbiddenFunctions>
 
     <stubs>
-        <file name="tests/Reflection/Fixtures/classes.php" preloadClasses="true"/>
-        <file name="tests/Reflection/Fixtures/classes_php82.php" preloadClasses="true"/>
+        <file name="tests/Reflection/Internal/NativeAdapter/Fixtures/classes.php" preloadClasses="true"/>
+        <file name="tests/Reflection/Internal/NativeAdapter/Fixtures/classes_php82.php" preloadClasses="true"/>
+        <file name="tests/Reflection/Internal/NativeAdapter/Fixtures/classes_php83.php" preloadClasses="true"/>
         <file name="stubs/PhpParser/Node/Expr/Variable.phpstub"/>
         <file name="stubs/PhpParser/Node/Identifier.phpstub"/>
         <file name="stubs/PhpParser/Node/IntersectionType.phpstub"/>

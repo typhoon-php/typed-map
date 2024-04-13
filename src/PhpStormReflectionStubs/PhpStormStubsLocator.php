@@ -1,0 +1,93 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Typhoon\PhpStormReflectionStubs;
+
+use JetBrains\PHPStormStub\PhpStormStubsMap;
+use Typhoon\ChangeDetector\ChangeDetector;
+use Typhoon\ChangeDetector\FileChangeDetector;
+use Typhoon\ChangeDetector\PackageChangeDetector;
+use Typhoon\DeclarationId\ClassId;
+use Typhoon\DeclarationId\FunctionId;
+use Typhoon\Reflection\Exception\FileNotReadable;
+use Typhoon\Reflection\Internal\Data;
+use Typhoon\Reflection\Locator;
+use Typhoon\Reflection\Resource;
+use Typhoon\TypedMap\TypedMap;
+
+/**
+ * @api
+ */
+final class PhpStormStubsLocator implements Locator
+{
+    private const PACKAGE = 'jetbrains/phpstorm-stubs';
+
+    /**
+     * @var ?non-empty-string
+     */
+    private static ?string $directory = null;
+
+    private static null|false|PackageChangeDetector $packageChangeDetector = false;
+
+    public static function packageChangeDetector(): ?ChangeDetector
+    {
+        if (self::$packageChangeDetector === false) {
+            return self::$packageChangeDetector = PackageChangeDetector::tryFromPackage(self::PACKAGE);
+        }
+
+        return self::$packageChangeDetector;
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    private static function directory(): string
+    {
+        if (self::$directory !== null) {
+            return self::$directory;
+        }
+
+        if (\defined(PhpStormStubsMap::class . '::DIR')) {
+            return self::$directory = PhpStormStubsMap::DIR;
+        }
+
+        $file = (new \ReflectionClass(PhpStormStubsMap::class))->getFileName();
+        \assert($file !== false, sprintf('Failed to locate class %s', PhpStormStubsMap::class));
+
+        return self::$directory = \dirname($file);
+    }
+
+    public function locate(ClassId|FunctionId $id): ?Resource
+    {
+        $relativePath = match (true) {
+            $id instanceof ClassId => PhpStormStubsMap::CLASSES[$id->name] ?? null,
+            default => PhpStormStubsMap::FUNCTIONS[$id->name] ?? null,
+        };
+
+        if ($relativePath === null) {
+            return null;
+        }
+
+        $file = self::directory() . '/' . $relativePath;
+        $code = @file_get_contents($file);
+
+        if ($code === false) {
+            throw new FileNotReadable($file);
+        }
+
+        return new Resource(
+            code: $code,
+            data: (new TypedMap())
+                ->with(Data::Extension(), \dirname($relativePath))
+                ->with(Data::WrittenInC(), true)
+                ->with(Data::UnresolvedChangeDetectors(), [
+                    self::packageChangeDetector() ?? FileChangeDetector::fromFileAndContents($file, $code),
+                ]),
+            hooks: [
+                new ApplyTentativeTypeAttribute(),
+                new CleanUp(),
+            ],
+        );
+    }
+}

@@ -1,7 +1,7 @@
 # Typhoon Reflection
 
 Typhoon Reflection is an alternative to [native PHP Reflection](https://www.php.net/manual/en/book.reflection.php). It is:
-- static,
+- static (does not run reflected code),
 - fast (due to lazy loading and caching),
 - [99% compatible with native reflection](#compatibility-with-native-reflection),
 - supports most of the Psalm and PHPStan phpDoc types,
@@ -21,38 +21,25 @@ Installing `jetbrains/phpstorm-stubs` is highly recommended. Without stubs core 
 
 ```php
 use Typhoon\Reflection\TyphoonReflector;
-use Typhoon\Type\types;
 use function Typhoon\TypeStringifier\stringify;
 
 /**
- * @template T
+ * @template TTag of non-empty-string
  */
 final readonly class Article
 {
     /**
-     * @param non-empty-list<non-empty-string> $tags
-     * @param T $data
+     * @param non-empty-list<TTag> $tags
      */
     public function __construct(
         private array $tags,
-        public mixed $data,
     ) {}
 }
 
 $reflector = TyphoonReflector::build();
-$article = $reflector->reflectClass(Article::class);
+$articleTagsType = $reflector->reflectClass(Article::class)->property('tags')?->type();
 
-$tags = $article->getProperty('tags');
-
-var_dump(stringify($tags->getTyphoonType())); // non-empty-list<non-empty-string>
-
-$data = $article->getProperty('data');
-
-var_dump(stringify($data->getTyphoonType())); // T@My\Awesome\App\Article
-
-$typeResolver = $article->createTypeResolver(['T' => types::object]);
-
-var_dump(stringify($data->getTyphoonType()->accept($typeResolver))); // object
+var_dump(stringify($articleTagsType)); // non-empty-list<TTag@Article>
 ```
 
 ## Caching
@@ -86,28 +73,27 @@ $reflector = TyphoonReflector::build(
 ## Class locators
 
 By default, reflector uses:
-- [ComposerClassLocator](../src/Reflection/ClassLocator/ComposerClassLocator.php) if composer autoloading is used, 
-- [PhpStormStubsClassLocator](../src/Reflection/ClassLocator/PhpStormStubsClassLocator.php) if `jetbrains/phpstorm-stubs` is installed,
-- [NativeReflectionFileLocator](../src/Reflection/ClassLocator/NativeReflectionFileLocator.php) (uses native reflection to obtain class file),
-- [NativeReflectionLocator](../src/Reflection/ClassLocator/NativeReflectionLocator.php) (returns native reflection itself).
+- [ComposerLocator](../src/Reflection/Locator/ComposerLocator.php) if composer autoloading is used, 
+- [PhpStormStubsLocator](../src/Reflection/Locator/PhpStormStubsLocator.php) if `jetbrains/phpstorm-stubs` is installed,
+- [NativeReflectionFileLocator](../src/Reflection/Locator/NativeReflectionFileLocator.php) (uses native reflection to obtain class file),
+- [NativeReflectionLocator](../src/Reflection/Locator/NativeReflectionLocator.php) (returns native reflection itself).
 
 You can implement your own locators and pass them to the `build` method:
 
 ```php
-use Typhoon\Reflection\ClassLocator;
-use Typhoon\Reflection\ClassLocator\ClassLocators;
+use Typhoon\Reflection\Locator;
 use Typhoon\Reflection\TyphoonReflector;
 
-final class MyClassLocator implements ClassLocator
+final class MyLocator implements Locator
 {
     // ...
 }
 
 $reflector = TyphoonReflector::build(
-    classLocator: new ClassLocators([
-        new MyClassLocator(),
-        TyphoonReflector::defaultClassLocator(),
-    ]),
+    locators: [
+        new MyLocator(),
+        ...TyphoonReflector::defaultLocators(),
+    ],
 );
 ```
 

@@ -1,0 +1,22 @@
+{
+    "name": "typhoon/phpstorm-reflection-stubs",
+    "description": "Typhoon PhpStorm Reflection Stubs",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Valentin Udaltsov",
+            "email": "udaltsov.valentin@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "typhoon/reflection": "^0.4",
+        "jetbrains/phpstorm-stubs": "^2023.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Typhoon\\PhpStormReflectionStubs\\": ""
+        }
+    }
+}

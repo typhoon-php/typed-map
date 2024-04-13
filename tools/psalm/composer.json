@@ -1,7 +1,11 @@
 {
     "require-dev": {
         "psalm/plugin-phpunit": "^0.18.4",
-        "vimeo/psalm": "^5.23.1"
+        "vimeo/psalm": "^5.23.0"
+    },
+    "conflict": {
+        "netresearch/jsonmapper": "<4",
+        "vimeo/psalm": "5.24"
     },
     "autoload-dev": {
         "psr-4": {

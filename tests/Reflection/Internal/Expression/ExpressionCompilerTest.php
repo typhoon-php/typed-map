@@ -6,17 +6,16 @@ namespace Typhoon\Reflection\Internal\Expression;
 
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt\Expression as ExpressionNode;
-use PhpParser\Parser;
-use PhpParser\ParserFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Typhoon\Reflection\Internal\ClassReflector;
+use Typhoon\Reflection\Internal\PhpParserReflector\PhpParser;
+use Typhoon\Reflection\Reflector;
 
 #[CoversClass(ExpressionCompiler::class)]
 final class ExpressionCompilerTest extends TestCase
 {
-    private static ?Parser $parser = null;
+    private static ?PhpParser $parser = null;
 
     /**
      * @return \Generator<string, array{string}>
@@ -80,14 +79,14 @@ final class ExpressionCompilerTest extends TestCase
         $expected = $this->evalExpression($expressionCode);
         $compiled = (new ExpressionCompiler())->compile($expressionNode);
 
-        $value = $compiled->evaluate($this->createMock(ClassReflector::class));
+        $value = $compiled->evaluate($this->createMock(Reflector::class));
 
         self::assertEquals($expected, $value);
     }
 
     private function parseExpression(string $expressionCode): Expr
     {
-        self::$parser ??= (new ParserFactory())->createForHostVersion();
+        self::$parser ??= new PhpParser();
         $nodes = self::$parser->parse('<?php ' . $expressionCode . ';');
         $exprNode = $nodes[0] ?? null;
         \assert($exprNode instanceof ExpressionNode);

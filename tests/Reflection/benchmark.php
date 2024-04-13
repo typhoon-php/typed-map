@@ -23,14 +23,14 @@ $freshOpcache->clear();
 $typhoonFreshOpcache = TyphoonReflector::build(cache: $freshOpcache);
 
 // warmup class autoloading
-$typhoonNoCache->reflectClass(AppendIterator::class)->getMethods();
+$typhoonNoCache->reflectClass(AppendIterator::class)->methods();
 
 Benchmark::start()
     ->withoutData()
     ->compare([
         'native reflection' => static fn(): array => (new ReflectionClass(AppendIterator::class))->getMethods(),
-        'typhoon, no cache' => static fn(): array => $typhoonNoCache->reflectClass(AppendIterator::class)->getMethods(),
-        'typhoon, in-memory cache' => static fn(): array => $typhoonInMemoryCache->reflectClass(AppendIterator::class)->getMethods(),
-        'typhoon, OPcache' => static fn(): array => $typhoonOpcache->reflectClass(AppendIterator::class)->getMethods(),
-        'typhoon, fresh OPcache' => static fn(): array => $typhoonFreshOpcache->reflectClass(AppendIterator::class)->getMethods(),
+        'typhoon, no cache' => static fn(): array => $typhoonNoCache->reflectClass(AppendIterator::class)->methods(),
+        'typhoon, in-memory cache' => static fn(): array => $typhoonInMemoryCache->reflectClass(AppendIterator::class)->methods(),
+        'typhoon, OPcache' => static fn(): array => $typhoonOpcache->reflectClass(AppendIterator::class)->methods(),
+        'typhoon, fresh OPcache' => static fn(): array => $typhoonFreshOpcache->reflectClass(AppendIterator::class)->methods(),
     ]);

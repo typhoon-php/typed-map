@@ -6,10 +6,9 @@ namespace Typhoon\TypeContext;
 
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name as NameNode;
-use Typhoon\Type\At;
-use Typhoon\Type\AtClass;
-use Typhoon\Type\AtFunction;
-use Typhoon\Type\AtMethod;
+use Typhoon\DeclarationId\AliasId;
+use Typhoon\DeclarationId\AnonymousClassId;
+use Typhoon\DeclarationId\TemplateId;
 use Typhoon\Type\Type;
 use Typhoon\Type\types;
 use Typhoon\TypeContext\Internal\ConstantImportTable;
@@ -121,10 +120,10 @@ final class TypeContext
         return $context;
     }
 
-    public function atAnonymousClass(null|Name|NameNode $parentName = null): self
+    public function atAnonymousClass(AnonymousClassId $id, null|Name|NameNode $parentName = null): self
     {
         $context = clone $this;
-        $context->mainImportTable = $context->mainImportTable->atAnonymousClass($this->resolveClassName($parentName));
+        $context->mainImportTable = $context->mainImportTable->atAnonymousClass($id, $this->resolveClassName($parentName));
 
         return $context;
     }
@@ -142,32 +141,31 @@ final class TypeContext
     }
 
     /**
-     * @param array<UnqualifiedName> $names
-     * @param non-empty-string $class
+     * @param array<AliasId> $aliases
      */
-    public function withAliases(array $names, string $class): self
+    public function withAliases(array $aliases): self
     {
-        if ($names === []) {
+        if ($aliases === []) {
             return $this;
         }
 
         $context = clone $this;
-        $context->mainImportTable = $context->mainImportTable->withAliases($names, $class);
+        $context->mainImportTable = $context->mainImportTable->withAliases($aliases);
 
         return $context;
     }
 
     /**
-     * @param array<UnqualifiedName> $names
+     * @param array<TemplateId> $templates
      */
-    public function withTemplates(array $names, At|AtFunction|AtClass|AtMethod $declaredAt): self
+    public function withTemplates(array $templates): self
     {
-        if ($names === []) {
+        if ($templates === []) {
             return $this;
         }
 
         $context = clone $this;
-        $context->mainImportTable = $context->mainImportTable->withTemplates($names, $declaredAt);
+        $context->mainImportTable = $context->mainImportTable->withTemplates($templates);
 
         return $context;
     }

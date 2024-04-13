@@ -11,6 +11,12 @@ use PHPUnit\Framework\TestCase;
 use Typhoon\Type\Type;
 use Typhoon\Type\types;
 use Typhoon\Type\Variance;
+use function Typhoon\DeclarationId\aliasId;
+use function Typhoon\DeclarationId\anonymousClassId;
+use function Typhoon\DeclarationId\classId;
+use function Typhoon\DeclarationId\functionId;
+use function Typhoon\DeclarationId\methodId;
+use function Typhoon\DeclarationId\templateId;
 
 #[CoversClass(TypeStringifier::class)]
 #[CoversFunction('Typhoon\TypeStringifier\stringify')]
@@ -110,12 +116,13 @@ final class TypeStringifierTest extends TestCase
         yield [types::closure([types::param(types::string, hasDefault: true)]), 'Closure(string=): mixed'];
         yield [types::closure([types::param(types::string, variadic: true)]), 'Closure(string...): mixed'];
         yield [types::closure([types::param(types::string, variadic: true)], types::never), 'Closure(string...): never'];
-        yield [types::template('T', types::atFunction('trim')), 'T@trim()'];
-        yield [types::template('T', types::atClass(\stdClass::class)), 'T@stdClass'];
-        yield [types::template('T', types::atMethod(\stdClass::class, 'm')), 'T@stdClass::m()'];
+        yield [types::template(templateId(functionId('trim'), 'T')), 'T@trim()'];
+        yield [types::template(templateId(classId(\stdClass::class), 'T')), 'T@stdClass'];
+        yield [types::template(templateId(anonymousClassId('file', 1), 'T')), 'T@anonymous-class:file:1'];
+        yield [types::template(templateId(methodId(\stdClass::class, 'm'), 'T')), 'T@stdClass::m()'];
         yield [types::literalString, 'literal-string'];
         yield [types::literalInt, 'literal-int'];
-        yield [types::classString(types::template('T', types::atClass(\stdClass::class))), 'class-string<T@stdClass>'];
+        yield [types::classString(types::template(templateId(classId(\stdClass::class), 'T'))), 'class-string<T@stdClass>'];
         yield [types::classString, 'class-string'];
         yield [types::objectShape(), 'object'];
         yield [types::objectShape(['name' => types::string, 'obj' => types::object(\stdClass::class)]), 'object{name: string, obj: stdClass}'];
@@ -127,10 +134,10 @@ final class TypeStringifierTest extends TestCase
         yield [types::key(types::list()), 'key-of<list>'];
         yield [types::value(types::list()), 'list[key-of<list>]'];
         yield [types::conditional(types::arg('a'), if: types::string, then: types::int, else: types::float), '($a is string ? int : float)'];
-        yield [types::conditional(types::template('T', types::atFunction('trim')), if: types::string, then: types::int, else: types::float), '(T@trim() is string ? int : float)'];
+        yield [types::conditional(types::template(templateId(functionId('trim'), 'T')), if: types::string, then: types::int, else: types::float), '(T@trim() is string ? int : float)'];
         yield [types::array(value: types::varianceAware(types::int, Variance::Covariant)), 'array<covariant int>'];
-        yield [types::offset(types::template('T', types::atClass('A')), types::literalValue('abc')), "T@A['abc']"];
-        yield [types::alias('Some', 'A'), 'Some@A'];
+        yield [types::offset(types::template(templateId(classId('A'), 'T')), types::literalValue('abc')), "T@A['abc']"];
+        yield [types::alias(aliasId('Some', 'A')), 'A@Some'];
         yield [types::static('X\\Y'), 'static@X\\Y'];
         yield [types::static('X\\Y', types::string), 'static@X\\Y<string>'];
     }

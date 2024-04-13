@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeContext\Internal;
 
-use Typhoon\Type\At;
-use Typhoon\Type\AtClass;
-use Typhoon\Type\AtFunction;
-use Typhoon\Type\AtMethod;
+use Typhoon\DeclarationId\AliasId;
+use Typhoon\DeclarationId\AnonymousClassId;
+use Typhoon\DeclarationId\TemplateId;
 use Typhoon\Type\Type;
 use Typhoon\Type\types;
 use Typhoon\TypeContext\FullyQualifiedName;
@@ -62,33 +61,30 @@ final class MainImportTable
     }
 
     /**
-     * @param array<UnqualifiedName> $names
-     * @param non-empty-string $class
+     * @param array<AliasId> $aliases
      */
-    public function withAliases(array $names, string $class): self
+    public function withAliases(array $aliases): self
     {
         $table = clone $this;
 
-        foreach ($names as $name) {
-            $table->imports[$name->toLowerCaseString()] =
+        foreach ($aliases as $alias) {
+            $table->imports[strtolower($alias->name)] =
                 /** @param list<Type> $arguments */
-                static fn(array $arguments): Type => types::alias($name->toString(), $class, ...$arguments);
+                static fn(array $arguments): Type => types::alias($alias, ...$arguments);
         }
 
         return $table;
     }
 
     /**
-     * @param array<UnqualifiedName> $names
+     * @param non-empty-array<TemplateId> $templates
      */
-    public function withTemplates(array $names, At|AtFunction|AtClass|AtMethod $declaredAt): self
+    public function withTemplates(array $templates): self
     {
         $table = clone $this;
 
-        foreach ($names as $name) {
-            $table->imports[$name->toLowerCaseString()] =
-                /** @param list<Type> $arguments */
-                static fn(array $arguments): Type => types::template($name->toString(), $declaredAt, ...$arguments);
+        foreach ($templates as $template) {
+            $table->imports[strtolower($template->name)] = static fn(): Type => types::template($template);
         }
 
         return $table;
@@ -113,13 +109,13 @@ final class MainImportTable
         return $table;
     }
 
-    public function atAnonymousClass(?FullyQualifiedName $parentName): self
+    public function atAnonymousClass(AnonymousClassId $id, ?FullyQualifiedName $parentName): self
     {
         $table = clone $this;
 
         $table->imports[Name::SELF] = $table->imports[Name::STATIC] =
             /** @param list<Type> $arguments */
-            static fn(array $arguments): Type => types::anonymousClassSelf(...$arguments);
+            static fn(array $arguments): Type => types::object($id, ...$arguments);
 
         if ($parentName === null) {
             unset($table->imports[Name::PARENT]);

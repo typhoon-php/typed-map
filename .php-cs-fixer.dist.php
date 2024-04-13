@@ -16,8 +16,7 @@ $config = (new Config())
                 Finder::create()
                     ->in(__DIR__ . '/tests')
                     ->exclude([
-                        'Reflection/NameContext/functional',
-                        'Reflection/Fixtures',
+                        'Reflection/Internal/NativeAdapter/Fixtures',
                     ]),
             ),
     )

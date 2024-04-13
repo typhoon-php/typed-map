@@ -15,7 +15,9 @@ use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeVisitor;
+use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\TypeContext\TypeContext;
+use function Typhoon\DeclarationId\anonymousClassId;
 
 /**
  * @api
@@ -29,8 +31,11 @@ final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
      */
     private array $childContextStack = [];
 
+    /**
+     * @param ?non-empty-string $file
+     */
     public function __construct(
-        private readonly TypeContextProcessor $processor = new NullTypeContextProcessor(),
+        private readonly ?string $file = null,
     ) {
         $this->mainContext = new TypeContext();
     }
@@ -72,13 +77,13 @@ final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
         }
 
         if ($node instanceof ClassLike) {
-            $this->childContextStack[] = $this->processor->processTypeContext($this->createClassContext($node), $node);
+            $this->childContextStack[] = $this->createClassContext($node);
 
             return null;
         }
 
         if ($node instanceof FunctionLike) {
-            $this->childContextStack[] = $this->processor->processTypeContext($this->typeContext(), $node);
+            $this->childContextStack[] = $this->typeContext();
 
             return null;
         }
@@ -131,7 +136,7 @@ final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
         $parentName = $node instanceof Class_ ? $node->extends : null;
 
         if ($name === null) {
-            return $this->typeContext()->atAnonymousClass($parentName);
+            return $this->typeContext()->atAnonymousClass($this->anonymousClassId($node), $parentName);
         }
 
         if ($node instanceof Trait_) {
@@ -139,5 +144,20 @@ final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
         }
 
         return $this->typeContext()->atClass($name, $parentName);
+    }
+
+    private function anonymousClassId(ClassLike $node): AnonymousClassId
+    {
+        if ($this->file === null) {
+            throw new \LogicException();
+        }
+
+        $startLine = $node->getStartLine();
+
+        if ($startLine <= 0) {
+            throw new \LogicException();
+        }
+
+        return anonymousClassId($this->file, $startLine);
     }
 }
