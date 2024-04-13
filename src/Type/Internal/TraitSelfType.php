@@ -2,24 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeContext\Internal;
+namespace Typhoon\Type\Internal;
 
 use Typhoon\Type\Type;
 use Typhoon\Type\TypeVisitor;
-use Typhoon\TypeContext\AnonymousClassTypesResolver;
+use Typhoon\Type\Visitor\TraitTypesResolver;
 
 /**
  * @internal
- * @psalm-internal Typhoon\TypeContext
+ * @psalm-internal Typhoon\Type
  * @readonly
  * @implements Type<object>
  */
-final class AnonymousSelfType implements Type
+final class TraitSelfType implements Type
 {
     /**
+     * @param non-empty-string $trait
      * @param list<Type> $arguments
      */
     public function __construct(
+        private readonly string $trait,
         private readonly array $arguments,
     ) {}
 
@@ -30,11 +32,11 @@ final class AnonymousSelfType implements Type
      */
     public function accept(TypeVisitor $visitor): mixed
     {
-        if ($visitor instanceof AnonymousClassTypesResolver) {
+        if ($visitor instanceof TraitTypesResolver) {
             /** @var TReturn */
-            return $visitor->objectType;
+            return $visitor->traitSelf($this->arguments);
         }
 
-        return $visitor->alias($this, 'self', 'anonymous-class', $this->arguments);
+        return $visitor->alias($this, 'self', 'trait-' . $this->trait, $this->arguments);
     }
 }

@@ -118,7 +118,7 @@ final class MainImportTable
 
         $table->imports[Name::SELF] = $table->imports[Name::STATIC] =
             /** @param list<Type> $arguments */
-            static fn(array $arguments): Type => new AnonymousSelfType($arguments);
+            static fn(array $arguments): Type => types::anonymousClassSelf(...$arguments);
 
         if ($parentName === null) {
             unset($table->imports[Name::PARENT]);
@@ -131,17 +131,17 @@ final class MainImportTable
 
     public function atTrait(FullyQualifiedName $name): self
     {
-        $trait = $name->toStringWithoutSlash();
         $table = clone $this;
+        $trait = $name->toStringWithoutSlash();
         $table->imports[Name::SELF] =
             /** @param list<Type> $arguments */
-            static fn(array $arguments): Type => new TraitSelfType($trait, $arguments);
+            static fn(array $arguments): Type => types::traitSelf($trait, ...$arguments);
         $table->imports[Name::PARENT] =
             /** @param list<Type> $arguments */
-            static fn(array $arguments): Type => new TraitParentType($trait, $arguments);
+            static fn(array $arguments): Type => types::traitParent($trait, ...$arguments);
         $table->imports[Name::STATIC] =
             /** @param list<Type> $arguments */
-            static fn(array $arguments): Type => new TraitStaticType($trait, $arguments);
+            static fn(array $arguments): Type => types::traitStatic($trait, ...$arguments);
 
         return $table;
     }

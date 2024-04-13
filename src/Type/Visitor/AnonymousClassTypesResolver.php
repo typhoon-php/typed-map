@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeContext;
+namespace Typhoon\Type\Visitor;
 
 use Typhoon\Type\RecursiveTypeReplacer;
 use Typhoon\Type\Type;
