@@ -56,7 +56,7 @@ Typhoon team is currently working on a type comparator. Until it is released, yo
 
 ```php
 use Typhoon\Type\Type;
-use Typhoon\Type\DefaultTypeVisitor;
+use Typhoon\Type\Visitor\DefaultTypeVisitor;
 
 $isMixed = $type->accept(
     new /** @extends DefaultTypeVisitor<bool> */ class () extends DefaultTypeVisitor {

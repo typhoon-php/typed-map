@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeComparator;
 
-use Typhoon\Type\DefaultTypeVisitor;
 use Typhoon\Type\Type;
+use Typhoon\Type\Visitor\DefaultTypeVisitor;
 
 /**
  * @internal
