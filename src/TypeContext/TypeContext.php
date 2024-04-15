@@ -156,10 +156,10 @@ final class TypeContext
 
         $className = $this->resolveClassName($name);
 
-        if (!$className->lastSegment()->isConstantLike() || ($this->classExists)($className->toString())) {
-            return types::object($className->toString(), ...$arguments);
+        if (!$className->lastSegment()->isConstantLike() || ($this->classExists)($className->toStringWithoutSlash())) {
+            return types::object($className->toStringWithoutSlash(), ...$arguments);
         }
 
-        return types::constant($this->resolveConstantName($name)->toString());
+        return types::constant($this->resolveConstantName($name)->toStringWithoutSlash());
     }
 }

@@ -127,7 +127,7 @@ final class UnqualifiedName extends Name
 
         $namespacedName = new FullyQualifiedName([...$namespace->segments, $this]);
 
-        if (($functionExists)($namespacedName->toString())) {
+        if (($functionExists)($namespacedName->toStringWithoutSlash())) {
             return $namespacedName;
         }
 
@@ -156,7 +156,7 @@ final class UnqualifiedName extends Name
 
         $namespacedName = new FullyQualifiedName([...$namespace->segments, $this]);
 
-        if (($constantExists)($namespacedName->toString())) {
+        if (($constantExists)($namespacedName->toStringWithoutSlash())) {
             return $namespacedName;
         }
 
