@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeContext\Internal;
 
+use Typhoon\Type\At;
 use Typhoon\Type\AtClass;
 use Typhoon\Type\AtFunction;
 use Typhoon\Type\AtMethod;
@@ -80,7 +81,7 @@ final class MainImportTable
     /**
      * @param array<UnqualifiedName> $names
      */
-    public function withTemplates(array $names, AtFunction|AtClass|AtMethod $declaredAt): self
+    public function withTemplates(array $names, At|AtFunction|AtClass|AtMethod $declaredAt): self
     {
         $table = clone $this;
 
