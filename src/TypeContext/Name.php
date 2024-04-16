@@ -41,6 +41,18 @@ abstract class Name
     }
 
     /**
+     * @param non-empty-list<UnqualifiedName> $segments
+     * @return non-empty-string
+     */
+    final protected static function segmentsToString(array $segments): string
+    {
+        return implode(self::DELIMITER, array_map(
+            static fn(UnqualifiedName $segment): string => $segment->toString(),
+            $segments,
+        ));
+    }
+
+    /**
      * @param list<string> $segments
      * @return non-empty-list<UnqualifiedName>
      */
@@ -104,16 +116,4 @@ abstract class Name
         ConstantImportTable $constantImportTable,
         callable $constantExists,
     ): FullyQualifiedName;
-
-    /**
-     * @param non-empty-list<UnqualifiedName> $segments
-     * @return non-empty-string
-     */
-    final protected function segmentsToString(array $segments): string
-    {
-        return implode(self::DELIMITER, array_map(
-            static fn(UnqualifiedName $segment): string => $segment->toString(),
-            $segments,
-        ));
-    }
 }
