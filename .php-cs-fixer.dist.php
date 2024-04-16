@@ -28,6 +28,7 @@ $config = (new Config())
     'no_unset_on_property' => false,
     /** @see TypeInheritanceResolver */
     'strict_comparison' => false,
+    'logical_operators' => false,
 ]);
 
 return $config;
