@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeContext;
 
-use Typhoon\TypeContext\Internal\ConstantImportTable;
-use Typhoon\TypeContext\Internal\FunctionImportTable;
-use Typhoon\TypeContext\Internal\MainImportTable;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name as NameNode;
+use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Name\Relative;
 
 /**
  * @api
  * @readonly
- * @psalm-import-type Exists from TypeContext
  */
 abstract class Name
 {
@@ -38,6 +38,45 @@ abstract class Name
         }
 
         return new QualifiedName(self::parseSegments($segments));
+    }
+
+    /**
+     * @return ($name is null ? null : (
+     *     $name is Identifier ? UnqualifiedName : (
+     *         $name is FullyQualified ? FullyQualifiedName : (
+     *             $name is Relative ? RelativeName : UnqualifiedName|QualifiedName
+     *         )
+     *     )
+     * ))
+     */
+    final public static function fromNode(null|Identifier|NameNode $name): ?self
+    {
+        if ($name === null) {
+            return null;
+        }
+
+        if ($name instanceof Identifier) {
+            return UnqualifiedName::fromString($name->name);
+        }
+
+        /** @var NameNode $name */
+        $parts = $name->getParts();
+        \assert($parts !== [] && array_is_list($parts));
+        $segments = array_map(UnqualifiedName::fromString(...), $parts);
+
+        if ($name instanceof FullyQualified) {
+            return new FullyQualifiedName($segments);
+        }
+
+        if ($name instanceof Relative) {
+            return new RelativeName($segments);
+        }
+
+        if (\count($segments) === 1) {
+            return $segments[0];
+        }
+
+        return new QualifiedName($segments);
     }
 
     /**
@@ -80,40 +119,5 @@ abstract class Name
 
     abstract public function toFullyQualified(): FullyQualifiedName;
 
-    abstract public function firstSegment(): UnqualifiedName;
-
     abstract public function lastSegment(): UnqualifiedName;
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    abstract public function resolveAsClassName(
-        ?FullyQualifiedName $namespace,
-        MainImportTable $mainImportTable,
-    ): FullyQualifiedName;
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     * @param Exists $functionExists
-     */
-    abstract public function resolveAsFunctionName(
-        ?FullyQualifiedName $namespace,
-        MainImportTable $mainImportTable,
-        FunctionImportTable $functionImportTable,
-        callable $functionExists,
-    ): FullyQualifiedName;
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     * @param Exists $constantExists
-     */
-    abstract public function resolveAsConstantName(
-        ?FullyQualifiedName $namespace,
-        MainImportTable $mainImportTable,
-        ConstantImportTable $constantImportTable,
-        callable $constantExists,
-    ): FullyQualifiedName;
 }

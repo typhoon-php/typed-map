@@ -52,7 +52,7 @@ final class MainImportTable
         return null;
     }
 
-    public function withName(Name $name, ?UnqualifiedName $alias = null): self
+    public function withName(Name $name, ?UnqualifiedName $alias): self
     {
         $table = clone $this;
         $name = $name->toFullyQualified();

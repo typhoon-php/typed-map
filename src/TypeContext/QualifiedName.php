@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeContext;
 
-use Typhoon\TypeContext\Internal\ConstantImportTable;
-use Typhoon\TypeContext\Internal\FunctionImportTable;
-use Typhoon\TypeContext\Internal\MainImportTable;
-
 /**
  * @api
  * @readonly
@@ -46,60 +42,8 @@ final class QualifiedName extends Name
         return new FullyQualifiedName($this->segments);
     }
 
-    public function firstSegment(): UnqualifiedName
-    {
-        return $this->segments[0];
-    }
-
     public function lastSegment(): UnqualifiedName
     {
         return $this->segments[\count($this->segments) - 1];
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    public function resolveAsClassName(
-        ?FullyQualifiedName $namespace,
-        MainImportTable $mainImportTable,
-    ): FullyQualifiedName {
-        $imported = $mainImportTable->getName($this->firstSegment());
-
-        if ($imported !== null) {
-            return new FullyQualifiedName([...$imported->segments, ...\array_slice($this->segments, 1)]);
-        }
-
-        if ($namespace === null) {
-            return new FullyQualifiedName($this->segments);
-        }
-
-        return new FullyQualifiedName([...$namespace->segments, ...$this->segments]);
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    public function resolveAsFunctionName(
-        ?FullyQualifiedName $namespace,
-        MainImportTable $mainImportTable,
-        FunctionImportTable $functionImportTable,
-        callable $functionExists,
-    ): FullyQualifiedName {
-        return $this->resolveAsClassName($namespace, $mainImportTable);
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    public function resolveAsConstantName(
-        ?FullyQualifiedName $namespace,
-        MainImportTable $mainImportTable,
-        ConstantImportTable $constantImportTable,
-        callable $constantExists,
-    ): FullyQualifiedName {
-        return $this->resolveAsClassName($namespace, $mainImportTable);
     }
 }

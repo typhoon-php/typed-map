@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeContext;
 
-use Typhoon\TypeContext\Internal\ConstantImportTable;
-use Typhoon\TypeContext\Internal\FunctionImportTable;
-use Typhoon\TypeContext\Internal\MainImportTable;
+use PhpParser\Node\Identifier;
 
 /**
  * @api
@@ -30,6 +28,11 @@ final class UnqualifiedName extends Name
         \assert($name !== '');
 
         return new self($name);
+    }
+
+    public static function fromIdentifier(Identifier $node): self
+    {
+        return new self($node->name);
     }
 
     public static function self(): self
@@ -57,11 +60,6 @@ final class UnqualifiedName extends Name
         return new FullyQualifiedName([$this]);
     }
 
-    public function firstSegment(): self
-    {
-        return $this;
-    }
-
     public function lastSegment(): self
     {
         return $this;
@@ -80,86 +78,8 @@ final class UnqualifiedName extends Name
         return preg_match('/[a-z]/', $this->name) === 0;
     }
 
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    public function resolveAsClassName(
-        ?FullyQualifiedName $namespace,
-        MainImportTable $mainImportTable,
-    ): FullyQualifiedName {
-        $imported = $mainImportTable->getName($this);
-
-        if ($imported !== null) {
-            return $imported;
-        }
-
-        if (\in_array($this->toLowerCaseString(), [self::SELF, self::PARENT, self::STATIC], true)) {
-            throw new InvalidName(sprintf('Cannot resolve %s', $this->name));
-        }
-
-        if ($namespace === null) {
-            return new FullyQualifiedName([$this]);
-        }
-
-        return new FullyQualifiedName([...$namespace->segments, $this]);
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    public function resolveAsFunctionName(
-        ?FullyQualifiedName $namespace,
-        MainImportTable $mainImportTable,
-        FunctionImportTable $functionImportTable,
-        callable $functionExists,
-    ): FullyQualifiedName {
-        $imported = $functionImportTable->getName($this);
-
-        if ($imported !== null) {
-            return $imported;
-        }
-
-        if ($namespace === null) {
-            return new FullyQualifiedName([$this]);
-        }
-
-        $namespacedName = new FullyQualifiedName([...$namespace->segments, $this]);
-
-        if (($functionExists)($namespacedName->toStringWithoutSlash())) {
-            return $namespacedName;
-        }
-
-        return new FullyQualifiedName([$this]);
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    public function resolveAsConstantName(
-        ?FullyQualifiedName $namespace,
-        MainImportTable $mainImportTable,
-        ConstantImportTable $constantImportTable,
-        callable $constantExists,
-    ): FullyQualifiedName {
-        $imported = $constantImportTable->getName($this);
-
-        if ($imported !== null) {
-            return $imported;
-        }
-
-        if ($namespace === null) {
-            return new FullyQualifiedName([$this]);
-        }
-
-        $namespacedName = new FullyQualifiedName([...$namespace->segments, $this]);
-
-        if (($constantExists)($namespacedName->toStringWithoutSlash())) {
-            return $namespacedName;
-        }
-
-        return new FullyQualifiedName([$this]);
+    public function isClassRelativeName(): bool
+    {
+        return \in_array($this->toLowerCaseString(), [self::SELF, self::PARENT, self::STATIC], true);
     }
 }

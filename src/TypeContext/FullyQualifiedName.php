@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeContext;
 
-use Typhoon\TypeContext\Internal\ConstantImportTable;
-use Typhoon\TypeContext\Internal\FunctionImportTable;
-use Typhoon\TypeContext\Internal\MainImportTable;
-
 /**
  * @api
  * @readonly
@@ -44,50 +40,8 @@ final class FullyQualifiedName extends Name
         return self::segmentsToString($this->segments);
     }
 
-    public function firstSegment(): UnqualifiedName
-    {
-        return $this->segments[0];
-    }
-
     public function lastSegment(): UnqualifiedName
     {
         return $this->segments[\count($this->segments) - 1];
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    public function resolveAsClassName(
-        ?self $namespace,
-        MainImportTable $mainImportTable,
-    ): self {
-        return $this;
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    public function resolveAsFunctionName(
-        ?self $namespace,
-        MainImportTable $mainImportTable,
-        FunctionImportTable $functionImportTable,
-        callable $functionExists,
-    ): self {
-        return $this;
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\TypeContext
-     */
-    public function resolveAsConstantName(
-        ?self $namespace,
-        MainImportTable $mainImportTable,
-        ConstantImportTable $constantImportTable,
-        callable $constantExists,
-    ): self {
-        return $this;
     }
 }
