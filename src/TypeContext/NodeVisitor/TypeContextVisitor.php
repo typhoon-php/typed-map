@@ -14,13 +14,13 @@ use PhpParser\Node\Stmt\GroupUse;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\Use_;
-use PhpParser\NodeVisitorAbstract;
+use PhpParser\NodeVisitor;
 use Typhoon\TypeContext\TypeContext;
 
 /**
  * @api
  */
-final class TypeContextVisitor extends NodeVisitorAbstract
+final class TypeContextVisitor implements NodeVisitor
 {
     private TypeContext $mainContext;
 
@@ -58,7 +58,7 @@ final class TypeContextVisitor extends NodeVisitorAbstract
 
         if ($node instanceof Use_) {
             foreach ($node->uses as $use) {
-                $this->addUse(type: $node->type, name: $use->name, alias: $use->alias);
+                $this->addUse($node->type, $use->name, $use->alias);
             }
 
             return null;
@@ -66,11 +66,7 @@ final class TypeContextVisitor extends NodeVisitorAbstract
 
         if ($node instanceof GroupUse) {
             foreach ($node->uses as $use) {
-                $this->addUse(
-                    type: $node->type | $use->type,
-                    name: NameNode::concat($node->prefix, $use->name),
-                    alias: $use->alias,
-                );
+                $this->addUse($node->type | $use->type, NameNode::concat($node->prefix, $use->name), $use->alias);
             }
 
             return null;
