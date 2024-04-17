@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeContext;
 
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name as NameNode;
 use Typhoon\Type\At;
 use Typhoon\Type\AtClass;
 use Typhoon\Type\AtFunction;
@@ -67,8 +69,12 @@ final class TypeContext
         $this->constantImportTable = new ConstantImportTable();
     }
 
-    public function atNamespace(?Name $namespace = null): self
+    public function atNamespace(null|Name|NameNode $namespace = null): self
     {
+        if ($namespace instanceof NameNode) {
+            $namespace = Name::fromNode($namespace);
+        }
+
         $context = clone $this;
         $context->namespace = $namespace?->toFullyQualified();
         $context->mainImportTable = new MainImportTable();
@@ -78,39 +84,67 @@ final class TypeContext
         return $context;
     }
 
-    public function withUse(Name $name, ?UnqualifiedName $alias = null): self
+    public function withUse(Name|NameNode $name, null|UnqualifiedName|Identifier $alias = null): self
     {
+        if ($name instanceof NameNode) {
+            $name = Name::fromNode($name);
+        }
+
+        if ($alias instanceof Identifier) {
+            $alias = UnqualifiedName::fromIdentifier($alias);
+        }
+
         $context = clone $this;
         $context->mainImportTable = $context->mainImportTable->withName($name, $alias);
 
         return $context;
     }
 
-    public function withFunctionUse(Name $name, ?UnqualifiedName $alias = null): self
+    public function withFunctionUse(Name|NameNode $name, null|UnqualifiedName|Identifier $alias = null): self
     {
+        if ($name instanceof NameNode) {
+            $name = Name::fromNode($name);
+        }
+
+        if ($alias instanceof Identifier) {
+            $alias = UnqualifiedName::fromIdentifier($alias);
+        }
+
         $context = clone $this;
         $context->functionImportTable = $context->functionImportTable->withName($name, $alias);
 
         return $context;
     }
 
-    public function withConstantUse(Name $name, ?UnqualifiedName $alias = null): self
+    public function withConstantUse(Name|NameNode $name, null|UnqualifiedName|Identifier $alias = null): self
     {
+        if ($name instanceof NameNode) {
+            $name = Name::fromNode($name);
+        }
+
+        if ($alias instanceof Identifier) {
+            $alias = UnqualifiedName::fromIdentifier($alias);
+        }
+
         $context = clone $this;
         $context->constantImportTable = $context->constantImportTable->withName($name, $alias);
 
         return $context;
     }
 
-    public function atClass(FullyQualifiedName $name, ?Name $parentName = null): self
+    public function atClass(FullyQualifiedName|Identifier $name, null|Name|NameNode $parentName = null): self
     {
+        if ($name instanceof Identifier) {
+            $name = $this->resolveDeclaredName($name);
+        }
+
         $context = clone $this;
         $context->mainImportTable = $context->mainImportTable->atClass($name, $this->resolveClassName($parentName));
 
         return $context;
     }
 
-    public function atAnonymousClass(?Name $parentName = null): self
+    public function atAnonymousClass(null|Name|NameNode $parentName = null): self
     {
         $context = clone $this;
         $context->mainImportTable = $context->mainImportTable->atAnonymousClass($this->resolveClassName($parentName));
@@ -118,8 +152,12 @@ final class TypeContext
         return $context;
     }
 
-    public function atTrait(FullyQualifiedName $name): self
+    public function atTrait(FullyQualifiedName|Identifier $name): self
     {
+        if ($name instanceof Identifier) {
+            $name = $this->resolveDeclaredName($name);
+        }
+
         $context = clone $this;
         $context->mainImportTable = $context->mainImportTable->atTrait($name);
 
@@ -157,15 +195,19 @@ final class TypeContext
         return $context;
     }
 
-    public function resolveDeclaredName(UnqualifiedName $name): FullyQualifiedName
+    public function resolveDeclaredName(UnqualifiedName|Identifier $name): FullyQualifiedName
     {
+        if ($name instanceof Identifier) {
+            $name = UnqualifiedName::fromIdentifier($name);
+        }
+
         return new FullyQualifiedName([...($this->namespace?->segments ?? []), $name]);
     }
 
     /**
      * @return ($name is null ? null : FullyQualifiedName)
      */
-    public function resolveClassName(?Name $name): ?FullyQualifiedName
+    public function resolveClassName(null|Name|NameNode $name): ?FullyQualifiedName
     {
         if ($name === null) {
             return null;
@@ -186,7 +228,7 @@ final class TypeContext
         });
     }
 
-    public function resolveFunctionName(Name $name): FullyQualifiedName
+    public function resolveFunctionName(Name|NameNode $name): FullyQualifiedName
     {
         return $this->doResolveName($name, function (UnqualifiedName $name): FullyQualifiedName {
             $imported = $this->functionImportTable->getName($name);
@@ -209,7 +251,7 @@ final class TypeContext
         });
     }
 
-    public function resolveConstantName(Name $name): FullyQualifiedName
+    public function resolveConstantName(Name|NameNode $name): FullyQualifiedName
     {
         return $this->doResolveName($name, function (UnqualifiedName $name): FullyQualifiedName {
             $imported = $this->constantImportTable->getName($name);
@@ -235,8 +277,12 @@ final class TypeContext
     /**
      * @param list<Type> $arguments
      */
-    public function resolveType(Name $name, array $arguments = []): Type
+    public function resolveType(Name|NameNode $name, array $arguments = []): Type
     {
+        if ($name instanceof NameNode) {
+            $name = Name::fromNode($name);
+        }
+
         if ($name instanceof UnqualifiedName) {
             $type = $this->mainImportTable->tryGetType($name, $arguments);
 
@@ -257,8 +303,12 @@ final class TypeContext
     /**
      * @param \Closure(UnqualifiedName): FullyQualifiedName $unqualifiedResolver
      */
-    private function doResolveName(Name $name, \Closure $unqualifiedResolver): FullyQualifiedName
+    private function doResolveName(Name|NameNode $name, \Closure $unqualifiedResolver): FullyQualifiedName
     {
+        if ($name instanceof NameNode) {
+            $name = Name::fromNode($name);
+        }
+
         if ($name instanceof FullyQualifiedName) {
             return $name;
         }
