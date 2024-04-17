@@ -21,7 +21,6 @@ use Typhoon\TypeContext\Name;
 use Typhoon\TypeContext\QualifiedName;
 use Typhoon\TypeContext\RelativeName;
 use Typhoon\TypeContext\TypeContext;
-use Typhoon\TypeContext\TypeContextFactory;
 use Typhoon\TypeContext\UnqualifiedName;
 
 /**
@@ -40,9 +39,9 @@ final class TypeContextVisitor extends NodeVisitorAbstract
     private array $classContexts = [];
 
     public function __construct(
-        private readonly TypeContextFactory $contextFactory,
+        TypeContext $contextPrototype = new TypeContext(),
     ) {
-        $this->mainContext = $this->contextFactory->start();
+        $this->mainContext = $contextPrototype->atNamespace();
     }
 
     public function context(): TypeContext
@@ -50,10 +49,9 @@ final class TypeContextVisitor extends NodeVisitorAbstract
         return reset($this->classContexts) ?: $this->mainContext;
     }
 
-    public function beforeTraverse(array $nodes = []): ?int
+    public function beforeTraverse(array $nodes): ?int
     {
-        $this->mainContext = $this->contextFactory->start();
-        $this->classContexts = [];
+        $this->enterNamespace();
 
         return null;
     }
@@ -61,7 +59,7 @@ final class TypeContextVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node): ?int
     {
         if ($node instanceof Namespace_) {
-            $this->mainContext = $this->contextFactory->start($node->name === null ? null : $this->nameFromNode($node->name));
+            $this->enterNamespace($node->name);
 
             return null;
         }
@@ -118,7 +116,9 @@ final class TypeContextVisitor extends NodeVisitorAbstract
     public function leaveNode(Node $node): ?int
     {
         if ($node instanceof Namespace_) {
-            return $this->beforeTraverse();
+            $this->enterNamespace();
+
+            return null;
         }
 
         if ($node instanceof ClassLike) {
@@ -132,7 +132,15 @@ final class TypeContextVisitor extends NodeVisitorAbstract
 
     public function afterTraverse(array $nodes): ?int
     {
-        return $this->beforeTraverse();
+        $this->enterNamespace();
+
+        return null;
+    }
+
+    private function enterNamespace(?NameNode $namespace = null): void
+    {
+        $this->mainContext = $this->mainContext->atNamespace($namespace === null ? null : $this->nameFromNode($namespace));
+        $this->classContexts = [];
     }
 
     private function addUse(int $type, NameNode $nameNode, ?Identifier $aliasNode): void

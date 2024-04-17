@@ -21,6 +21,23 @@ use Typhoon\TypeContext\Internal\MainImportTable;
  */
 final class TypeContext
 {
+    /**
+     * @var Exists
+     */
+    private readonly mixed $classExists;
+
+    /**
+     * @var Exists
+     */
+    private readonly mixed $functionExists;
+
+    /**
+     * @var Exists
+     */
+    private readonly mixed $constantExists;
+
+    private ?FullyQualifiedName $namespace;
+
     private MainImportTable $mainImportTable;
 
     private FunctionImportTable $functionImportTable;
@@ -28,19 +45,34 @@ final class TypeContext
     private ConstantImportTable $constantImportTable;
 
     /**
-     * @param Exists $classExists
-     * @param Exists $functionExists
-     * @param Exists $constantExists
+     * @param ?Exists $classExists
+     * @param ?Exists $functionExists
+     * @param ?Exists $constantExists
      */
     public function __construct(
-        private readonly ?FullyQualifiedName $namespace,
-        private readonly mixed $classExists,
-        private readonly mixed $functionExists,
-        private readonly mixed $constantExists,
+        ?Name $namespace = null,
+        ?callable $classExists = null,
+        ?callable $functionExists = null,
+        ?callable $constantExists = null,
     ) {
+        $this->classExists = $classExists ?? static fn(string $class): bool => class_exists($class) || interface_exists($class);
+        $this->functionExists = $functionExists ?? 'function_exists';
+        $this->constantExists = $constantExists ?? 'defined';
+        $this->namespace = $namespace?->toFullyQualified();
         $this->mainImportTable = new MainImportTable();
         $this->functionImportTable = new FunctionImportTable();
         $this->constantImportTable = new ConstantImportTable();
+    }
+
+    public function atNamespace(?Name $namespace = null): self
+    {
+        $context = clone $this;
+        $context->namespace = $namespace?->toFullyQualified();
+        $context->mainImportTable = new MainImportTable();
+        $context->functionImportTable = new FunctionImportTable();
+        $context->constantImportTable = new ConstantImportTable();
+
+        return $context;
     }
 
     public function withUse(Name $name, ?UnqualifiedName $alias = null): self
