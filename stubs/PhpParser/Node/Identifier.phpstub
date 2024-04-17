@@ -1,15 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
 namespace PhpParser\Node;
 
-use PhpParser\NodeAbstract;
-
-class Identifier extends NodeAbstract
+class Identifier
 {
     /**
      * @var non-empty-string
      */
     public $name;
+
+    /**
+     * @return non-empty-string
+     */
+    public function toString() {}
+
+    /**
+     * @return non-empty-lowercase-string
+     */
+    public function toLowerString() {}
 }
