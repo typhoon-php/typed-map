@@ -13,5 +13,4 @@ parameters:
     ignoreErrors:
         - { identifier: missingType.generics }
         - { identifier: possiblyImpure.methodCall }
-        - { identifier: possiblyImpure.new }
         - { identifier: return.unusedType }
