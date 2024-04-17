@@ -60,9 +60,7 @@ abstract class Name
         }
 
         /** @var NameNode $name */
-        $parts = $name->getParts();
-        \assert($parts !== [] && array_is_list($parts));
-        $segments = array_map(UnqualifiedName::fromString(...), $parts);
+        $segments = array_map(UnqualifiedName::fromString(...), $name->getParts());
 
         if ($name instanceof FullyQualified) {
             return new FullyQualifiedName($segments);
