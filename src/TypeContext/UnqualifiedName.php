@@ -21,11 +21,9 @@ final class UnqualifiedName extends Name
 
     public static function fromString(string $name): self
     {
-        if (preg_match('/^[a-zA-Z_\x80-\xff][\w\x80-\xff]*$/', $name) !== 1) {
-            throw new InvalidName(sprintf('"%s" is not a valid PHP label', $name));
+        if ($name === '' || str_contains($name, self::DELIMITER)) {
+            throw new InvalidName(sprintf('"%s" is not a valid unqualified name', $name));
         }
-
-        \assert($name !== '');
 
         return new self($name);
     }
