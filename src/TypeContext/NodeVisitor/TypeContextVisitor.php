@@ -20,7 +20,7 @@ use Typhoon\TypeContext\TypeContext;
 /**
  * @api
  */
-final class TypeContextVisitor implements NodeVisitor
+final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
 {
     private TypeContext $mainContext;
 
@@ -36,7 +36,7 @@ final class TypeContextVisitor implements NodeVisitor
         $this->mainContext = $contextPrototype->atNamespace();
     }
 
-    public function context(): TypeContext
+    public function typeContext(): TypeContext
     {
         return reset($this->symbolContexts) ?: $this->mainContext;
     }
@@ -79,7 +79,7 @@ final class TypeContextVisitor implements NodeVisitor
         }
 
         if ($node instanceof FunctionLike) {
-            $this->symbolContexts[] = $this->processor->process($this->context(), $node);
+            $this->symbolContexts[] = $this->processor->process($this->typeContext(), $node);
 
             return null;
         }
@@ -132,13 +132,13 @@ final class TypeContextVisitor implements NodeVisitor
         $parentName = $node instanceof Class_ ? $node->extends : null;
 
         if ($name === null) {
-            return $this->context()->atAnonymousClass($parentName);
+            return $this->typeContext()->atAnonymousClass($parentName);
         }
 
         if ($node instanceof Trait_) {
-            return $this->context()->atTrait($name);
+            return $this->typeContext()->atTrait($name);
         }
 
-        return $this->context()->atClass($name, $parentName);
+        return $this->typeContext()->atClass($name, $parentName);
     }
 }
