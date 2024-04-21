@@ -28,41 +28,18 @@ final class TypeContext
      */
     public ?FullyQualifiedName $namespace;
 
-    /**
-     * @var Exists
-     */
-    private readonly mixed $classExists;
-
-    /**
-     * @var Exists
-     */
-    private readonly mixed $functionExists;
-
-    /**
-     * @var Exists
-     */
-    private readonly mixed $constantExists;
-
     private MainImportTable $mainImportTable;
 
     private FunctionImportTable $functionImportTable;
 
     private ConstantImportTable $constantImportTable;
 
-    /**
-     * @param ?Exists $classExists
-     * @param ?Exists $functionExists
-     * @param ?Exists $constantExists
-     */
-    public function __construct(
-        ?Name $namespace = null,
-        ?callable $classExists = null,
-        ?callable $functionExists = null,
-        ?callable $constantExists = null,
-    ) {
-        $this->classExists = $classExists ?? static fn(string $class): bool => class_exists($class) || interface_exists($class);
-        $this->functionExists = $functionExists ?? 'function_exists';
-        $this->constantExists = $constantExists ?? 'defined';
+    public function __construct(null|Name|NameNode $namespace = null)
+    {
+        if ($namespace instanceof NameNode) {
+            $namespace = Name::fromNode($namespace);
+        }
+
         $this->namespace = $namespace?->toFullyQualified();
         $this->mainImportTable = new MainImportTable();
         $this->functionImportTable = new FunctionImportTable();
@@ -201,7 +178,11 @@ final class TypeContext
             $name = UnqualifiedName::fromIdentifier($name);
         }
 
-        return new FullyQualifiedName([...($this->namespace?->segments ?? []), $name]);
+        if ($this->namespace === null) {
+            return $name->toFullyQualified();
+        }
+
+        return new FullyQualifiedName([...$this->namespace->segments, $name]);
     }
 
     /**
@@ -213,65 +194,111 @@ final class TypeContext
             return null;
         }
 
-        return $this->doResolveName($name, function (UnqualifiedName $name): FullyQualifiedName {
-            $imported = $this->mainImportTable->getName($name);
+        if ($name instanceof NameNode) {
+            $name = Name::fromNode($name);
+        }
 
-            if ($imported !== null) {
-                return $imported;
-            }
+        if ($name instanceof FullyQualifiedName) {
+            return $name;
+        }
 
-            if ($name->isClassRelativeName()) {
-                throw new InvalidName(sprintf('Cannot resolve %s', $name->toString()));
-            }
+        if ($name instanceof RelativeName) {
+            return $this->resolveRelativeName($name);
+        }
 
-            return new FullyQualifiedName([...($this->namespace?->segments ?? []), $name]);
-        });
+        if ($name instanceof QualifiedName) {
+            return $this->resolveQualifiedName($name);
+        }
+
+        \assert($name instanceof UnqualifiedName);
+
+        $imported = $this->mainImportTable->getName($name);
+
+        if ($imported !== null) {
+            return $imported;
+        }
+
+        if ($name->isClassRelativeName()) {
+            throw new InvalidName(sprintf('Cannot resolve %s', $name->toString()));
+        }
+
+        if ($this->namespace === null) {
+            return $name->toFullyQualified();
+        }
+
+        return new FullyQualifiedName([...$this->namespace->segments, $name]);
     }
 
-    public function resolveFunctionName(Name|NameNode $name): FullyQualifiedName
+    public function preResolveFunctionName(Name|NameNode $name): PreResolvedFunctionName
     {
-        return $this->doResolveName($name, function (UnqualifiedName $name): FullyQualifiedName {
-            $imported = $this->functionImportTable->getName($name);
+        if ($name instanceof NameNode) {
+            $name = Name::fromNode($name);
+        }
 
-            if ($imported !== null) {
-                return $imported;
-            }
+        if ($name instanceof FullyQualifiedName) {
+            return new PreResolvedFunctionName($name);
+        }
 
-            if ($this->namespace === null) {
-                return new FullyQualifiedName([$name]);
-            }
+        if ($name instanceof RelativeName) {
+            return new PreResolvedFunctionName($this->resolveRelativeName($name));
+        }
 
-            $namespacedName = new FullyQualifiedName([...$this->namespace->segments, $name]);
+        if ($name instanceof QualifiedName) {
+            return new PreResolvedFunctionName($this->resolveQualifiedName($name));
+        }
 
-            if (($this->functionExists)($namespacedName->toStringWithoutSlash())) {
-                return $namespacedName;
-            }
+        \assert($name instanceof UnqualifiedName);
 
-            return new FullyQualifiedName([$name]);
-        });
+        $imported = $this->functionImportTable->getName($name);
+
+        if ($imported !== null) {
+            return new PreResolvedFunctionName($imported);
+        }
+
+        if ($this->namespace === null) {
+            return new PreResolvedFunctionName($name->toFullyQualified());
+        }
+
+        return new PreResolvedFunctionName(
+            new FullyQualifiedName([...$this->namespace->segments, $name]),
+            $name->toFullyQualified(),
+        );
     }
 
-    public function resolveConstantName(Name|NameNode $name): FullyQualifiedName
+    public function preResolveConstantName(Name|NameNode $name): PreResolvedConstantName
     {
-        return $this->doResolveName($name, function (UnqualifiedName $name): FullyQualifiedName {
-            $imported = $this->constantImportTable->getName($name);
+        if ($name instanceof NameNode) {
+            $name = Name::fromNode($name);
+        }
 
-            if ($imported !== null) {
-                return $imported;
-            }
+        if ($name instanceof FullyQualifiedName) {
+            return new PreResolvedConstantName($name);
+        }
 
-            if ($this->namespace === null) {
-                return new FullyQualifiedName([$name]);
-            }
+        if ($name instanceof RelativeName) {
+            return new PreResolvedConstantName($this->resolveRelativeName($name));
+        }
 
-            $namespacedName = new FullyQualifiedName([...$this->namespace->segments, $name]);
+        if ($name instanceof QualifiedName) {
+            return new PreResolvedConstantName($this->resolveQualifiedName($name));
+        }
 
-            if (($this->constantExists)($namespacedName->toStringWithoutSlash())) {
-                return $namespacedName;
-            }
+        \assert($name instanceof UnqualifiedName);
 
-            return new FullyQualifiedName([$name]);
-        });
+        $imported = $this->constantImportTable->getName($name);
+
+        if ($imported !== null) {
+            return new PreResolvedConstantName($imported);
+        }
+
+        if ($this->namespace === null) {
+            return new PreResolvedConstantName($name->toFullyQualified());
+        }
+
+        return new PreResolvedConstantName(
+            new FullyQualifiedName([...$this->namespace->segments, $name]),
+            $name->toFullyQualified(),
+        );
     }
 
     /**
@@ -291,46 +318,30 @@ final class TypeContext
             }
         }
 
-        $className = $this->resolveClassName($name);
-
-        if (!$className->lastSegment()->isConstantLike() || ($this->classExists)($className->toStringWithoutSlash())) {
-            return types::object($className->toStringWithoutSlash(), ...$arguments);
-        }
-
-        return types::constant($this->resolveConstantName($name)->toStringWithoutSlash());
+        return types::object($this->resolveClassName($name)->toStringWithoutSlash(), ...$arguments);
     }
 
-    /**
-     * @param \Closure(UnqualifiedName): FullyQualifiedName $unqualifiedResolver
-     */
-    private function doResolveName(Name|NameNode $name, \Closure $unqualifiedResolver): FullyQualifiedName
+    private function resolveRelativeName(RelativeName $name): FullyQualifiedName
     {
-        if ($name instanceof NameNode) {
-            $name = Name::fromNode($name);
+        if ($this->namespace === null) {
+            return $name->toFullyQualified();
         }
 
-        if ($name instanceof FullyQualifiedName) {
-            return $name;
+        return new FullyQualifiedName([...$this->namespace->segments, ...$name->segments]);
+    }
+
+    private function resolveQualifiedName(QualifiedName $name): FullyQualifiedName
+    {
+        $imported = $this->mainImportTable->getName($name->segments[0]);
+
+        if ($imported !== null) {
+            return new FullyQualifiedName([...$imported->segments, ...\array_slice($name->segments, 1)]);
         }
 
-        if ($name instanceof RelativeName) {
-            return new FullyQualifiedName([...($this->namespace?->segments ?? []), ...$name->segments]);
+        if ($this->namespace === null) {
+            return $name->toFullyQualified();
         }
 
-        if ($name instanceof QualifiedName) {
-            $imported = $this->mainImportTable->getName($name->segments[0]);
-
-            if ($imported !== null) {
-                return new FullyQualifiedName([...$imported->segments, ...\array_slice($name->segments, 1)]);
-            }
-
-            return new FullyQualifiedName([...($this->namespace?->segments ?? []), ...$name->segments]);
-        }
-
-        if (!$name instanceof UnqualifiedName) {
-            throw new \LogicException();
-        }
-
-        return $unqualifiedResolver($name);
+        return new FullyQualifiedName([...$this->namespace->segments, ...$name->segments]);
     }
 }
