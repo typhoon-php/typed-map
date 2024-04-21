@@ -26,18 +26,18 @@ abstract class Name
         $segments = explode(self::DELIMITER, $name);
 
         if ($segments[0] === '') {
-            return new FullyQualifiedName(self::parseSegments(\array_slice($segments, 1)));
+            return self::fromSegments(FullyQualifiedName::class, \array_slice($segments, 1));
         }
 
         if (strtolower($segments[0]) === self::RELATIVE_PREFIX) {
-            return new RelativeName(self::parseSegments(\array_slice($segments, 1)));
+            return self::fromSegments(RelativeName::class, \array_slice($segments, 1));
         }
 
         if (\count($segments) === 1) {
             return UnqualifiedName::fromString($segments[0]);
         }
 
-        return new QualifiedName(self::parseSegments($segments));
+        return self::fromSegments(QualifiedName::class, $segments);
     }
 
     /**
@@ -56,7 +56,7 @@ abstract class Name
         }
 
         if ($name instanceof Identifier) {
-            return UnqualifiedName::fromString($name->name);
+            return UnqualifiedName::fromIdentifier($name);
         }
 
         /** @var NameNode $name */
@@ -90,16 +90,16 @@ abstract class Name
     }
 
     /**
+     * @param FullyQualifiedName::class|RelativeName::class|QualifiedName::class $class
      * @param list<string> $segments
-     * @return non-empty-list<UnqualifiedName>
      */
-    private static function parseSegments(array $segments): array
+    private static function fromSegments(string $class, array $segments): self
     {
         if (\count($segments) === 0) {
             throw new InvalidName('Empty name');
         }
 
-        return array_map(UnqualifiedName::fromString(...), $segments);
+        return new $class(array_map(UnqualifiedName::fromString(...), $segments));
     }
 
     /**
