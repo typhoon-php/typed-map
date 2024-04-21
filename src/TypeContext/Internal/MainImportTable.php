@@ -41,7 +41,7 @@ final class MainImportTable
     /**
      * @param list<Type> $arguments
      */
-    public function tryGetType(UnqualifiedName $name, array $arguments): ?Type
+    public function getType(UnqualifiedName $name, array $arguments): ?Type
     {
         $import = $this->imports[$name->toLowerCaseString()] ?? null;
 

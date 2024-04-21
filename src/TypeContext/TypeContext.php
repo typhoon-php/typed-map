@@ -284,7 +284,7 @@ final class TypeContext
         }
 
         if ($name instanceof UnqualifiedName) {
-            $type = $this->mainImportTable->tryGetType($name, $arguments);
+            $type = $this->mainImportTable->getType($name, $arguments);
 
             if ($type !== null) {
                 return $type;
