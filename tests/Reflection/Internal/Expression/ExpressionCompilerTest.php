@@ -11,6 +11,7 @@ use PhpParser\ParserFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Typhoon\Reflection\Internal\ClassReflector;
 
 #[CoversClass(ExpressionCompiler::class)]
 final class ExpressionCompilerTest extends TestCase
@@ -79,7 +80,7 @@ final class ExpressionCompilerTest extends TestCase
         $expected = $this->evalExpression($expressionCode);
         $compiled = (new ExpressionCompiler())->compile($expressionNode);
 
-        $value = $compiled->evaluate(new EvaluationContext());
+        $value = $compiled->evaluate($this->createMock(ClassReflector::class));
 
         self::assertEquals($expected, $value);
     }
