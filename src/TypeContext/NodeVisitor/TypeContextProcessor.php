@@ -13,5 +13,5 @@ use Typhoon\TypeContext\TypeContext;
  */
 interface TypeContextProcessor
 {
-    public function process(TypeContext $context, ClassLike|FunctionLike $node): TypeContext;
+    public function processTypeContext(TypeContext $typeContext, ClassLike|FunctionLike $node): TypeContext;
 }

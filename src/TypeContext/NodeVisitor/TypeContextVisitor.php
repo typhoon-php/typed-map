@@ -73,13 +73,13 @@ final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
         }
 
         if ($node instanceof ClassLike) {
-            $this->symbolContexts[] = $this->processor->process($this->createClassContext($node), $node);
+            $this->symbolContexts[] = $this->processor->processTypeContext($this->createClassContext($node), $node);
 
             return null;
         }
 
         if ($node instanceof FunctionLike) {
-            $this->symbolContexts[] = $this->processor->process($this->typeContext(), $node);
+            $this->symbolContexts[] = $this->processor->processTypeContext($this->typeContext(), $node);
 
             return null;
         }

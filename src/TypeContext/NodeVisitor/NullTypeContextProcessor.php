@@ -13,8 +13,8 @@ use Typhoon\TypeContext\TypeContext;
  */
 final class NullTypeContextProcessor implements TypeContextProcessor
 {
-    public function process(TypeContext $context, ClassLike|FunctionLike $node): TypeContext
+    public function processTypeContext(TypeContext $typeContext, ClassLike|FunctionLike $node): TypeContext
     {
-        return $context;
+        return $typeContext;
     }
 }
