@@ -27,18 +27,17 @@ final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
     /**
      * @var list<TypeContext>
      */
-    private array $symbolContexts = [];
+    private array $childContextStack = [];
 
     public function __construct(
-        TypeContext $contextPrototype = new TypeContext(),
         private readonly TypeContextProcessor $processor = new NullTypeContextProcessor(),
     ) {
-        $this->mainContext = $contextPrototype->atNamespace();
+        $this->mainContext = new TypeContext();
     }
 
     public function typeContext(): TypeContext
     {
-        return reset($this->symbolContexts) ?: $this->mainContext;
+        return reset($this->childContextStack) ?: $this->mainContext;
     }
 
     public function beforeTraverse(array $nodes): ?int
@@ -73,13 +72,13 @@ final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
         }
 
         if ($node instanceof ClassLike) {
-            $this->symbolContexts[] = $this->processor->processTypeContext($this->createClassContext($node), $node);
+            $this->childContextStack[] = $this->processor->processTypeContext($this->createClassContext($node), $node);
 
             return null;
         }
 
         if ($node instanceof FunctionLike) {
-            $this->symbolContexts[] = $this->processor->processTypeContext($this->typeContext(), $node);
+            $this->childContextStack[] = $this->processor->processTypeContext($this->typeContext(), $node);
 
             return null;
         }
@@ -96,7 +95,7 @@ final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
         }
 
         if ($node instanceof ClassLike || $node instanceof FunctionLike) {
-            \assert(array_pop($this->symbolContexts) !== null);
+            \assert(array_pop($this->childContextStack) !== null);
 
             return null;
         }
@@ -113,8 +112,8 @@ final class TypeContextVisitor implements NodeVisitor, TypeContextProvider
 
     private function enterNamespace(?NameNode $namespace = null): void
     {
-        $this->mainContext = $this->mainContext->atNamespace($namespace);
-        $this->symbolContexts = [];
+        $this->mainContext = new TypeContext($namespace);
+        $this->childContextStack = [];
     }
 
     private function addUse(int $type, NameNode $name, ?Identifier $alias): void
