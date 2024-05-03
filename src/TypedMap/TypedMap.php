@@ -33,21 +33,29 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public function with(Key $key, mixed $value): self
     {
-        $values = clone $this;
-        $values->values[self::keyToString($key)] = $value;
+        $copy = clone $this;
+        $copy->values[self::keyToString($key)] = $value;
 
-        return $values;
+        return $copy;
+    }
+
+    public function withAllFrom(self $map): self
+    {
+        $copy = clone $this;
+        $copy->values = [...$this->values, ...$map->values];
+
+        return $copy;
     }
 
     public function without(Key ...$keys): self
     {
-        $values = clone $this;
+        $copy = clone $this;
 
         foreach ($keys as $key) {
-            unset($values->values[self::keyToString($key)]);
+            unset($copy->values[self::keyToString($key)]);
         }
 
-        return $values;
+        return $copy;
     }
 
     public function offsetExists(mixed $offset): bool
