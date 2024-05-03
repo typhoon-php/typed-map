@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeMap;
+namespace Typhoon\TypedMap;
 
 /**
  * @api
@@ -10,7 +10,7 @@ namespace Typhoon\TypeMap;
  * @implements \ArrayAccess<Key, mixed>
  * @implements \IteratorAggregate<Key, mixed>
  */
-final class TypeMap implements \ArrayAccess, \IteratorAggregate, \Countable
+final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
 {
     /**
      * @var array<non-empty-string, mixed>
@@ -24,47 +24,6 @@ final class TypeMap implements \ArrayAccess, \IteratorAggregate, \Countable
     private static function keyToString(Key $key): string
     {
         return sprintf('%s::%s', $key::class, $key->name);
-    }
-
-    public function has(Key $key): bool
-    {
-        return \array_key_exists(self::keyToString($key), $this->values);
-    }
-
-    /**
-     * @template T
-     * @template TDefault
-     * @param Key<T> $key
-     * @param TDefault $default
-     * @return T|TDefault
-     */
-    public function get(Key $key, mixed $default = null): mixed
-    {
-        $stringKey = self::keyToString($key);
-
-        if (\array_key_exists($stringKey, $this->values)) {
-            /** @var T */
-            return $this->values[$stringKey];
-        }
-
-        return $default;
-    }
-
-    /**
-     * @template T
-     * @param Key<T> $key
-     * @return T
-     */
-    public function require(Key $key): mixed
-    {
-        $stringKey = self::keyToString($key);
-
-        if (\array_key_exists($stringKey, $this->values)) {
-            /** @var T */
-            return $this->values[$stringKey];
-        }
-
-        throw new UndefinedKey($key);
     }
 
     /**
@@ -93,12 +52,24 @@ final class TypeMap implements \ArrayAccess, \IteratorAggregate, \Countable
 
     public function offsetExists(mixed $offset): bool
     {
-        return $this->has($offset);
+        return \array_key_exists(self::keyToString($offset), $this->values);
     }
 
+    /**
+     * @template T
+     * @param Key<T> $offset
+     * @return T
+     */
     public function offsetGet(mixed $offset): mixed
     {
-        return $this->require($offset);
+        $stringKey = self::keyToString($offset);
+
+        if (!\array_key_exists($stringKey, $this->values)) {
+            throw new UndefinedKey($offset);
+        }
+
+        /** @var T */
+        return $this->values[$stringKey];
     }
 
     public function offsetSet(mixed $offset, mixed $value): void

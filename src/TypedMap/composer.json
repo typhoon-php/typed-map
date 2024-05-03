@@ -1,5 +1,5 @@
 {
-    "name": "typhoon/type-map",
+    "name": "typhoon/typed-map",
     "description": "Typhoon Type Map",
     "license": "MIT",
     "type": "library",
@@ -14,11 +14,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Typhoon\\TypeMap\\": ""
+            "Typhoon\\TypedMap\\": ""
         }
     },
     "config": {
         "lock": false,
-        "vendor-dir": "../../var/TypeMap/vendor"
+        "vendor-dir": "../../var/TypedMap/vendor"
     }
 }
