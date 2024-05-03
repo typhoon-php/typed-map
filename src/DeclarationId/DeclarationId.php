@@ -22,8 +22,10 @@ abstract class DeclarationId
         throw new \InvalidArgumentException(sprintf('Invalid function name %s', $name));
     }
 
-    final public static function class(string $name): ClassId|AnonymousClassId
+    final public static function class(string|object $nameOrObject): ClassId|AnonymousClassId
     {
+        $name = \is_object($nameOrObject) ? $nameOrObject::class : $nameOrObject;
+
         if (str_contains($name, '@')) {
             if (preg_match('/@anonymous\x00(.+):(\d+)/', $name, $matches) !== 1) {
                 throw new \InvalidArgumentException(sprintf('Invalid class name %s', $name));
