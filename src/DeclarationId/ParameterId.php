@@ -14,7 +14,7 @@ final class ParameterId extends DeclarationId
      * @param non-empty-string $name
      */
     protected function __construct(
-        public readonly MethodId $function,
+        public readonly FunctionId|MethodId $function,
         public readonly string $name,
     ) {}
 

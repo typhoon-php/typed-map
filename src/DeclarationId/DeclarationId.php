@@ -107,7 +107,7 @@ abstract class DeclarationId
         return new MethodId($class, $name);
     }
 
-    final public static function parameter(MethodId $function, string $name): ParameterId
+    final public static function parameter(FunctionId|MethodId $function, string $name): ParameterId
     {
         if (!self::isLabelValid($name)) {
             throw new \InvalidArgumentException(sprintf('Invalid parameter name %s', $name));
