@@ -10,8 +10,6 @@ namespace Typhoon\DeclarationId;
  */
 abstract class DeclarationId
 {
-    protected function __construct() {}
-
     final public static function function(string $name): FunctionId
     {
         if (\function_exists($name) || self::isNameValid($name)) {
@@ -31,14 +29,8 @@ abstract class DeclarationId
                 throw new \InvalidArgumentException(sprintf('Invalid class name %s', $name));
             }
 
-            /** @var non-empty-string */
-            $file = $matches[1];
-            $line = (int) $matches[2];
-            \assert($line > 0);
-
             return new AnonymousClassId(
-                file: $file,
-                line: $line,
+                id: $matches[1] . ':' . $matches[2],
                 originalName: class_exists($name, autoload: false) ? $name : null,
             );
         }
@@ -55,17 +47,17 @@ abstract class DeclarationId
         throw new \InvalidArgumentException(sprintf('Invalid class name %s', $name));
     }
 
-    final public static function anonymousClass(string $file, int $line): AnonymousClassId
+    final public static function anonymousClassFromFile(string $file, int $line): AnonymousClassId
     {
-        if ($file === '') {
-            throw new \InvalidArgumentException('File name must not be empty');
-        }
+        return new AnonymousClassId($file . ':' . $line);
+    }
 
-        if ($line <= 0) {
-            throw new \InvalidArgumentException('Line number must not be a positive integer');
-        }
-
-        return new AnonymousClassId($file, $line);
+    /**
+     * @param non-empty-string $id
+     */
+    final public static function anonymousClass(string $id): AnonymousClassId
+    {
+        return new AnonymousClassId($id);
     }
 
     final public static function classConstant(string|ClassId|AnonymousClassId $class, string $name): ClassConstantId
