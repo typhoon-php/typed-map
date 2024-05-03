@@ -116,6 +116,15 @@ abstract class DeclarationId
         return new ParameterId($function, $name);
     }
 
+    final public static function template(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, string $name): TemplateId
+    {
+        if (!self::isLabelValid($name)) {
+            throw new \InvalidArgumentException(sprintf('Invalid template name %s', $name));
+        }
+
+        return new TemplateId($declaredAt, $name);
+    }
+
     /**
      * @psalm-assert-if-true non-empty-string $name
      */
