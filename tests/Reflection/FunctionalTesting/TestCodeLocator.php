@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection\FunctionalTesting;
 
+use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ClassId;
+use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\FunctionId;
 use Typhoon\Reflection\Locator;
 use Typhoon\Reflection\Resource;
@@ -17,7 +19,7 @@ final class TestCodeLocator implements Locator
         private readonly TypedMap $data = new TypedMap(),
     ) {}
 
-    public function locate(ClassId|FunctionId $id): ?Resource
+    public function locate(ConstantId|FunctionId|ClassId|AnonymousClassId $id): ?Resource
     {
         return new Resource($this->code, $this->data);
     }

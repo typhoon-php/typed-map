@@ -8,7 +8,9 @@ use JetBrains\PHPStormStub\PhpStormStubsMap;
 use Typhoon\ChangeDetector\ChangeDetector;
 use Typhoon\ChangeDetector\FileChangeDetector;
 use Typhoon\ChangeDetector\PackageChangeDetector;
+use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ClassId;
+use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\FunctionId;
 use Typhoon\Reflection\Exception\FileNotReadable;
 use Typhoon\Reflection\Internal\Data;
@@ -58,11 +60,13 @@ final class PhpStormStubsLocator implements Locator
         return self::$directory = \dirname($file);
     }
 
-    public function locate(ClassId|FunctionId $id): ?Resource
+    public function locate(ConstantId|FunctionId|ClassId|AnonymousClassId $id): ?Resource
     {
         $relativePath = match (true) {
+            $id instanceof ConstantId => PhpStormStubsMap::CONSTANTS[$id->name] ?? null,
+            $id instanceof FunctionId => PhpStormStubsMap::FUNCTIONS[$id->name] ?? null,
             $id instanceof ClassId => PhpStormStubsMap::CLASSES[$id->name] ?? null,
-            default => PhpStormStubsMap::FUNCTIONS[$id->name] ?? null,
+            default => null,
         };
 
         if ($relativePath === null) {
