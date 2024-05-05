@@ -92,7 +92,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->isInternal(), $typhoon->isInternal(), 'class.isInternal()');
         self::assertSame($native->isIterable(), $typhoon->isIterable(), 'class.isIterable()');
         self::assertSame($native->isIterateable(), $typhoon->isIterateable(), 'class.isIterateable()');
-        if (method_exists(ClassReflection::class, 'isReadOnly')) {
+        if (method_exists(\ReflectionClass::class, 'isReadOnly')) {
             /** @psalm-suppress MixedArgument, UnusedPsalmSuppress */
             self::assertSame($native->isReadOnly(), $typhoon->isReadOnly(), 'class.isReadOnly()');
         }
