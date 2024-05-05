@@ -43,12 +43,7 @@ abstract class DeclarationId
             );
         }
 
-        if (class_exists($name, autoload: false)
-            || interface_exists($name, autoload: false)
-            || trait_exists($name, autoload: false)
-            || self::isNameValid($name)
-        ) {
-            /** @psalm-suppress ArgumentTypeCoercion */
+        if (self::isNameValid($name)) {
             return new ClassId($name);
         }
 
