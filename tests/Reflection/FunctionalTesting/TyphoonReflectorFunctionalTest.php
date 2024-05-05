@@ -30,12 +30,12 @@ final class TyphoonReflectorFunctionalTest extends TestCase
         /** @psalm-suppress UnresolvableInclude */
         $config = require_once $file;
         \assert($config instanceof TestBuilder);
-        [$code, $exec] = $config();
+        [$code, $exec, $data] = $config();
 
         $locators = [new PhpStormStubsLocator()];
 
         if ($code !== null) {
-            $locators[] = new TestCodeLocator($code);
+            $locators[] = new TestCodeLocator($code, $data);
         }
 
         $exec(TyphoonReflector::build(locators: $locators));
