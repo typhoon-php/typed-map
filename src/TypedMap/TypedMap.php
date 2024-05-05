@@ -6,24 +6,25 @@ namespace Typhoon\TypedMap;
 
 /**
  * @api
- * @psalm-immutable
+ * @readonly
  * @implements \ArrayAccess<Key, mixed>
  * @implements \IteratorAggregate<Key, mixed>
  */
 final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
 {
     /**
-     * @var array<non-empty-string, mixed>
+     * @var \SplObjectStorage<Key, mixed>
      */
-    private array $values = [];
+    private \SplObjectStorage $values;
 
-    /**
-     * @psalm-pure
-     * @return non-empty-string
-     */
-    private static function keyToString(Key $key): string
+    public function __construct()
     {
-        return sprintf('%s::%s', $key::class, $key->name);
+        $this->values = new \SplObjectStorage();
+    }
+
+    public function __clone()
+    {
+        $this->values = clone $this->values;
     }
 
     /**
@@ -34,7 +35,7 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
     public function with(Key $key, mixed $value): self
     {
         $copy = clone $this;
-        $copy->values[self::keyToString($key)] = $value;
+        $copy->values->attach($key, $value);
 
         return $copy;
     }
@@ -42,7 +43,7 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
     public function withAllFrom(self $map): self
     {
         $copy = clone $this;
-        $copy->values = [...$this->values, ...$map->values];
+        $copy->values->addAll($map->values);
 
         return $copy;
     }
@@ -52,7 +53,7 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
         $copy = clone $this;
 
         foreach ($keys as $key) {
-            unset($copy->values[self::keyToString($key)]);
+            $copy->values->detach($key);
         }
 
         return $copy;
@@ -60,7 +61,7 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
 
     public function offsetExists(mixed $offset): bool
     {
-        return \array_key_exists(self::keyToString($offset), $this->values);
+        return $this->values->contains($offset);
     }
 
     /**
@@ -70,14 +71,12 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public function offsetGet(mixed $offset): mixed
     {
-        $stringKey = self::keyToString($offset);
-
-        if (!\array_key_exists($stringKey, $this->values)) {
+        try {
+            /** @var T */
+            return $this->values[$offset];
+        } catch (\UnexpectedValueException) {
             throw new UndefinedKey($offset);
         }
-
-        /** @var T */
-        return $this->values[$stringKey];
     }
 
     public function offsetSet(mixed $offset, mixed $value): void
@@ -95,11 +94,8 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public function getIterator(): \Generator
     {
-        foreach ($this->values as $key => $value) {
-            $key = \constant($key);
-            \assert($key instanceof Key);
-
-            yield $key => $value;
+        foreach ($this->values as $key) {
+            yield $key => $this->values[$key];
         }
     }
 
