@@ -444,7 +444,12 @@ final class AdapterCompatibilityTest extends TestCase
             return $class->name::cases() !== [];
         }
 
-        return true;
+        return !\in_array($class->name, [
+            \UnitEnum::class,
+            \BackedEnum::class,
+            \Throwable::class,
+            \Traversable::class,
+        ], true);
     }
 
     /**

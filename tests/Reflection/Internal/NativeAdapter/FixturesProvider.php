@@ -23,9 +23,12 @@ final class FixturesProvider
         }
 
         self::$classes = [
+            \Traversable::class => [\Traversable::class],
             \Iterator::class => [\Iterator::class],
             \IteratorAggregate::class => [\IteratorAggregate::class],
             \Stringable::class => [\Stringable::class],
+            \UnitEnum::class => [\UnitEnum::class],
+            \BackedEnum::class => [\BackedEnum::class],
             ...self::loadFromFile(__DIR__ . '/Fixtures/classes.php'),
         ];
 
