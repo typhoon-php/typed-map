@@ -121,6 +121,15 @@ abstract class DeclarationId
         return new ParameterId($function, $name);
     }
 
+    final public static function alias(ClassId $class, string $name): AliasId
+    {
+        if (!self::isLabelValid($name)) {
+            throw new \InvalidArgumentException(sprintf('Invalid alias name %s', $name));
+        }
+
+        return new AliasId($class, $name);
+    }
+
     final public static function template(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, string $name): TemplateId
     {
         if (!self::isLabelValid($name)) {

@@ -71,6 +71,14 @@ function parameterId(FunctionId|MethodId $function, string $name): ParameterId
 /**
  * @api
  */
+function aliasId(ClassId $class, string $name): AliasId
+{
+    return DeclarationId::alias($class, $name);
+}
+
+/**
+ * @api
+ */
 function templateId(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, string $name): TemplateId
 {
     return DeclarationId::template($declaredAt, $name);
