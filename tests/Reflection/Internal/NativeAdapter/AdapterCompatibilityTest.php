@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Traits\Trait1;
+use Typhoon\Reflection\ClassReflection;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Variance;
 
@@ -91,7 +92,8 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->isInternal(), $typhoon->isInternal(), 'class.isInternal()');
         self::assertSame($native->isIterable(), $typhoon->isIterable(), 'class.isIterable()');
         self::assertSame($native->isIterateable(), $typhoon->isIterateable(), 'class.isIterateable()');
-        if (method_exists($native, 'isReadOnly')) {
+        if (method_exists(ClassReflection::class, 'isReadOnly')) {
+            /** @psalm-suppress MixedArgument, UnusedPsalmSuppress */
             self::assertSame($native->isReadOnly(), $typhoon->isReadOnly(), 'class.isReadOnly()');
         }
         foreach ($this->getClasses($native) as $class) {
@@ -263,7 +265,8 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->getStaticVariables(), $typhoon->getStaticVariables(), $messagePrefix . '.getStaticVariables()');
         $this->assertTypeEquals($native->getReturnType(), $typhoon->getReturnType(), $messagePrefix . '.getReturnType()', $native->getDeclaringClass());
         $this->assertTypeEquals($native->getTentativeReturnType(), $typhoon->getTentativeReturnType(), $messagePrefix . '.getTentativeReturnType()');
-        if (method_exists($native, 'hasPrototype')) {
+        if (method_exists(\ReflectionMethod::class, 'hasPrototype')) {
+            /** @psalm-suppress MixedArgument, UnusedPsalmSuppress */
             self::assertSame($native->hasPrototype(), $typhoon->hasPrototype(), $messagePrefix . '.hasPrototype()');
         }
         self::assertSame($native->hasReturnType(), $typhoon->hasReturnType(), $messagePrefix . '.hasReturnType()');
