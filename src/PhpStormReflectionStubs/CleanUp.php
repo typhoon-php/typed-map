@@ -18,7 +18,7 @@ use Typhoon\TypedMap\TypedMap;
  */
 final class CleanUp implements ReflectionHook
 {
-    private const ATTRIBUTE_PREFIX = 'JetBrains\\PhpStorm\\Internal\\';
+    private const ATTRIBUTE_PREFIX = 'JetBrains\\';
 
     public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
     {
