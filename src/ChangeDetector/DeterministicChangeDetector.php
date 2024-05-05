@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Typhoon\ChangeDetector;
 
+/**
+ * @api
+ */
 final class DeterministicChangeDetector implements ChangeDetector
 {
     /**
