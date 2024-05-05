@@ -11,11 +11,13 @@ namespace Typhoon\DeclarationId;
 final class AnonymousClassId extends DeclarationId
 {
     /**
-     * @param non-empty-string $id
+     * @param non-empty-string $file
+     * @param positive-int $line
      * @param ?\class-string $originalName
      */
     protected function __construct(
-        private readonly string $id,
+        public readonly string $file,
+        public readonly int $line,
         private readonly ?string $originalName = null,
     ) {}
 
@@ -33,13 +35,14 @@ final class AnonymousClassId extends DeclarationId
 
     public function toString(): string
     {
-        return 'anonymous-class:' . $this->id;
+        return sprintf('anonymous-class:%s:%s', $this->file, $this->line);
     }
 
     public function __serialize(): array
     {
         return [
-            'id' => $this->id,
+            'file' => $this->file,
+            'line' => $this->line,
             'originalName' => null,
         ];
     }
@@ -47,6 +50,7 @@ final class AnonymousClassId extends DeclarationId
     public function equals(DeclarationId $id): bool
     {
         return $id instanceof self
-            && $id->id === $this->id;
+            && $id->file === $this->file
+            && $id->line === $this->line;
     }
 }
