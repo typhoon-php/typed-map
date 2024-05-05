@@ -11,31 +11,26 @@ namespace Typhoon\DeclarationId;
 final class AnonymousClassId extends DeclarationId
 {
     /**
+     * @var non-empty-string
+     */
+    public readonly string $name;
+
+    /**
      * @param non-empty-string $file
      * @param positive-int $line
-     * @param ?\class-string $originalName
+     * @param ?class-string $originalName
      */
     protected function __construct(
         public readonly string $file,
         public readonly int $line,
-        private readonly ?string $originalName = null,
-    ) {}
-
-    /**
-     * @return class-string
-     */
-    public function name(): string
-    {
-        if ($this->originalName !== null) {
-            return $this->originalName;
-        }
-
-        throw new \LogicException('Runtime anonymous class name is not available');
+        ?string $originalName = null,
+    ) {
+        $this->name = $originalName ?? $this->composeName();
     }
 
     public function toString(): string
     {
-        return sprintf('anonymous-class:%s:%s', $this->file, $this->line);
+        return sprintf('anonymous-class:%s:%d', $this->file, $this->line);
     }
 
     public function __serialize(): array
@@ -43,7 +38,7 @@ final class AnonymousClassId extends DeclarationId
         return [
             'file' => $this->file,
             'line' => $this->line,
-            'originalName' => null,
+            'name' => $this->composeName(),
         ];
     }
 
@@ -52,5 +47,13 @@ final class AnonymousClassId extends DeclarationId
         return $id instanceof self
             && $id->file === $this->file
             && $id->line === $this->line;
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    private function composeName(): string
+    {
+        return sprintf("class@anonymous\x00%s:%d", $this->file, $this->line);
     }
 }

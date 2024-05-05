@@ -14,16 +14,8 @@ final class ClassId extends DeclarationId
      * @param non-empty-string $name
      */
     protected function __construct(
-        private readonly string $name,
+        public readonly string $name,
     ) {}
-
-    /**
-     * @return non-empty-string
-     */
-    public function name(): string
-    {
-        return $this->name;
-    }
 
     public function toString(): string
     {
