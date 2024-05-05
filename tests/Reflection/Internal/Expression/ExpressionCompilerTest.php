@@ -52,7 +52,6 @@ final class ExpressionCompilerTest extends TestCase
         yield 'new ("std"."Class")()';
         yield 'PHP_VERSION_ID';
         yield 'ArrayObject::ARRAY_AS_PROPS';
-        yield "('Array'.'Object')::{'ARRAY'.'_AS_PROPS'}";
         yield 'true ? 1 : 2';
         yield 'true ?: 2';
         yield '(1 + 2) ?: 2';
@@ -82,6 +81,16 @@ final class ExpressionCompilerTest extends TestCase
         $value = $compiled->evaluate($this->createMock(Reflector::class));
 
         self::assertEquals($expected, $value);
+    }
+
+    public function testConstantFetchWithClassExpression(): void
+    {
+        $expressionNode = $this->parseExpression("('Array'.'Object')::{'ARRAY'.'_AS_PROPS'}");
+        $compiled = (new ExpressionCompiler())->compile($expressionNode);
+
+        $value = $compiled->evaluate($this->createMock(Reflector::class));
+
+        self::assertEquals(\ArrayObject::ARRAY_AS_PROPS, $value);
     }
 
     private function parseExpression(string $expressionCode): Expr
