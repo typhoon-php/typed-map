@@ -128,8 +128,13 @@ abstract class DeclarationId
     /**
      * @psalm-pure
      */
-    final public static function alias(ClassId $class, string $name): AliasId
+    final public static function alias(string|ClassId $class, string $name): AliasId
     {
+        if (\is_string($class)) {
+            $class = self::class($class);
+            \assert($class instanceof ClassId);
+        }
+
         \assert(self::isLabelValid($name), sprintf('Invalid alias name "%s"', $name));
 
         return new AliasId($class, $name);

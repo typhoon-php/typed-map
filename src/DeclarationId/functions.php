@@ -80,7 +80,7 @@ function parameterId(FunctionId|MethodId $function, string $name): ParameterId
  * @api
  * @psalm-pure
  */
-function aliasId(ClassId $class, string $name): AliasId
+function aliasId(string|ClassId $class, string $name): AliasId
 {
     return DeclarationId::alias($class, $name);
 }
