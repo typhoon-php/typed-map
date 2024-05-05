@@ -6,6 +6,7 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
+ * @psalm-pure
  */
 function constantId(string $name): ConstantId
 {
@@ -14,6 +15,7 @@ function constantId(string $name): ConstantId
 
 /**
  * @api
+ * @psalm-pure
  */
 function functionId(string $name): FunctionId
 {
@@ -22,6 +24,7 @@ function functionId(string $name): FunctionId
 
 /**
  * @api
+ * @psalm-pure
  */
 function classId(string|object $nameOrObject): ClassId|AnonymousClassId
 {
@@ -30,6 +33,7 @@ function classId(string|object $nameOrObject): ClassId|AnonymousClassId
 
 /**
  * @api
+ * @psalm-pure
  */
 function anonymousClassId(string $file, int $line): AnonymousClassId
 {
@@ -38,6 +42,7 @@ function anonymousClassId(string $file, int $line): AnonymousClassId
 
 /**
  * @api
+ * @psalm-pure
  */
 function classConstantId(string|ClassId|AnonymousClassId $class, string $name): ClassConstantId
 {
@@ -46,6 +51,7 @@ function classConstantId(string|ClassId|AnonymousClassId $class, string $name): 
 
 /**
  * @api
+ * @psalm-pure
  */
 function propertyId(string|ClassId|AnonymousClassId $class, string $name): PropertyId
 {
@@ -54,6 +60,7 @@ function propertyId(string|ClassId|AnonymousClassId $class, string $name): Prope
 
 /**
  * @api
+ * @psalm-pure
  */
 function methodId(string|ClassId|AnonymousClassId $class, string $name): MethodId
 {
@@ -62,6 +69,7 @@ function methodId(string|ClassId|AnonymousClassId $class, string $name): MethodI
 
 /**
  * @api
+ * @psalm-pure
  */
 function parameterId(FunctionId|MethodId $function, string $name): ParameterId
 {
@@ -70,6 +78,7 @@ function parameterId(FunctionId|MethodId $function, string $name): ParameterId
 
 /**
  * @api
+ * @psalm-pure
  */
 function aliasId(ClassId $class, string $name): AliasId
 {
@@ -78,6 +87,7 @@ function aliasId(ClassId $class, string $name): AliasId
 
 /**
  * @api
+ * @psalm-pure
  */
 function templateId(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, string $name): TemplateId
 {

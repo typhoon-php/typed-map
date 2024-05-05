@@ -6,7 +6,7 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
- * @readonly
+ * @psalm-immutable
  */
 final class ClassConstantId extends DeclarationId
 {

@@ -12,134 +12,141 @@ abstract class DeclarationId
 {
     protected function __construct() {}
 
+    /**
+     * @psalm-pure
+     */
     final public static function constant(string $name): ConstantId
     {
-        if (\defined($name) || self::isNameValid($name)) {
-            /** @psalm-suppress ArgumentTypeCoercion */
-            return new ConstantId($name);
-        }
+        \assert(self::isNameValid($name), sprintf('Invalid constant name "%s"', $name));
 
-        throw new \InvalidArgumentException(sprintf('Invalid constant name %s', $name));
+        return new ConstantId($name);
     }
 
+    /**
+     * @psalm-pure
+     */
     final public static function function(string $name): FunctionId
     {
-        if (\function_exists($name) || self::isNameValid($name)) {
-            /** @psalm-suppress ArgumentTypeCoercion */
-            return new FunctionId($name);
-        }
+        \assert(self::isNameValid($name), sprintf('Invalid function name "%s"', $name));
 
-        throw new \InvalidArgumentException(sprintf('Invalid function name %s', $name));
+        return new FunctionId($name);
     }
 
+    /**
+     * @psalm-pure
+     */
     final public static function class(string|object $nameOrObject): ClassId|AnonymousClassId
     {
         $name = \is_object($nameOrObject) ? $nameOrObject::class : $nameOrObject;
 
-        if (str_contains($name, '@')) {
-            if (preg_match('/@anonymous\x00(.+):(\d+)/', $name, $matches) !== 1) {
-                throw new \InvalidArgumentException(sprintf('Invalid class name %s', $name));
-            }
+        if (!str_contains($name, '@')) {
+            \assert(self::isNameValid($name), sprintf('Invalid class name "%s"', $name));
 
-            /** @var non-empty-string */
-            $file = $matches[1];
-            $line = (int) $matches[2];
-            \assert($line > 0);
-
-            return new AnonymousClassId(
-                file: $file,
-                line: $line,
-                originalName: class_exists($name, autoload: false) ? $name : null,
-            );
-        }
-
-        if (self::isNameValid($name)) {
             return new ClassId($name);
         }
 
-        throw new \InvalidArgumentException(sprintf('Invalid class name %s', $name));
+        $matched = preg_match('/anonymous\x00(.+):(\d+)/', $name, $matches) === 1;
+        \assert($matched, sprintf('Invalid anonymous class name "%s"', $name));
+
+        /** @var non-empty-string $file */
+        $file = $matches[1];
+
+        $line = (int) $matches[2];
+        \assert($line > 0, 'Anonymous class line must be a positive int');
+
+        /** @psalm-suppress ImpureFunctionCall */
+        return new AnonymousClassId(
+            file: $file,
+            line: $line,
+            originalName: class_exists($name, autoload: false) ? $name : null,
+        );
     }
 
+    /**
+     * @psalm-pure
+     */
     final public static function anonymousClass(string $file, int $line): AnonymousClassId
     {
-        if ($file === '') {
-            throw new \InvalidArgumentException('File name must not be empty');
-        }
-
-        if ($line <= 0) {
-            throw new \InvalidArgumentException('Line number must not be a positive integer');
-        }
+        \assert($file !== '', 'Anonymous class file must not be empty');
+        \assert($line > 0, 'Anonymous class line must be a positive int');
 
         return new AnonymousClassId($file, $line);
     }
 
+    /**
+     * @psalm-pure
+     */
     final public static function classConstant(string|ClassId|AnonymousClassId $class, string $name): ClassConstantId
     {
         if (\is_string($class)) {
             $class = self::class($class);
         }
 
-        if (!self::isLabelValid($name)) {
-            throw new \InvalidArgumentException(sprintf('Invalid class constant name %s', $name));
-        }
+        \assert(self::isLabelValid($name), sprintf('Invalid class constant name "%s"', $name));
 
         return new ClassConstantId($class, $name);
     }
 
+    /**
+     * @psalm-pure
+     */
     final public static function property(string|ClassId|AnonymousClassId $class, string $name): PropertyId
     {
         if (\is_string($class)) {
             $class = self::class($class);
         }
 
-        if (!self::isLabelValid($name)) {
-            throw new \InvalidArgumentException(sprintf('Invalid property name %s', $name));
-        }
+        \assert(self::isLabelValid($name), sprintf('Invalid property name "%s"', $name));
 
         return new PropertyId($class, $name);
     }
 
+    /**
+     * @psalm-pure
+     */
     final public static function method(string|ClassId|AnonymousClassId $class, string $name): MethodId
     {
         if (\is_string($class)) {
             $class = self::class($class);
         }
 
-        if (!self::isLabelValid($name)) {
-            throw new \InvalidArgumentException(sprintf('Invalid method name %s', $name));
-        }
+        \assert(self::isLabelValid($name), sprintf('Invalid method name "%s"', $name));
 
         return new MethodId($class, $name);
     }
 
+    /**
+     * @psalm-pure
+     */
     final public static function parameter(FunctionId|MethodId $function, string $name): ParameterId
     {
-        if (!self::isLabelValid($name)) {
-            throw new \InvalidArgumentException(sprintf('Invalid parameter name %s', $name));
-        }
+        \assert(self::isLabelValid($name), sprintf('Invalid parameter name "%s"', $name));
 
         return new ParameterId($function, $name);
     }
 
+    /**
+     * @psalm-pure
+     */
     final public static function alias(ClassId $class, string $name): AliasId
     {
-        if (!self::isLabelValid($name)) {
-            throw new \InvalidArgumentException(sprintf('Invalid alias name %s', $name));
-        }
+        \assert(self::isLabelValid($name), sprintf('Invalid alias name "%s"', $name));
 
         return new AliasId($class, $name);
     }
 
+    /**
+     * @psalm-pure
+     */
     final public static function template(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, string $name): TemplateId
     {
-        if (!self::isLabelValid($name)) {
-            throw new \InvalidArgumentException(sprintf('Invalid template name %s', $name));
-        }
+        \assert(self::isLabelValid($name), sprintf('Invalid template name "%s"', $name));
 
         return new TemplateId($declaredAt, $name);
     }
 
     /**
+     * @psalm-pure
      * @psalm-assert-if-true non-empty-string $name
      */
     private static function isNameValid(string $name): bool
@@ -148,6 +155,7 @@ abstract class DeclarationId
     }
 
     /**
+     * @psalm-pure
      * @psalm-assert-if-true non-empty-string $name
      */
     private static function isLabelValid(string $name): bool
