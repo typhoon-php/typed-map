@@ -7,6 +7,14 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  */
+function constantId(string $name): ConstantId
+{
+    return DeclarationId::constant($name);
+}
+
+/**
+ * @api
+ */
 function functionId(string $name): FunctionId
 {
     return DeclarationId::function($name);

@@ -12,6 +12,16 @@ abstract class DeclarationId
 {
     protected function __construct() {}
 
+    final public static function constant(string $name): ConstantId
+    {
+        if (\defined($name) || self::isNameValid($name)) {
+            /** @psalm-suppress ArgumentTypeCoercion */
+            return new ConstantId($name);
+        }
+
+        throw new \InvalidArgumentException(sprintf('Invalid constant name %s', $name));
+    }
+
     final public static function function(string $name): FunctionId
     {
         if (\function_exists($name) || self::isNameValid($name)) {
