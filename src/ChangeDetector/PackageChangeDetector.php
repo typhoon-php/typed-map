@@ -59,6 +59,6 @@ final class PackageChangeDetector implements ChangeDetector
 
     public function deduplicate(): array
     {
-        return [$this->package . '#' . self::class => $this];
+        return [$this->package . '#package' => $this];
     }
 }

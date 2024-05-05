@@ -40,6 +40,6 @@ final class FileChangeDetector implements ChangeDetector
 
     public function deduplicate(): array
     {
-        return [$this->file . '#' . self::class => $this];
+        return [$this->file . '#file' => $this];
     }
 }
