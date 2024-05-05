@@ -15,7 +15,10 @@
     "autoload": {
         "psr-4": {
             "Typhoon\\DeclarationId\\": ""
-        }
+        },
+        "files": [
+            "functions.php"
+        ]
     },
     "config": {
         "lock": false,
