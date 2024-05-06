@@ -138,8 +138,9 @@ final class TypeStringifierTest extends TestCase
         yield [types::array(value: types::varianceAware(types::int, Variance::Covariant)), 'array<covariant int>'];
         yield [types::offset(types::template(templateId(classId('A'), 'T')), types::literalValue('abc')), "T@A['abc']"];
         yield [types::alias(aliasId('Some', 'A')), 'A@Some'];
-        yield [types::static('X\\Y'), 'static@X\\Y'];
-        yield [types::static('X\\Y', types::string), 'static@X\\Y<string>'];
+        yield [types::static(), 'static'];
+        yield [types::static('X\\Y'), 'static(X\\Y)'];
+        yield [types::static('X\\Y', types::string), 'static(X\\Y)<string>'];
     }
 
     #[DataProvider('types')]
