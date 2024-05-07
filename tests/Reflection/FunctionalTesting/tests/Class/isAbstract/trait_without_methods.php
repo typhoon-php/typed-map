@@ -6,11 +6,10 @@ namespace Typhoon\Reflection\FunctionalTesting;
 
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertFalse;
+use function Typhoon\DeclarationId\classId;
 
-return (new TestBuilder())
-    ->code('trait A {}')
-    ->test(static function (TyphoonReflector $reflector): void {
-        $reflection = $reflector->reflectClass('A');
+return static function (TyphoonReflector $reflector): void {
+    $reflection = $reflector->reflectCode('<?php trait A {}')[classId('A')];
 
-        assertFalse($reflection->isAbstract());
-    });
+    assertFalse($reflection->isAbstract());
+};

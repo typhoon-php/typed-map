@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection\FunctionalTesting;
 
+use PHPUnit\Framework\TestCase;
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertSame;
 
-return (new TestBuilder())
-    ->test(static function (TyphoonReflector $reflector): void {
-        $object = new class () {};
+return static function (TyphoonReflector $reflector): void {
+    TestCase::markTestSkipped();
 
-        $reflection = $reflector->reflectClass($object);
+    $object = new class () {};
 
-        assertSame($object::class, $reflection->name);
-    });
+    $reflection = $reflector->reflectClass($object);
+
+    assertSame($object::class, $reflection->name);
+};

@@ -6,11 +6,18 @@ namespace Typhoon\Reflection\FunctionalTesting;
 
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertSame;
+use function Typhoon\DeclarationId\classId;
 
-return (new TestBuilder())
-    ->code('namespace X\Y; class A {}')
-    ->test(static function (TyphoonReflector $reflector): void {
-        $reflection = $reflector->reflectClass('X\Y\A');
+return static function (TyphoonReflector $reflector): void {
+    $reflection = $reflector->reflectCode(
+        <<<'PHP'
+            <?php
+            
+            namespace X\Y;
+            
+            class A {}
+            PHP,
+    )[classId('X\Y\A')];
 
-        assertSame('X\Y\A', $reflection->name);
-    });
+    assertSame('X\Y\A', $reflection->name);
+};

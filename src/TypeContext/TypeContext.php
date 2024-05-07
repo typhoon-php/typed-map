@@ -4,342 +4,122 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeContext;
 
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name as NameNode;
-use Typhoon\DeclarationId\AliasId;
+use PhpParser\ErrorHandler\Throwing;
+use PhpParser\NameContext;
+use PhpParser\Node\Name;
+use PhpParser\Node\Name\FullyQualified;
+use PhpParser\Node\Name\Relative;
 use Typhoon\DeclarationId\AnonymousClassId;
-use Typhoon\DeclarationId\TemplateId;
+use Typhoon\DeclarationId\ClassId;
+use Typhoon\DeclarationId\DeclarationId;
+use Typhoon\DeclarationId\FunctionId;
+use Typhoon\DeclarationId\MethodId;
 use Typhoon\Type\Type;
 use Typhoon\Type\types;
-use Typhoon\TypeContext\Internal\ConstantImportTable;
-use Typhoon\TypeContext\Internal\FunctionImportTable;
-use Typhoon\TypeContext\Internal\MainImportTable;
+use function Typhoon\DeclarationId\aliasId;
+use function Typhoon\DeclarationId\templateId;
 
 /**
  * @api
- * @readonly
- * @psalm-type Exists = callable(non-empty-string): bool
  */
 final class TypeContext
 {
-    /**
-     * @readonly
-     */
-    public ?FullyQualifiedName $namespace;
+    public readonly ?string $namespace;
 
-    private MainImportTable $mainImportTable;
-
-    private FunctionImportTable $functionImportTable;
-
-    private ConstantImportTable $constantImportTable;
-
-    public function __construct(null|Name|NameNode $namespace = null)
-    {
-        if ($namespace instanceof NameNode) {
-            $namespace = Name::fromNode($namespace);
-        }
-
-        $this->namespace = $namespace?->toFullyQualified();
-        $this->mainImportTable = new MainImportTable();
-        $this->functionImportTable = new FunctionImportTable();
-        $this->constantImportTable = new ConstantImportTable();
-    }
-
-    public function atNamespace(null|Name|NameNode $namespace = null): self
-    {
-        if ($namespace instanceof NameNode) {
-            $namespace = Name::fromNode($namespace);
-        }
-
-        $context = clone $this;
-        $context->namespace = $namespace?->toFullyQualified();
-        $context->mainImportTable = new MainImportTable();
-        $context->functionImportTable = new FunctionImportTable();
-        $context->constantImportTable = new ConstantImportTable();
-
-        return $context;
-    }
-
-    public function withUse(Name|NameNode $name, null|UnqualifiedName|Identifier $alias = null): self
-    {
-        if ($name instanceof NameNode) {
-            $name = Name::fromNode($name);
-        }
-
-        if ($alias instanceof Identifier) {
-            $alias = UnqualifiedName::fromIdentifier($alias);
-        }
-
-        $context = clone $this;
-        $context->mainImportTable = $context->mainImportTable->withName($name, $alias);
-
-        return $context;
-    }
-
-    public function withFunctionUse(Name|NameNode $name, null|UnqualifiedName|Identifier $alias = null): self
-    {
-        if ($name instanceof NameNode) {
-            $name = Name::fromNode($name);
-        }
-
-        if ($alias instanceof Identifier) {
-            $alias = UnqualifiedName::fromIdentifier($alias);
-        }
-
-        $context = clone $this;
-        $context->functionImportTable = $context->functionImportTable->withName($name, $alias);
-
-        return $context;
-    }
-
-    public function withConstantUse(Name|NameNode $name, null|UnqualifiedName|Identifier $alias = null): self
-    {
-        if ($name instanceof NameNode) {
-            $name = Name::fromNode($name);
-        }
-
-        if ($alias instanceof Identifier) {
-            $alias = UnqualifiedName::fromIdentifier($alias);
-        }
-
-        $context = clone $this;
-        $context->constantImportTable = $context->constantImportTable->withName($name, $alias);
-
-        return $context;
-    }
-
-    public function atClass(FullyQualifiedName|Identifier $name, null|Name|NameNode $parentName = null): self
-    {
-        if ($name instanceof Identifier) {
-            $name = $this->resolveDeclaredName($name);
-        }
-
-        $context = clone $this;
-        $context->mainImportTable = $context->mainImportTable->atClass($name, $this->resolveClassName($parentName));
-
-        return $context;
-    }
-
-    public function atAnonymousClass(AnonymousClassId $id, null|Name|NameNode $parentName = null): self
-    {
-        $context = clone $this;
-        $context->mainImportTable = $context->mainImportTable->atAnonymousClass($id, $this->resolveClassName($parentName));
-
-        return $context;
-    }
-
-    public function atTrait(FullyQualifiedName|Identifier $name): self
-    {
-        if ($name instanceof Identifier) {
-            $name = $this->resolveDeclaredName($name);
-        }
-
-        $context = clone $this;
-        $context->mainImportTable = $context->mainImportTable->atTrait($name);
-
-        return $context;
-    }
+    private readonly NameContext $nameContext;
 
     /**
-     * @param array<AliasId> $aliases
+     * @var array<non-empty-string, true>
      */
-    public function withAliases(array $aliases): self
-    {
-        if ($aliases === []) {
-            return $this;
-        }
-
-        $context = clone $this;
-        $context->mainImportTable = $context->mainImportTable->withAliases($aliases);
-
-        return $context;
-    }
+    private array $aliasNames;
 
     /**
-     * @param array<TemplateId> $templates
+     * @var array<non-empty-string, true>
      */
-    public function withTemplates(array $templates): self
-    {
-        if ($templates === []) {
-            return $this;
-        }
-
-        $context = clone $this;
-        $context->mainImportTable = $context->mainImportTable->withTemplates($templates);
-
-        return $context;
-    }
-
-    public function resolveDeclaredName(UnqualifiedName|Identifier $name): FullyQualifiedName
-    {
-        if ($name instanceof Identifier) {
-            $name = UnqualifiedName::fromIdentifier($name);
-        }
-
-        if ($this->namespace === null) {
-            return $name->toFullyQualified();
-        }
-
-        return new FullyQualifiedName([...$this->namespace->segments, $name]);
-    }
+    private array $templateNames;
 
     /**
-     * @return ($name is null ? null : FullyQualifiedName)
+     * @param array<non-empty-string> $aliasNames
+     * @param array<non-empty-string> $templateNames
      */
-    public function resolveClassName(null|Name|NameNode $name): ?FullyQualifiedName
-    {
-        if ($name === null) {
-            return null;
+    public function __construct(
+        ?NameContext $nameContext = null,
+        public readonly ?DeclarationId $id = null,
+        public readonly null|ClassId|AnonymousClassId $self = null,
+        public readonly ?ClassId $parent = null,
+        public readonly bool $trait = false,
+        array $aliasNames = [],
+        array $templateNames = [],
+    ) {
+        if ($nameContext === null) {
+            $this->nameContext = new NameContext(new Throwing());
+            $this->nameContext->startNamespace();
+            $this->namespace = null;
+        } else {
+            $this->nameContext = clone $nameContext;
+            $this->namespace = $nameContext->getNamespace()?->toString();
         }
 
-        if ($name instanceof NameNode) {
-            $name = Name::fromNode($name);
-        }
-
-        if ($name instanceof FullyQualifiedName) {
-            return $name;
-        }
-
-        if ($name instanceof RelativeName) {
-            return $this->resolveRelativeName($name);
-        }
-
-        if ($name instanceof QualifiedName) {
-            return $this->resolveQualifiedName($name);
-        }
-
-        \assert($name instanceof UnqualifiedName);
-
-        $imported = $this->mainImportTable->getName($name);
-
-        if ($imported !== null) {
-            return $imported;
-        }
-
-        if ($name->isClassRelativeName()) {
-            throw new InvalidName(sprintf('Cannot resolve %s', $name->toString()));
-        }
-
-        if ($this->namespace === null) {
-            return $name->toFullyQualified();
-        }
-
-        return new FullyQualifiedName([...$this->namespace->segments, $name]);
+        $this->aliasNames = array_fill_keys($aliasNames, true);
+        $this->templateNames = array_fill_keys($templateNames, true);
     }
 
-    public function preResolveFunctionName(Name|NameNode $name): PreResolvedFunctionName
+    public static function parseName(string $name): Name
     {
-        if ($name instanceof NameNode) {
-            $name = Name::fromNode($name);
+        if ($name === '') {
+            throw new \LogicException('Name cannot be empty');
         }
 
-        if ($name instanceof FullyQualifiedName) {
-            return new PreResolvedFunctionName($name);
+        if ($name[0] === '\\') {
+            return new FullyQualified(substr($name, 1));
         }
 
-        if ($name instanceof RelativeName) {
-            return new PreResolvedFunctionName($this->resolveRelativeName($name));
+        if (str_starts_with($name, 'namespace\\')) {
+            return new Relative(substr($name, 10));
         }
 
-        if ($name instanceof QualifiedName) {
-            return new PreResolvedFunctionName($this->resolveQualifiedName($name));
-        }
-
-        \assert($name instanceof UnqualifiedName);
-
-        $imported = $this->functionImportTable->getName($name);
-
-        if ($imported !== null) {
-            return new PreResolvedFunctionName($imported);
-        }
-
-        if ($this->namespace === null) {
-            return new PreResolvedFunctionName($name->toFullyQualified());
-        }
-
-        return new PreResolvedFunctionName(
-            new FullyQualifiedName([...$this->namespace->segments, $name]),
-            $name->toFullyQualified(),
-        );
+        return new Name($name);
     }
 
-    public function preResolveConstantName(Name|NameNode $name): PreResolvedConstantName
+    public function resolveClass(Name $name): Name
     {
-        if ($name instanceof NameNode) {
-            $name = Name::fromNode($name);
-        }
-
-        if ($name instanceof FullyQualifiedName) {
-            return new PreResolvedConstantName($name);
-        }
-
-        if ($name instanceof RelativeName) {
-            return new PreResolvedConstantName($this->resolveRelativeName($name));
-        }
-
-        if ($name instanceof QualifiedName) {
-            return new PreResolvedConstantName($this->resolveQualifiedName($name));
-        }
-
-        \assert($name instanceof UnqualifiedName);
-
-        $imported = $this->constantImportTable->getName($name);
-
-        if ($imported !== null) {
-            return new PreResolvedConstantName($imported);
-        }
-
-        if ($this->namespace === null) {
-            return new PreResolvedConstantName($name->toFullyQualified());
-        }
-
-        return new PreResolvedConstantName(
-            new FullyQualifiedName([...$this->namespace->segments, $name]),
-            $name->toFullyQualified(),
-        );
+        return $this->nameContext->getResolvedClassName($name);
     }
 
     /**
      * @param list<Type> $arguments
      */
-    public function resolveType(Name|NameNode $name, array $arguments = []): Type
+    public function resolveType(Name $name, array $arguments = []): Type
     {
-        if ($name instanceof NameNode) {
-            $name = Name::fromNode($name);
+        if ($name->isSpecialClassName()) {
+            return match ($name->toLowerString()) {
+                'self' => types::self($this->self, ...$arguments),
+                'parent' => types::parent($this->parent, ...$arguments),
+                default => types::static($this->self, ...$arguments),
+            };
         }
 
-        if ($name instanceof UnqualifiedName) {
-            $type = $this->mainImportTable->getType($name, $arguments);
+        $stringName = $name->toString();
 
-            if ($type !== null) {
-                return $type;
+        if (isset($this->aliasNames[$stringName])) {
+            \assert($this->self instanceof ClassId);
+
+            return types::alias(aliasId($this->self, $stringName), ...$arguments);
+        }
+
+        if (isset($this->templateNames[$stringName])) {
+            if ($arguments !== []) {
+                throw new \LogicException('Template type arguments are not supported');
             }
+
+            \assert($this->id instanceof FunctionId
+                || $this->id instanceof ClassId
+                || $this->id instanceof AnonymousClassId
+                || $this->id instanceof MethodId);
+
+            return types::template(templateId($this->id, $stringName));
         }
 
-        return types::object($this->resolveClassName($name)->toStringWithoutSlash(), ...$arguments);
-    }
-
-    private function resolveRelativeName(RelativeName $name): FullyQualifiedName
-    {
-        if ($this->namespace === null) {
-            return $name->toFullyQualified();
-        }
-
-        return new FullyQualifiedName([...$this->namespace->segments, ...$name->segments]);
-    }
-
-    private function resolveQualifiedName(QualifiedName $name): FullyQualifiedName
-    {
-        $imported = $this->mainImportTable->getName($name->segments[0]);
-
-        if ($imported !== null) {
-            return new FullyQualifiedName([...$imported->segments, ...\array_slice($name->segments, 1)]);
-        }
-
-        if ($this->namespace === null) {
-            return $name->toFullyQualified();
-        }
-
-        return new FullyQualifiedName([...$this->namespace->segments, ...$name->segments]);
+        return types::object($this->nameContext->getResolvedClassName($name)->toString(), ...$arguments);
     }
 }

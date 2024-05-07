@@ -7,19 +7,14 @@ namespace Typhoon\Reflection\FunctionalTesting;
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertTrue;
+use function Typhoon\DeclarationId\classId;
 
-return (new TestBuilder())
-    ->code(
-        <<<'PHP'
-            enum A: string {}
-            PHP,
-    )
-    ->test(static function (TyphoonReflector $reflector): void {
-        $reflection = $reflector->reflectClass('A');
+return static function (TyphoonReflector $reflector): void {
+    $reflection = $reflector->reflectCode('<?php enum A: string {}')[classId('A')];
 
-        assertFalse($reflection->isInstanceOf(\Iterator::class));
-        assertFalse($reflection->isInstanceOf(\stdClass::class));
-        assertTrue($reflection->isInstanceOf('A'));
-        assertTrue($reflection->isInstanceOf(\UnitEnum::class));
-        assertTrue($reflection->isInstanceOf(\BackedEnum::class));
-    });
+    assertFalse($reflection->isInstanceOf(\Iterator::class));
+    assertFalse($reflection->isInstanceOf(\stdClass::class));
+    assertTrue($reflection->isInstanceOf('A'));
+    assertTrue($reflection->isInstanceOf(\UnitEnum::class));
+    assertTrue($reflection->isInstanceOf(\BackedEnum::class));
+};

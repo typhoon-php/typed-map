@@ -6,13 +6,11 @@ namespace Typhoon\PhpStormReflectionStubs;
 
 use JetBrains\PHPStormStub\PhpStormStubsMap;
 use Typhoon\ChangeDetector\ChangeDetector;
-use Typhoon\ChangeDetector\FileChangeDetector;
 use Typhoon\ChangeDetector\PackageChangeDetector;
 use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ClassId;
 use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\FunctionId;
-use Typhoon\Reflection\Exception\FileNotReadable;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Locator;
 use Typhoon\Reflection\Resource;
@@ -32,7 +30,7 @@ final class PhpStormStubsLocator implements Locator
 
     private static null|false|PackageChangeDetector $packageChangeDetector = false;
 
-    public static function packageChangeDetector(): ?ChangeDetector
+    private static function packageChangeDetector(): ?ChangeDetector
     {
         if (self::$packageChangeDetector === false) {
             return self::$packageChangeDetector = PackageChangeDetector::tryFromPackage(self::PACKAGE);
@@ -73,21 +71,19 @@ final class PhpStormStubsLocator implements Locator
             return null;
         }
 
-        $file = self::directory() . '/' . $relativePath;
-        $code = @file_get_contents($file);
+        $baseData = (new TypedMap())
+            ->with(Data::Extension(), \dirname($relativePath))
+            ->with(Data::WrittenInC(), true);
 
-        if ($code === false) {
-            throw new FileNotReadable($file);
+        $packageChangeDetector = self::packageChangeDetector();
+
+        if ($packageChangeDetector !== null) {
+            $baseData = $baseData->with(Data::UnresolvedChangeDetectors(), [$packageChangeDetector]);
         }
 
         return new Resource(
-            code: $code,
-            data: (new TypedMap())
-                ->with(Data::Extension(), \dirname($relativePath))
-                ->with(Data::WrittenInC(), true)
-                ->with(Data::UnresolvedChangeDetectors(), [
-                    self::packageChangeDetector() ?? FileChangeDetector::fromFileAndContents($file, $code),
-                ]),
+            file: self::directory() . '/' . $relativePath,
+            baseData: $baseData,
             hooks: [
                 new ApplyTentativeTypeAttribute(),
                 new CleanUp(),

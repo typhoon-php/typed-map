@@ -28,16 +28,8 @@ final class TyphoonReflectorFunctionalTest extends TestCase
     public function test(string $file): void
     {
         /** @psalm-suppress UnresolvableInclude */
-        $config = require_once $file;
-        \assert($config instanceof TestBuilder);
-        [$code, $exec, $data] = $config();
-
-        $locators = [new PhpStormStubsLocator()];
-
-        if ($code !== null) {
-            $locators[] = new TestCodeLocator($code, $data);
-        }
-
-        $exec(TyphoonReflector::build(locators: $locators));
+        $test = require_once $file;
+        \assert($test instanceof \Closure);
+        $test(TyphoonReflector::build(locators: [new PhpStormStubsLocator()]));
     }
 }

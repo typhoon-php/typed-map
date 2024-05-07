@@ -328,9 +328,9 @@ namespace Attributes
 
 namespace ParameterTypes
 {
-    final class Y {}
+    abstract class Y {}
 
-    final class X
+    final class X extends Y
     {
         public const A = 1;
 
@@ -340,6 +340,7 @@ namespace ParameterTypes
             \Closure $closure,
             $noType,
             self $self,
+            parent $parent,
             Y $y,
             null|int|float $nullIntFloat,
             mixed $mixed,
