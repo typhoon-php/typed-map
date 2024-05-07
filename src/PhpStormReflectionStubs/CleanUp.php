@@ -10,6 +10,7 @@ use Typhoon\DeclarationId\FunctionId;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\InheritedName;
 use Typhoon\Reflection\Internal\ReflectionHook;
+use Typhoon\Reflection\Reflector;
 use Typhoon\TypedMap\TypedMap;
 
 /**
@@ -20,7 +21,7 @@ final class CleanUp implements ReflectionHook
 {
     private const ATTRIBUTE_PREFIX = 'JetBrains\\';
 
-    public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
+    public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap
     {
         $data = $this->cleanUp($data);
 

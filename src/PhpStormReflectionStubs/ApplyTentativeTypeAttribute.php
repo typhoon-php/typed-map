@@ -9,6 +9,7 @@ use Typhoon\DeclarationId\ClassId;
 use Typhoon\DeclarationId\FunctionId;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\ReflectionHook;
+use Typhoon\Reflection\Reflector;
 use Typhoon\TypedMap\TypedMap;
 
 /**
@@ -33,7 +34,7 @@ final class ApplyTentativeTypeAttribute implements ReflectionHook
         return false;
     }
 
-    public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
+    public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap
     {
         if (!$id instanceof ClassId || !isset($data[Data::Methods()])) {
             return $data;

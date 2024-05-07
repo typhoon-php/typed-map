@@ -38,10 +38,6 @@ final class AdapterCompatibilityTest extends TestCase
     #[DataProviderExternal(FixturesProvider::class, 'classes')]
     public function testItReflectsClassesCompatiblyViaPhpParserReflector(string $class): void
     {
-        if (str_contains($class, '@')) {
-            self::markTestSkipped('anonymous');
-        }
-
         $native = new \ReflectionClass($class);
 
         $typhoon = self::$typhoonReflector->reflectClass($class)->toNative();
@@ -508,12 +504,12 @@ final class AdapterCompatibilityTest extends TestCase
 
         try {
             $nativeResult = $native();
-        } catch (\Throwable $nativeException) {
+        } catch (\ReflectionException $nativeException) {
         }
 
         try {
             $typhoonResult = $typhoon();
-        } catch (\Throwable $typhoonException) {
+        } catch (\ReflectionException $typhoonException) {
         }
 
         if ($nativeException !== null) {
