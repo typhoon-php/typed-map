@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeContext;
+namespace Typhoon\Reflection\Internal\TypeContext;
 
 /**
- * @api
+ * @internal
+ * @psalm-internal Typhoon\Reflection
  */
 final class TypeDeclarations
 {

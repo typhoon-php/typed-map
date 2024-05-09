@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeContext;
+namespace Typhoon\Reflection\Internal\TypeContext;
 
 use PhpParser\ErrorHandler\Throwing;
 use PhpParser\NameContext;
 use PhpParser\Node\Name;
-use PhpParser\Node\Name\FullyQualified;
-use PhpParser\Node\Name\Relative;
 use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ClassId;
 use Typhoon\DeclarationId\DeclarationId;
@@ -20,10 +18,14 @@ use function Typhoon\DeclarationId\aliasId;
 use function Typhoon\DeclarationId\templateId;
 
 /**
- * @api
+ * @internal
+ * @psalm-internal Typhoon\Reflection
  */
 final class TypeContext
 {
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     public readonly ?string $namespace;
 
     private readonly NameContext $nameContext;
@@ -47,7 +49,6 @@ final class TypeContext
         public readonly ?DeclarationId $id = null,
         public readonly null|ClassId|AnonymousClassId $self = null,
         public readonly ?ClassId $parent = null,
-        public readonly bool $trait = false,
         array $aliasNames = [],
         array $templateNames = [],
     ) {
@@ -64,23 +65,9 @@ final class TypeContext
         $this->templateNames = array_fill_keys($templateNames, true);
     }
 
-    public static function parseName(string $name): Name
-    {
-        if ($name === '') {
-            throw new \LogicException('Name cannot be empty');
-        }
-
-        if ($name[0] === '\\') {
-            return new FullyQualified(substr($name, 1));
-        }
-
-        if (str_starts_with($name, 'namespace\\')) {
-            return new Relative(substr($name, 10));
-        }
-
-        return new Name($name);
-    }
-
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function resolveClass(Name $name): Name
     {
         return $this->nameContext->getResolvedClassName($name);

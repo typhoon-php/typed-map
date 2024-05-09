@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeContext;
+namespace Typhoon\Reflection\Internal\TypeContext;
 
 interface TypeContextProvider
 {

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeContext;
+namespace Typhoon\Reflection\Internal\TypeContext;
 
 use PhpParser\Node\FunctionLike;
 use PhpParser\Node\Stmt\ClassLike;
 
 /**
- * @api
+ * @internal
+ * @psalm-internal Typhoon\Reflection
  */
 interface AnnotatedTypesDriver
 {

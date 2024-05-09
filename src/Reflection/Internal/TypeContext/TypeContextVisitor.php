@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeContext;
+namespace Typhoon\Reflection\Internal\TypeContext;
 
 use PhpParser\NameContext;
 use PhpParser\Node;
@@ -23,7 +23,8 @@ use function Typhoon\DeclarationId\methodId;
 use function Typhoon\DeclarationId\propertyId;
 
 /**
- * @api
+ * @internal
+ * @psalm-internal Typhoon\Reflection
  */
 final class TypeContextVisitor extends NodeVisitorAbstract implements TypeContextProvider
 {
@@ -185,7 +186,6 @@ final class TypeContextVisitor extends NodeVisitorAbstract implements TypeContex
             id: end($this->idsStack) ?: null,
             self: end($this->selfStack) ?: null,
             parent: end($this->parentStack) ?: null,
-            trait: end($this->traitStack),
             aliasNames: $this->aliasNames,
             templateNames: $this->templateNamesStack === [] ? [] : end($this->templateNamesStack),
         );
