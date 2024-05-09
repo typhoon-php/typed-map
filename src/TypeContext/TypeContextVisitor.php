@@ -59,9 +59,13 @@ final class TypeContextVisitor extends NodeVisitorAbstract implements TypeContex
 
     private ?TypeContext $typeContext = null;
 
+    /**
+     * @param ?non-empty-string $file
+     */
     public function __construct(
         private readonly NameContext $nameContext,
         private readonly AnnotatedTypesDriver $reader = new NullAnnotatedTypesDriver(),
+        private readonly ?string $file = null,
     ) {}
 
     public function enterNode(Node $node): ?int
@@ -72,7 +76,11 @@ final class TypeContextVisitor extends NodeVisitorAbstract implements TypeContex
             $typeDeclarations = $this->reader->reflectTypeDeclarations($node);
 
             if ($node->name === null) {
-                $classId = anonymousClassId('/dev/null', $node->getStartLine());
+                if ($this->file === null) {
+                    throw new \LogicException('Anonymous class file is null');
+                }
+
+                $classId = anonymousClassId($this->file, $node->getStartLine());
             } else {
                 \assert($node->namespacedName !== null);
                 $classId = classId($node->namespacedName->toString());
