@@ -8,7 +8,6 @@ use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ClassId;
 use Typhoon\DeclarationId\FunctionId;
 use Typhoon\Reflection\Internal\Data;
-use Typhoon\Reflection\Internal\InheritedName;
 use Typhoon\Reflection\Internal\ReflectionHook;
 use Typhoon\TypedMap\TypedMap;
 
@@ -28,11 +27,8 @@ final class CleanUp implements ReflectionHook
             return $data;
         }
 
-        if (isset($data[Data::UnresolvedInterfaces()])) {
-            $data = $data->with(Data::UnresolvedInterfaces(), array_values(array_filter(
-                $data[Data::UnresolvedInterfaces()],
-                static fn(InheritedName $name): bool => $name->name !== 'iterable',
-            )));
+        if ($id->name === \Traversable::class) {
+            $data = $data->with(Data::UnresolvedInterfaces(), []);
         }
 
         if (isset($data[Data::ClassConstants()])) {
@@ -52,15 +48,11 @@ final class CleanUp implements ReflectionHook
 
     private function cleanUp(TypedMap $data): TypedMap
     {
-        $data = $data->without(Data::StartLine(), Data::EndLine(), Data::PhpDoc());
-
-        if (!isset($data[Data::Attributes()])) {
-            return $data;
-        }
-
-        return $data->with(Data::Attributes(), array_values(array_filter(
-            $data[Data::Attributes()],
-            static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClass()] ?? '', self::ATTRIBUTE_PREFIX),
-        )));
+        return $data
+            ->without(Data::StartLine(), Data::EndLine(), Data::PhpDoc())
+            ->with(Data::Attributes(), array_values(array_filter(
+                $data[Data::Attributes()],
+                static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClass()], self::ATTRIBUTE_PREFIX),
+            )));
     }
 }
