@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\PhpStormReflectionStubs;
+namespace Typhoon\PhpStormReflectionStubs\Internal;
 
 use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ClassId;

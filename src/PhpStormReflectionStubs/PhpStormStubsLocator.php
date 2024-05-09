@@ -11,6 +11,8 @@ use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ClassId;
 use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\FunctionId;
+use Typhoon\PhpStormReflectionStubs\Internal\ApplyTentativeTypeAttribute;
+use Typhoon\PhpStormReflectionStubs\Internal\CleanUp;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Locator;
 use Typhoon\Reflection\Resource;
