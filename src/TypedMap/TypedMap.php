@@ -40,7 +40,7 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
         return $copy;
     }
 
-    public function withAllFrom(self $map): self
+    public function merge(self $map): self
     {
         $copy = clone $this;
         $copy->values->addAll($map->values);
