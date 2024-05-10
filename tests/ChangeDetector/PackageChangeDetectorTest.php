@@ -6,18 +6,10 @@ namespace Typhoon\ChangeDetector;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Filesystem\Filesystem;
 
 #[CoversClass(PackageChangeDetector::class)]
 final class PackageChangeDetectorTest extends TestCase
 {
-    private const TEMP_DIR = __DIR__ . '/../../var/PackageChangeDetectorTest';
-
-    public static function setUpBeforeClass(): void
-    {
-        (new Filesystem())->mkdir(self::TEMP_DIR);
-    }
-
     public function testFromPackageReturnsNullForNonInstalledPackage(): void
     {
         $detector = PackageChangeDetector::tryFromPackage('a/b');
