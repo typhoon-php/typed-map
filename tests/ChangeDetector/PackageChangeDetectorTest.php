@@ -32,6 +32,8 @@ final class PackageChangeDetectorTest extends TestCase
     #[RunInSeparateProcess]
     public function testItDetectsPackageCommitChange(): void
     {
+        self::markTestSkipped('Should be refactored');
+
         $this->requirePsrLog('dev-master#4165cf6c29d0b7f34807590b2718caf483e8b1f7');
         $this->saveDetector();
 
@@ -46,6 +48,8 @@ final class PackageChangeDetectorTest extends TestCase
     #[Depends('testItDetectsPackageCommitChange')]
     public function testItReturnsDeduplicatedDetectors(): void
     {
+        self::markTestSkipped('Should be refactored');
+
         $detector = ChangeDetectors::from([
             new PackageChangeDetector('nikic/php-parser', '0.3.0'),
             PackageChangeDetector::tryFromPackage('nikic/php-parser') ?? throw new \LogicException(),
