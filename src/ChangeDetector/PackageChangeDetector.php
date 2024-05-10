@@ -15,7 +15,7 @@ final class PackageChangeDetector implements ChangeDetector
      * @param non-empty-string $package
      * @param non-empty-string $reference
      */
-    public function __construct(
+    private function __construct(
         private readonly string $package,
         private readonly string $reference,
     ) {}

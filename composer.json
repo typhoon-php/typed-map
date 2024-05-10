@@ -26,7 +26,6 @@
         "phpstan/phpstan": "^1.11@dev",
         "phpunit/phpunit": "^10.5.20",
         "phpyh/coding-standard": "^2.6.1",
-        "symfony/process": "^6.4.4 || ^7.0.7",
         "symfony/var-dumper": "^6.4.6 || ^7.0.7",
         "typhoon/opcache": "^0.2.1"
     },
