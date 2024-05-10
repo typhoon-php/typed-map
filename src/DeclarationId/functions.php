@@ -26,7 +26,16 @@ function functionId(string $name): FunctionId
  * @api
  * @psalm-pure
  */
-function classId(string|object $nameOrObject): ClassId|AnonymousClassId
+function anyClassId(string|object $nameOrObject): ClassId|AnonymousClassId
+{
+    return DeclarationId::anyClass($nameOrObject);
+}
+
+/**
+ * @api
+ * @psalm-pure
+ */
+function classId(string|object $nameOrObject): ClassId
 {
     return DeclarationId::class($nameOrObject);
 }

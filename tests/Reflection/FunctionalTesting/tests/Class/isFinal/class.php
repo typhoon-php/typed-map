@@ -7,10 +7,10 @@ namespace Typhoon\Reflection\FunctionalTesting;
 use Typhoon\Reflection\Kind;
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertFalse;
-use function Typhoon\DeclarationId\classId;
+use function Typhoon\DeclarationId\anyClassId;
 
 return static function (TyphoonReflector $reflector): void {
-    $reflection = $reflector->reflectCode('<?php class A {}')[classId('A')];
+    $reflection = $reflector->reflectCode('<?php class A {}')[anyClassId('A')];
 
     assertFalse($reflection->isFinal(Kind::Native));
     assertFalse($reflection->isFinal(Kind::Annotated));

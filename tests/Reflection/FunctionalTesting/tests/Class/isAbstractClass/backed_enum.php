@@ -6,10 +6,10 @@ namespace Typhoon\Reflection\FunctionalTesting;
 
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertFalse;
-use function Typhoon\DeclarationId\classId;
+use function Typhoon\DeclarationId\anyClassId;
 
 return static function (TyphoonReflector $reflector): void {
-    $reflection = $reflector->reflectCode('<?php enum A: string {}')[classId('A')];
+    $reflection = $reflector->reflectCode('<?php enum A: string {}')[anyClassId('A')];
 
     assertFalse($reflection->isAbstractClass());
 };

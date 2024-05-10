@@ -35,14 +35,22 @@ abstract class DeclarationId
     /**
      * @psalm-pure
      */
-    final public static function class(string|object $nameOrObject): ClassId|AnonymousClassId
+    final public static function anyClass(string|object $nameOrObject): ClassId|AnonymousClassId
     {
-        $name = \is_object($nameOrObject) ? $nameOrObject::class : $nameOrObject;
+        if (\is_object($nameOrObject)) {
+            $name = $nameOrObject::class;
 
-        if (!str_contains($name, '@')) {
-            \assert(self::isNameValid($name), sprintf('Invalid class name "%s"', $name));
+            if (!str_contains($name, '@')) {
+                return new ClassId($name);
+            }
+        } else {
+            $name = $nameOrObject;
 
-            return new ClassId($name);
+            if (!str_contains($name, '@')) {
+                \assert(self::isNameValid($name), sprintf('Invalid class name "%s"', $name));
+
+                return new ClassId($name);
+            }
         }
 
         $matched = preg_match('/anonymous\x00(.+):(\d+)/', $name, $matches) === 1;
@@ -65,6 +73,26 @@ abstract class DeclarationId
     /**
      * @psalm-pure
      */
+    final public static function class(string|object $nameOrObject): ClassId
+    {
+        if (\is_object($nameOrObject)) {
+            $name = $nameOrObject::class;
+
+            \assert(!str_contains($name, '@'), sprintf('Invalid class name "%s"', $name));
+
+            return new ClassId($name);
+        }
+
+        $name = $nameOrObject;
+
+        \assert(self::isNameValid($name), sprintf('Invalid class name "%s"', $name));
+
+        return new ClassId($name);
+    }
+
+    /**
+     * @psalm-pure
+     */
     final public static function anonymousClass(string $file, int $line): AnonymousClassId
     {
         \assert($file !== '', 'Anonymous class file must not be empty');
@@ -79,7 +107,7 @@ abstract class DeclarationId
     final public static function classConstant(string|ClassId|AnonymousClassId $class, string $name): ClassConstantId
     {
         if (\is_string($class)) {
-            $class = self::class($class);
+            $class = self::anyClass($class);
         }
 
         \assert(self::isLabelValid($name), sprintf('Invalid class constant name "%s"', $name));
@@ -93,7 +121,7 @@ abstract class DeclarationId
     final public static function property(string|ClassId|AnonymousClassId $class, string $name): PropertyId
     {
         if (\is_string($class)) {
-            $class = self::class($class);
+            $class = self::anyClass($class);
         }
 
         \assert(self::isLabelValid($name), sprintf('Invalid property name "%s"', $name));
@@ -107,7 +135,7 @@ abstract class DeclarationId
     final public static function method(string|ClassId|AnonymousClassId $class, string $name): MethodId
     {
         if (\is_string($class)) {
-            $class = self::class($class);
+            $class = self::anyClass($class);
         }
 
         \assert(self::isLabelValid($name), sprintf('Invalid method name "%s"', $name));
@@ -132,7 +160,6 @@ abstract class DeclarationId
     {
         if (\is_string($class)) {
             $class = self::class($class);
-            \assert($class instanceof ClassId);
         }
 
         \assert(self::isLabelValid($name), sprintf('Invalid alias name "%s"', $name));
