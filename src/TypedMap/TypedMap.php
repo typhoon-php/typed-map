@@ -71,12 +71,17 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public function offsetGet(mixed $offset): mixed
     {
-        try {
+        if ($this->values->contains($offset)) {
             /** @var T */
             return $this->values[$offset];
-        } catch (\UnexpectedValueException) {
-            throw new UndefinedKey($offset);
         }
+
+        if ($offset instanceof OptionalKey) {
+            /** @var T */
+            return $offset->default($this);
+        }
+
+        throw new UndefinedKey($offset);
     }
 
     public function offsetSet(mixed $offset, mixed $value): void
