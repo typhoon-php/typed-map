@@ -21,15 +21,15 @@ final class ApplyTentativeTypeAttribute implements ReflectionHook
 
     public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
     {
-        return $data->modify(Data::Methods(), fn(array $methods): array => array_map(
+        return $data->modify(Data::Methods, fn(array $methods): array => array_map(
             function (TypedMap $method): TypedMap {
-                $nativeType = $method[Data::NativeType()] ?? null;
+                $type = $method[Data::Type];
 
-                if ($nativeType === null || !$this->hasTentativeAttribute($method[Data::Attributes()] ?? [])) {
+                if ($type->native === null || !$this->hasTentativeAttribute($method[Data::Attributes] ?? [])) {
                     return $method;
                 }
 
-                return $method->set(Data::TentativeType(), $nativeType)->unset(Data::NativeType());
+                return $method->set(Data::Type, $type->withTentative($type->native)->withNative(null));
             },
             $methods,
         ));
@@ -41,7 +41,7 @@ final class ApplyTentativeTypeAttribute implements ReflectionHook
     private function hasTentativeAttribute(array $attributes): bool
     {
         foreach ($attributes as $attribute) {
-            if ($attribute[Data::AttributeClass()] === self::TENTATIVE_TYPE_ATTRIBUTE) {
+            if ($attribute[Data::AttributeClass] === self::TENTATIVE_TYPE_ATTRIBUTE) {
                 return true;
             }
         }

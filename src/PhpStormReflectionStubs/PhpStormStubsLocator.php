@@ -72,13 +72,13 @@ final class PhpStormStubsLocator implements Locator
         }
 
         $baseData = (new TypedMap())
-            ->set(Data::Extension(), \dirname($relativePath))
-            ->set(Data::WrittenInC(), true);
+            ->set(Data::PhpExtension, \dirname($relativePath))
+            ->set(Data::WrittenInC, true);
 
         $packageChangeDetector = self::packageChangeDetector();
 
         if ($packageChangeDetector !== null) {
-            $baseData = $baseData->set(Data::UnresolvedChangeDetectors(), [$packageChangeDetector]);
+            $baseData = $baseData->set(Data::UnresolvedChangeDetectors, [$packageChangeDetector]);
         }
 
         return new Resource(

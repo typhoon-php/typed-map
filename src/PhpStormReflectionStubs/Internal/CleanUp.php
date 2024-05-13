@@ -22,23 +22,23 @@ final class CleanUp implements ReflectionHook
     public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
     {
         if ($id->name === \Traversable::class) {
-            $data = $data->unset(Data::UnresolvedInterfaces());
+            $data = $data->unset(Data::UnresolvedInterfaces);
         }
 
         return $this->cleanUp($data)
-            ->modify(Data::ClassConstants(), fn(array $constants): array => array_map($this->cleanUp(...), $constants))
-            ->modify(Data::Properties(), fn(array $properties): array => array_map($this->cleanUp(...), $properties))
-            ->modify(Data::Methods(), fn(array $methods): array => array_map($this->cleanUp(...), $methods));
+            ->modify(Data::ClassConstants, fn(array $constants): array => array_map($this->cleanUp(...), $constants))
+            ->modify(Data::Properties, fn(array $properties): array => array_map($this->cleanUp(...), $properties))
+            ->modify(Data::Methods, fn(array $methods): array => array_map($this->cleanUp(...), $methods));
     }
 
     private function cleanUp(TypedMap $data): TypedMap
     {
         return $data
-            ->unset(Data::StartLine(), Data::EndLine(), Data::PhpDoc())
-            ->modify(Data::Attributes(), static fn(array $attributes): array => array_values(
+            ->unset(Data::StartLine, Data::EndLine, Data::PhpDoc)
+            ->modify(Data::Attributes, static fn(array $attributes): array => array_values(
                 array_filter(
                     $attributes,
-                    static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClass()], self::ATTRIBUTE_PREFIX),
+                    static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClass], self::ATTRIBUTE_PREFIX),
                 ),
             ));
     }
