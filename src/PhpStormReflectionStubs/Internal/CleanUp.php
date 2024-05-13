@@ -21,38 +21,25 @@ final class CleanUp implements ReflectionHook
 
     public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
     {
-        $data = $this->cleanUp($data);
-
-        if ($id instanceof FunctionId) {
-            return $data;
-        }
-
         if ($id->name === \Traversable::class) {
-            $data = $data->with(Data::UnresolvedInterfaces(), []);
+            $data = $data->without(Data::UnresolvedInterfaces());
         }
 
-        if (isset($data[Data::ClassConstants()])) {
-            $data = $data->with(Data::ClassConstants(), array_map($this->cleanUp(...), $data[Data::ClassConstants()]));
-        }
-
-        if (isset($data[Data::Properties()])) {
-            $data = $data->with(Data::Properties(), array_map($this->cleanUp(...), $data[Data::Properties()]));
-        }
-
-        if (isset($data[Data::Methods()])) {
-            $data = $data->with(Data::Methods(), array_map($this->cleanUp(...), $data[Data::Methods()]));
-        }
-
-        return $data;
+        return $this->cleanUp($data)
+            ->withModified(Data::ClassConstants(), fn(array $constants): array => array_map($this->cleanUp(...), $constants))
+            ->withModified(Data::Properties(), fn(array $properties): array => array_map($this->cleanUp(...), $properties))
+            ->withModified(Data::Methods(), fn(array $methods): array => array_map($this->cleanUp(...), $methods));
     }
 
     private function cleanUp(TypedMap $data): TypedMap
     {
         return $data
             ->without(Data::StartLine(), Data::EndLine(), Data::PhpDoc())
-            ->with(Data::Attributes(), array_values(array_filter(
-                $data[Data::Attributes()],
-                static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClass()], self::ATTRIBUTE_PREFIX),
-            )));
+            ->withModified(Data::Attributes(), static fn(array $attributes): array => array_values(
+                array_filter(
+                    $attributes,
+                    static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClass()], self::ATTRIBUTE_PREFIX),
+                ),
+            ));
     }
 }

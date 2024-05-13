@@ -19,39 +19,33 @@ final class ApplyTentativeTypeAttribute implements ReflectionHook
 {
     private const TENTATIVE_TYPE_ATTRIBUTE = 'JetBrains\\PhpStorm\\Internal\\TentativeType';
 
+    public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
+    {
+        return $data->withModified(Data::Methods(), fn(array $methods): array => array_map(
+            function (TypedMap $method): TypedMap {
+                $nativeType = $method[Data::NativeType()] ?? null;
+
+                if ($nativeType === null || !$this->hasTentativeAttribute($method[Data::Attributes()] ?? [])) {
+                    return $method;
+                }
+
+                return $method->with(Data::TentativeType(), $nativeType)->without(Data::NativeType());
+            },
+            $methods,
+        ));
+    }
+
     /**
      * @param list<TypedMap> $attributes
      */
-    private static function hasTentativeTypeAttribute(array $attributes): bool
+    private function hasTentativeAttribute(array $attributes): bool
     {
         foreach ($attributes as $attribute) {
-            if (($attribute[Data::AttributeClass()] ?? null) === self::TENTATIVE_TYPE_ATTRIBUTE) {
+            if ($attribute[Data::AttributeClass()] === self::TENTATIVE_TYPE_ATTRIBUTE) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
-    {
-        if (!$id instanceof ClassId || !isset($data[Data::Methods()])) {
-            return $data;
-        }
-
-        return $data->with(Data::Methods(), array_map(
-            static function (TypedMap $method): TypedMap {
-                $nativeType = $method[Data::NativeType()] ?? null;
-
-                if ($nativeType === null || !self::hasTentativeTypeAttribute($method[Data::Attributes()] ?? [])) {
-                    return $method;
-                }
-
-                return $method
-                    ->with(Data::TentativeType(), $nativeType)
-                    ->without(Data::NativeType());
-            },
-            $data[Data::Methods()],
-        ));
     }
 }
