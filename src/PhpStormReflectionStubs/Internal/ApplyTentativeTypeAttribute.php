@@ -21,7 +21,7 @@ final class ApplyTentativeTypeAttribute implements ReflectionHook
 
     public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
     {
-        return $data->withModified(Data::Methods(), fn(array $methods): array => array_map(
+        return $data->modify(Data::Methods(), fn(array $methods): array => array_map(
             function (TypedMap $method): TypedMap {
                 $nativeType = $method[Data::NativeType()] ?? null;
 
@@ -29,7 +29,7 @@ final class ApplyTentativeTypeAttribute implements ReflectionHook
                     return $method;
                 }
 
-                return $method->with(Data::TentativeType(), $nativeType)->without(Data::NativeType());
+                return $method->set(Data::TentativeType(), $nativeType)->unset(Data::NativeType());
             },
             $methods,
         ));
