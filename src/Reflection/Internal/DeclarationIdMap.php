@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\DeclarationId;
+namespace Typhoon\Reflection\Internal;
+
+use Typhoon\DeclarationId\DeclarationId;
 
 /**
  * @api
