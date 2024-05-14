@@ -26,20 +26,18 @@ final class CleanUp implements ReflectionHook
         }
 
         return $this->cleanUp($data)
-            ->modify(Data::ClassConstants, fn(array $constants): array => array_map($this->cleanUp(...), $constants))
-            ->modify(Data::Properties, fn(array $properties): array => array_map($this->cleanUp(...), $properties))
-            ->modify(Data::Methods, fn(array $methods): array => array_map($this->cleanUp(...), $methods));
+            ->modifyIfSet(Data::ClassConstants, fn(array $constants): array => array_map($this->cleanUp(...), $constants))
+            ->modifyIfSet(Data::Properties, fn(array $properties): array => array_map($this->cleanUp(...), $properties))
+            ->modifyIfSet(Data::Methods, fn(array $methods): array => array_map($this->cleanUp(...), $methods));
     }
 
     private function cleanUp(TypedMap $data): TypedMap
     {
         return $data
             ->unset(Data::StartLine, Data::EndLine, Data::PhpDoc)
-            ->modify(Data::Attributes, static fn(array $attributes): array => array_values(
-                array_filter(
-                    $attributes,
-                    static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClass], self::ATTRIBUTE_PREFIX),
-                ),
-            ));
+            ->modifyIfSet(Data::Attributes, static fn(array $attributes): array => array_values(array_filter(
+                $attributes,
+                static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClass], self::ATTRIBUTE_PREFIX),
+            )));
     }
 }

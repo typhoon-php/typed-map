@@ -50,6 +50,20 @@ final class TypedMap implements \ArrayAccess, \IteratorAggregate, \Countable
         return $this->set($key, $modify($this[$key]));
     }
 
+    /**
+     * @template T
+     * @param Key<T> $key
+     * @param callable(T): T $modify
+     */
+    public function modifyIfSet(Key $key, callable $modify): self
+    {
+        if (!$this->values->contains($key)) {
+            return $this;
+        }
+
+        return $this->set($key, $modify($this[$key]));
+    }
+
     public function merge(self $map): self
     {
         $copy = clone $this;

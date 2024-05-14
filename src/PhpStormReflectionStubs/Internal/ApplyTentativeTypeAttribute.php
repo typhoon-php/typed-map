@@ -21,7 +21,7 @@ final class ApplyTentativeTypeAttribute implements ReflectionHook
 
     public function reflect(FunctionId|ClassId|AnonymousClassId $id, TypedMap $data): TypedMap
     {
-        return $data->modify(Data::Methods, fn(array $methods): array => array_map(
+        return $data->modifyIfSet(Data::Methods, fn(array $methods): array => array_map(
             function (TypedMap $method): TypedMap {
                 $type = $method[Data::Type];
 
