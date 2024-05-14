@@ -18,7 +18,7 @@ return static function (TyphoonReflector $reflector): void {
             abstract class A
             {
                 /**
-                 * @return 'a'
+                 * @return non-empty-string
                  */
                 public function a(): string {}
             }
@@ -30,6 +30,6 @@ return static function (TyphoonReflector $reflector): void {
     )[classId('B')]->method('a') ?? throw new \LogicException();
 
     assertEquals(types::string, $reflection->returnType(Kind::Native));
-    assertEquals(types::literalValue('a'), $reflection->returnType(Kind::Annotated));
-    assertEquals(types::literalValue('a'), $reflection->returnType(Kind::Resolved));
+    assertEquals(types::nonEmptyString, $reflection->returnType(Kind::Annotated));
+    assertEquals(types::nonEmptyString, $reflection->returnType(Kind::Resolved));
 };
