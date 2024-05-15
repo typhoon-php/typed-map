@@ -13,6 +13,8 @@ abstract class DeclarationId
     protected function __construct() {}
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function constant(string $name): ConstantId
@@ -23,6 +25,8 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function function(string $name): FunctionId
@@ -33,6 +37,8 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function anyClass(string|object $nameOrObject): ClassId|AnonymousClassId
@@ -71,6 +77,8 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function class(string|object $nameOrObject): ClassId
@@ -91,6 +99,8 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function anonymousClass(string $file, int $line): AnonymousClassId
@@ -102,6 +112,8 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function classConstant(string|ClassId|AnonymousClassId $class, string $name): ClassConstantId
@@ -116,6 +128,8 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function property(string|ClassId|AnonymousClassId $class, string $name): PropertyId
@@ -130,6 +144,8 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function method(string|ClassId|AnonymousClassId $class, string $name): MethodId
@@ -154,6 +170,8 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function alias(string|ClassId $class, string $name): AliasId
@@ -168,6 +186,8 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
     final public static function template(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, string $name): TemplateId
