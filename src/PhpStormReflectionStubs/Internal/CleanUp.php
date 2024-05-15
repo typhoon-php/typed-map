@@ -37,7 +37,7 @@ final class CleanUp implements ReflectionHook
             ->unset(Data::StartLine, Data::EndLine, Data::PhpDoc)
             ->modifyIfSet(Data::Attributes, static fn(array $attributes): array => array_values(array_filter(
                 $attributes,
-                static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClass], self::ATTRIBUTE_PREFIX),
+                static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClassName], self::ATTRIBUTE_PREFIX),
             )));
     }
 }

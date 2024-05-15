@@ -41,7 +41,7 @@ final class ApplyTentativeTypeAttribute implements ReflectionHook
     private function hasTentativeAttribute(array $attributes): bool
     {
         foreach ($attributes as $attribute) {
-            if ($attribute[Data::AttributeClass] === self::TENTATIVE_TYPE_ATTRIBUTE) {
+            if ($attribute[Data::AttributeClassName] === self::TENTATIVE_TYPE_ATTRIBUTE) {
                 return true;
             }
         }
