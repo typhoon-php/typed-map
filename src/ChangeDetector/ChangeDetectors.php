@@ -17,15 +17,10 @@ final class ChangeDetectors implements ChangeDetector
     ) {}
 
     /**
-     * @param array<ChangeDetector> $changeDetectors
-     * @return ($changeDetectors is array{} ? null : ChangeDetector)
+     * @param non-empty-array<ChangeDetector> $changeDetectors
      */
-    public static function from(array $changeDetectors): ?ChangeDetector
+    public static function from(array $changeDetectors): ChangeDetector
     {
-        if ($changeDetectors === []) {
-            return null;
-        }
-
         if (\count($changeDetectors) === 1) {
             return reset($changeDetectors);
         }
@@ -38,7 +33,6 @@ final class ChangeDetectors implements ChangeDetector
             }
         }
 
-        /** @psalm-suppress ArgumentTypeCoercion */
         return new self($deduplicated);
     }
 
