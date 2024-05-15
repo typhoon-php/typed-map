@@ -26,12 +26,11 @@ return static function (TyphoonReflector $reflector): void {
                 public function a() {}
             }
             PHP,
-    )[classId('A')]->method('a') ?? throw new \LogicException();
+    )[classId('A')]->methods['a'];
 
-    $templates = $reflection->templates();
+    $templates = $reflection->templates;
     assertCount(1, $templates);
     assertArrayHasKey('T', $templates);
-    /** @psalm-suppress PossiblyUndefinedStringArrayOffset */
     $template = $templates['T'];
     assertSame('T', $template->name);
     assertSame(0, $template->index);

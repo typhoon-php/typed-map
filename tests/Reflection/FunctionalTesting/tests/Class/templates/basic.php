@@ -27,10 +27,9 @@ return static function (TyphoonReflector $reflector): void {
             PHP,
     )[classId('A')] ?? throw new \LogicException();
 
-    $templates = $reflection->templates();
+    $templates = $reflection->templates;
     assertCount(1, $templates);
     assertArrayHasKey('T', $templates);
-    /** @psalm-suppress PossiblyUndefinedStringArrayOffset */
     $template = $templates['T'];
     assertSame('T', $template->name);
     assertSame(0, $template->index);

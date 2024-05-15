@@ -23,7 +23,7 @@ return static function (TyphoonReflector $reflector): void {
                 ) {}
             }
             PHP,
-    )[classId('A')]->property('a') ?? throw new \LogicException();
+    )[classId('A')]->properties['a'];
 
     assertEquals(types::string, $reflection->type(Kind::Native));
     assertEquals(types::nonEmptyString, $reflection->type(Kind::Annotated));

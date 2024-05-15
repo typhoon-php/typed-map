@@ -23,7 +23,7 @@ return static function (TyphoonReflector $reflector): void {
                 public function a(): string;
             }
             PHP,
-    )[classId('A')]->method('a') ?? throw new \LogicException();
+    )[classId('A')]->methods['a'];
 
     assertEquals(
         types::union(
