@@ -9,36 +9,36 @@ use Composer\InstalledVersions;
 /**
  * @api
  */
-final class PackageChangeDetector implements ChangeDetector
+final class ComposerPackageChangeDetector implements ChangeDetector
 {
     /**
-     * @param non-empty-string $package
+     * @param non-empty-string $name
      * @param non-empty-string $reference
      */
     private function __construct(
-        private readonly string $package,
+        private readonly string $name,
         private readonly string $reference,
     ) {}
 
     /**
-     * @param non-empty-string $package
+     * @param non-empty-string $name
      */
-    public static function tryFromPackage(string $package): ?self
+    public static function tryFromName(string $name): ?self
     {
-        $version = self::tryGetReference($package);
+        $version = self::tryGetReference($name);
 
         if ($version === null) {
             return null;
         }
 
-        return new self($package, $version);
+        return new self($name, $version);
     }
 
     /**
-     * @param non-empty-string $package
+     * @param non-empty-string $name
      * @return ?non-empty-string
      */
-    private static function tryGetReference(string $package): ?string
+    private static function tryGetReference(string $name): ?string
     {
         if (!class_exists(InstalledVersions::class)) {
             return null;
@@ -46,7 +46,7 @@ final class PackageChangeDetector implements ChangeDetector
 
         try {
             /** @var non-empty-string */
-            return InstalledVersions::getReference($package);
+            return InstalledVersions::getReference($name);
         } catch (\Throwable) {
             return null;
         }
@@ -54,11 +54,11 @@ final class PackageChangeDetector implements ChangeDetector
 
     public function changed(): bool
     {
-        return self::tryGetReference($this->package) !== $this->reference;
+        return self::tryGetReference($this->name) !== $this->reference;
     }
 
     public function deduplicate(): array
     {
-        return [$this->package . '#package' => $this];
+        return [$this->name . '#package' => $this];
     }
 }

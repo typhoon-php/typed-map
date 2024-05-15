@@ -7,12 +7,12 @@ namespace Typhoon\ChangeDetector;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(PackageChangeDetector::class)]
+#[CoversClass(ComposerPackageChangeDetector::class)]
 final class PackageChangeDetectorTest extends TestCase
 {
     public function testFromPackageReturnsNullForNonInstalledPackage(): void
     {
-        $detector = PackageChangeDetector::tryFromPackage('a/b');
+        $detector = ComposerPackageChangeDetector::tryFromName('a/b');
 
         self::assertNull($detector);
     }
@@ -30,8 +30,8 @@ final class PackageChangeDetectorTest extends TestCase
     {
         $detector = ChangeDetectors::from([
             $this->newPackageDetector('nikic/php-parser', '0.3.0'),
-            PackageChangeDetector::tryFromPackage('nikic/php-parser') ?? throw new \LogicException(),
-            PackageChangeDetector::tryFromPackage('psr/simple-cache') ?? throw new \LogicException(),
+            ComposerPackageChangeDetector::tryFromName('nikic/php-parser') ?? throw new \LogicException(),
+            ComposerPackageChangeDetector::tryFromName('psr/simple-cache') ?? throw new \LogicException(),
         ]);
 
         $deduplicated = $detector->deduplicate();
@@ -43,14 +43,14 @@ final class PackageChangeDetectorTest extends TestCase
      * @param non-empty-string $package
      * @param non-empty-string $reference
      */
-    private function newPackageDetector(string $package, string $reference): PackageChangeDetector
+    private function newPackageDetector(string $package, string $reference): ComposerPackageChangeDetector
     {
         /**
          * @psalm-suppress InaccessibleMethod
-         * @var \Closure(): PackageChangeDetector
+         * @var \Closure(): ComposerPackageChangeDetector
          */
-        $boundConstructor = (static fn(): PackageChangeDetector => new PackageChangeDetector($package, $reference))
-            ->bindTo(null, PackageChangeDetector::class);
+        $boundConstructor = (static fn(): ComposerPackageChangeDetector => new ComposerPackageChangeDetector($package, $reference))
+            ->bindTo(null, ComposerPackageChangeDetector::class);
 
         return $boundConstructor();
     }

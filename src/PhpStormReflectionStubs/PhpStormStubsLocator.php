@@ -6,7 +6,7 @@ namespace Typhoon\PhpStormReflectionStubs;
 
 use JetBrains\PHPStormStub\PhpStormStubsMap;
 use Typhoon\ChangeDetector\ChangeDetector;
-use Typhoon\ChangeDetector\PackageChangeDetector;
+use Typhoon\ChangeDetector\ComposerPackageChangeDetector;
 use Typhoon\DeclarationId\ClassId;
 use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\FunctionId;
@@ -29,12 +29,12 @@ final class PhpStormStubsLocator implements Locator
      */
     private static ?string $directory = null;
 
-    private static null|false|PackageChangeDetector $packageChangeDetector = false;
+    private static null|false|ComposerPackageChangeDetector $packageChangeDetector = false;
 
     private static function packageChangeDetector(): ?ChangeDetector
     {
         if (self::$packageChangeDetector === false) {
-            return self::$packageChangeDetector = PackageChangeDetector::tryFromPackage(self::PACKAGE);
+            return self::$packageChangeDetector = ComposerPackageChangeDetector::tryFromName(self::PACKAGE);
         }
 
         return self::$packageChangeDetector;
