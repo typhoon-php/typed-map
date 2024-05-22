@@ -23,7 +23,7 @@ final class IntTest extends RelationTestCase
         yield [types::int(-9, 10), types::int(min: -100)];
         yield [types::int(min: -100), types::int(min: -100)];
         yield [types::int(min: -9), types::int(min: -100)];
-        yield [types::literalValue(1), types::int(0, 1)];
+        yield [types::intValue(1), types::int(0, 1)];
     }
 
     protected static function xNotSubtypeOfY(): iterable
@@ -36,7 +36,7 @@ final class IntTest extends RelationTestCase
         yield [types::literalInt, types::int(-1, 1)];
         yield [types::positiveInt, types::int(-1, 1)];
         yield [types::negativeInt, types::int(-1, 1)];
-        yield [types::intMask(types::literalValue(0)), types::int(-1, 1)];
+        yield [types::intMask(types::intValue(0)), types::int(-1, 1)];
         yield [types::arrayKey, types::int(-1, 1)];
         yield [types::float, types::int(-1, 1)];
         yield [types::string, types::int(-1, 1)];

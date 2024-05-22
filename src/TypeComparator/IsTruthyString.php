@@ -23,9 +23,9 @@ final class IsTruthyString extends Comparator
         return true;
     }
 
-    public function literalValue(Type $self, float|bool|int|string $value): mixed
+    public function stringValue(Type $self, string $value): mixed
     {
-        return \is_string($value) && $value;
+        return (bool) $value;
     }
 
     public function truthyString(Type $self): mixed

@@ -40,9 +40,24 @@ final class ComparatorSelector extends DefaultTypeVisitor
         return new IsLiteral($type);
     }
 
-    public function literalValue(Type $self, float|bool|int|string $value): mixed
+    public function true(Type $self): mixed
     {
-        return new IsLiteralValue($value);
+        return new IsTrue();
+    }
+
+    public function false(Type $self): mixed
+    {
+        return new IsFalse();
+    }
+
+    public function floatValue(Type $self, float $value): mixed
+    {
+        return new IsFloatValue($value);
+    }
+
+    public function stringValue(Type $self, string $value): mixed
+    {
+        return new IsStringValue($value);
     }
 
     public function mixed(Type $self): mixed

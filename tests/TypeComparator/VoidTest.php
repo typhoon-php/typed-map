@@ -33,7 +33,7 @@ final class VoidTest extends AtomicRelationTestCase
         yield types::literalInt;
         yield types::positiveInt;
         yield types::negativeInt;
-        yield types::intMask(types::literalValue(0));
+        yield types::intMask(types::intValue(0));
         yield types::arrayKey;
         yield types::float;
         yield types::string;

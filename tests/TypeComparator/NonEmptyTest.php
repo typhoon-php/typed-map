@@ -15,9 +15,9 @@ final class NonEmptyTest extends RelationTestCase
     {
         yield [types::nonEmptyString, types::nonEmptyString];
         yield [types::never, types::nonEmptyString];
-        yield [types::literalValue('abc'), types::nonEmptyString];
+        yield [types::stringValue('abc'), types::nonEmptyString];
         yield [types::nonEmpty(types::int), types::nonEmpty(types::mixed)];
-        yield [types::literalValue(1), types::nonEmpty(types::int)];
+        yield [types::intValue(1), types::nonEmpty(types::int)];
         yield [types::true, types::nonEmpty(types::bool)];
     }
 
@@ -31,7 +31,7 @@ final class NonEmptyTest extends RelationTestCase
         yield [types::literalInt, types::nonEmptyString];
         yield [types::positiveInt, types::nonEmptyString];
         yield [types::negativeInt, types::nonEmptyString];
-        yield [types::intMask(types::literalValue(0)), types::nonEmptyString];
+        yield [types::intMask(types::intValue(0)), types::nonEmptyString];
         yield [types::arrayKey, types::nonEmptyString];
         yield [types::float, types::nonEmptyString];
         yield [types::string, types::nonEmptyString];

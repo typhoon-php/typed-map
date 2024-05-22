@@ -17,8 +17,13 @@ final class IsBool extends Comparator
         return true;
     }
 
-    public function literalValue(Type $self, float|bool|int|string $value): mixed
+    public function true(Type $self): mixed
     {
-        return \is_bool($value);
+        return true;
+    }
+
+    public function false(Type $self): mixed
+    {
+        return true;
     }
 }

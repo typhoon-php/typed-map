@@ -21,7 +21,7 @@ final class TruthyStringTest extends AtomicRelationTestCase
     {
         yield types::truthyString;
         yield types::never;
-        yield types::literalValue('abc');
+        yield types::stringValue('abc');
         yield types::nonEmpty(types::truthyString);
         yield types::classString;
         yield types::classString(types::object(\stdClass::class));
@@ -38,7 +38,7 @@ final class TruthyStringTest extends AtomicRelationTestCase
         yield types::literalInt;
         yield types::positiveInt;
         yield types::negativeInt;
-        yield types::intMask(types::literalValue(0));
+        yield types::intMask(types::intValue(0));
         yield types::arrayKey;
         yield types::float;
         yield types::string;

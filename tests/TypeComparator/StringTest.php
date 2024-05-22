@@ -24,12 +24,12 @@ final class StringTest extends AtomicRelationTestCase
         yield types::nonEmptyString;
         yield types::literalString;
         yield types::classString;
-        yield types::literalValue('string');
+        yield types::stringValue('string');
         yield types::classString(types::object(\stdClass::class));
         yield types::truthyString;
         yield types::classStringLiteral(\stdClass::class);
         yield types::numericString;
-        yield types::union(types::literalValue('a'), types::literalValue('b'));
+        yield types::union(types::stringValue('a'), types::stringValue('b'));
         yield types::intersection(types::callable, types::string);
     }
 
@@ -43,7 +43,7 @@ final class StringTest extends AtomicRelationTestCase
         yield types::literalInt;
         yield types::positiveInt;
         yield types::negativeInt;
-        yield types::intMask(types::literalValue(0));
+        yield types::intMask(types::intValue(0));
         yield types::arrayKey;
         yield types::float;
         yield types::array;

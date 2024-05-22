@@ -12,9 +12,9 @@ use Typhoon\Type\Type;
  */
 final class IsNumericString extends Comparator
 {
-    public function literalValue(Type $self, float|bool|int|string $value): mixed
+    public function stringValue(Type $self, string $value): mixed
     {
-        return \is_string($value) && is_numeric($value);
+        return is_numeric($value);
     }
 
     public function numericString(Type $self): mixed

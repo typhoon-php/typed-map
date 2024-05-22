@@ -32,11 +32,4 @@ final class IsInt extends Comparator
         return ($this->min === null || ($min !== null && $min >= $this->min))
             && ($this->max === null || ($max !== null && $max <= $this->max));
     }
-
-    public function literalValue(Type $self, float|bool|int|string $value): mixed
-    {
-        return \is_int($value)
-            && ($this->min === null || $value >= $this->min)
-            && ($this->max === null || $value <= $this->max);
-    }
 }

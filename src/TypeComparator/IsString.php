@@ -23,9 +23,9 @@ final class IsString extends Comparator
         return true;
     }
 
-    public function literalValue(Type $self, float|bool|int|string $value): mixed
+    public function stringValue(Type $self, string $value): mixed
     {
-        return \is_string($value);
+        return true;
     }
 
     public function numericString(Type $self): mixed

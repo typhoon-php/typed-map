@@ -21,10 +21,10 @@ final class NumericStringTest extends AtomicRelationTestCase
     {
         yield types::numericString;
         yield types::never;
-        yield types::literalValue('0.5');
-        yield types::literalValue('123');
-        yield types::literalValue('-10');
-        yield types::literalValue('-' . M_PI);
+        yield types::stringValue('0.5');
+        yield types::stringValue('123');
+        yield types::stringValue('-10');
+        yield types::stringValue('-' . M_PI);
     }
 
     protected static function nonSubtypes(): iterable
@@ -37,7 +37,7 @@ final class NumericStringTest extends AtomicRelationTestCase
         yield types::literalInt;
         yield types::positiveInt;
         yield types::negativeInt;
-        yield types::intMask(types::literalValue(0));
+        yield types::intMask(types::intValue(0));
         yield types::arrayKey;
         yield types::float;
         yield types::string;

@@ -28,7 +28,7 @@ final class UnionTest extends RelationTestCase
         yield [types::literalInt, types::union(types::object, types::callable)];
         yield [types::positiveInt, types::union(types::object, types::callable)];
         yield [types::negativeInt, types::union(types::object, types::callable)];
-        yield [types::intMask(types::literalValue(0)), types::union(types::object, types::callable)];
+        yield [types::intMask(types::intValue(0)), types::union(types::object, types::callable)];
         yield [types::arrayKey, types::union(types::object, types::callable)];
         yield [types::float, types::union(types::object, types::callable)];
         yield [types::string, types::union(types::object, types::callable)];

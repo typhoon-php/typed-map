@@ -28,9 +28,9 @@ final class ArrayKeyTest extends AtomicRelationTestCase
         yield types::literalString;
         yield types::truthyString;
         yield types::numericString;
-        yield types::intMask(types::literalValue(0));
+        yield types::intMask(types::intValue(0));
         yield types::intersection(types::callable, types::string);
-        yield types::union(types::nonEmptyString, types::literalValue(1));
+        yield types::union(types::nonEmptyString, types::intValue(1));
     }
 
     protected static function nonSubtypes(): iterable

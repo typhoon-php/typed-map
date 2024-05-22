@@ -10,15 +10,14 @@ use Typhoon\Type\Type;
  * @internal
  * @psalm-internal Typhoon\TypeComparator
  */
-final class IsFloat extends Comparator
+final class IsFloatValue extends Comparator
 {
-    public function float(Type $self): mixed
-    {
-        return true;
-    }
+    public function __construct(
+        private readonly float $value,
+    ) {}
 
     public function floatValue(Type $self, float $value): mixed
     {
-        return true;
+        return $this->value === $value;
     }
 }

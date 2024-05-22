@@ -21,8 +21,8 @@ final class FloatTest extends AtomicRelationTestCase
     {
         yield types::float;
         yield types::never;
-        yield types::literalValue(M_PI);
-        yield types::literalValue(-0.67);
+        yield types::floatValue(M_PI);
+        yield types::floatValue(-0.67);
     }
 
     protected static function nonSubtypes(): iterable
@@ -35,7 +35,7 @@ final class FloatTest extends AtomicRelationTestCase
         yield types::literalInt;
         yield types::positiveInt;
         yield types::negativeInt;
-        yield types::intMask(types::literalValue(0));
+        yield types::intMask(types::intValue(0));
         yield types::arrayKey;
         yield types::string;
         yield types::nonEmptyString;

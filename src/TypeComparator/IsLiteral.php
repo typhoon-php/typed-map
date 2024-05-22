@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Typhoon\TypeComparator;
 
 use Typhoon\Type\Type;
-use Typhoon\Type\types;
 
 /**
  * @internal
@@ -19,8 +18,7 @@ final class IsLiteral extends Comparator
 
     public function classConstant(Type $self, Type $class, string $name): mixed
     {
-        // TODO full class constant support.
-        return $name === 'class' && isSubtype(types::string, $this->type);
+        return isSubtype($self, $this->type);
     }
 
     public function literal(Type $self, Type $type): mixed
@@ -28,7 +26,27 @@ final class IsLiteral extends Comparator
         return isSubtype($type, $this->type);
     }
 
-    public function literalValue(Type $self, float|bool|int|string $value): mixed
+    public function int(Type $self, ?int $min, ?int $max): mixed
+    {
+        return $min !== null && $max !== null && isSubtype($self, $this->type);
+    }
+
+    public function true(Type $self): mixed
+    {
+        return isSubtype($self, $this->type);
+    }
+
+    public function false(Type $self): mixed
+    {
+        return isSubtype($self, $this->type);
+    }
+
+    public function floatValue(Type $self, float $value): mixed
+    {
+        return isSubtype($self, $this->type);
+    }
+
+    public function stringValue(Type $self, string $value): mixed
     {
         return isSubtype($self, $this->type);
     }

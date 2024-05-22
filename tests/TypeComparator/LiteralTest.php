@@ -18,9 +18,9 @@ final class LiteralTest extends RelationTestCase
         yield [types::literalString, types::literalString];
         yield [types::true, types::literal(types::bool)];
         yield [types::false, types::literal(types::bool)];
-        yield [types::literalValue(1), types::literalInt];
-        yield [types::literalValue(M_PI), types::literal(types::float)];
-        yield [types::literalValue('abc'), types::literalString];
+        yield [types::intValue(1), types::literalInt];
+        yield [types::floatValue(M_PI), types::literal(types::float)];
+        yield [types::stringValue('abc'), types::literalString];
         yield [types::classStringLiteral(\stdClass::class), types::literalString];
     }
 
@@ -34,7 +34,7 @@ final class LiteralTest extends RelationTestCase
         yield [types::literalInt, types::literalString];
         yield [types::positiveInt, types::literalString];
         yield [types::negativeInt, types::literalString];
-        yield [types::intMask(types::literalValue(0)), types::literalString];
+        yield [types::intMask(types::intValue(0)), types::literalString];
         yield [types::arrayKey, types::literalString];
         yield [types::float, types::literalString];
         yield [types::string, types::literalString];
