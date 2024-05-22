@@ -37,10 +37,10 @@ final class TypeStringifierTest extends TestCase
         yield [types::int, 'int'];
         yield [types::literalValue(123), '123'];
         yield [types::literalValue(-123), '-123'];
-        yield [types::intRange(), 'int'];
-        yield [types::intRange(min: 23), 'int<23, max>'];
-        yield [types::intRange(max: 23), 'int<min, 23>'];
-        yield [types::intRange(min: -100, max: 234), 'int<-100, 234>'];
+        yield [types::int(), 'int'];
+        yield [types::int(min: 23), 'int<23, max>'];
+        yield [types::int(max: 23), 'int<min, 23>'];
+        yield [types::int(min: -100, max: 234), 'int<-100, 234>'];
         yield [types::intMask(types::union(types::literalValue(1), types::literalValue(2), types::literalValue(4))), 'int-mask-of<1|2|4>'];
         yield [types::intMask(types::classConstant(types::object(\RecursiveIteratorIterator::class), 'LEAVES_ONLY')), 'int-mask-of<RecursiveIteratorIterator::LEAVES_ONLY>'];
         yield [types::float, 'float'];
