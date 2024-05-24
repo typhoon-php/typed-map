@@ -57,15 +57,27 @@ final class FixturesProvider
     {
         $classes = [];
 
-        $declaredClasses = get_declared_classes();
+        $declaredClasses = self::allDeclaredClasses();
 
         /** @psalm-suppress UnresolvableInclude */
         require_once $file;
 
-        foreach (array_diff(get_declared_classes(), $declaredClasses) as $class) {
+        foreach (array_diff(self::allDeclaredClasses(), $declaredClasses) as $class) {
             $classes[str_replace("\0" . __DIR__, '', $class)] = [$class];
         }
 
         return $classes;
+    }
+
+    /**
+     * @return list<class-string>
+     */
+    private static function allDeclaredClasses(): array
+    {
+        return [
+            ...get_declared_classes(),
+            ...get_declared_interfaces(),
+            ...get_declared_traits(),
+        ];
     }
 }
