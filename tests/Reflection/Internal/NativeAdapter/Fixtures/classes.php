@@ -546,3 +546,20 @@ namespace Types
         public function void(): void {}
     }
 }
+
+namespace Stringables
+{
+    interface AnotherInterface {}
+
+    class ImplicitlyStringableClass implements AnotherInterface
+    {
+        public function __toString(): string { return 'string'; }
+    }
+
+    interface ImplicitlyStringableInterface extends AnotherInterface
+    {
+        public function __toString(): string;
+    }
+
+    abstract class ExplicitlyStringableClass implements \Stringable {}
+}
