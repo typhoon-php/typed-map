@@ -198,6 +198,56 @@ abstract class DeclarationId
     }
 
     /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
+     * @return (
+     *     $reflector is \ReflectionFunction ? FunctionId :
+     *     $reflector is \ReflectionClass ? ClassId|AnonymousClassId :
+     *     $reflector is \ReflectionClassConstant ? ClassConstantId :
+     *     $reflector is \ReflectionProperty ? PropertyId :
+     *     $reflector is \ReflectionMethod ? MethodId :
+     *     $reflector is \ReflectionParameter ? ParameterId : never
+     * )
+     */
+    final public static function fromReflection(\Reflector $reflector): self
+    {
+        if ($reflector instanceof \ReflectionFunction) {
+            \assert($reflector->name !== '');
+
+            return new FunctionId($reflector->name);
+        }
+
+        if ($reflector instanceof \ReflectionClass) {
+            if ($reflector->isAnonymous()) {
+                return new AnonymousClassId($reflector->getFileName(), $reflector->getStartLine(), $reflector->name);
+            }
+
+            return new ClassId($reflector->name);
+        }
+
+        if ($reflector instanceof \ReflectionClassConstant) {
+            return new ClassConstantId(self::fromReflection($reflector->getDeclaringClass()), $reflector->name);
+        }
+
+        if ($reflector instanceof \ReflectionProperty) {
+            /** @psalm-suppress RedundantCondition */
+            \assert($reflector->isDefault() && $reflector->name !== '');
+
+            return new PropertyId(self::fromReflection($reflector->getDeclaringClass()), $reflector->name);
+        }
+
+        if ($reflector instanceof \ReflectionMethod) {
+            return new MethodId(self::fromReflection($reflector->getDeclaringClass()), $reflector->name);
+        }
+
+        if ($reflector instanceof \ReflectionParameter) {
+            return new ParameterId(self::fromReflection($reflector->getDeclaringFunction()), $reflector->name);
+        }
+
+        throw new \InvalidArgumentException(sprintf('%s cannot be identified', $reflector::class));
+    }
+
+    /**
      * @psalm-pure
      * @psalm-assert-if-true non-empty-string $name
      */

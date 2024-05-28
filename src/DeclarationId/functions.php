@@ -102,3 +102,20 @@ function templateId(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, st
 {
     return DeclarationId::template($declaredAt, $name);
 }
+
+/**
+ * @api
+ * @psalm-suppress InvalidReturnType, NoValue
+ * @return (
+ *      $reflector is \ReflectionFunction ? FunctionId :
+ *      $reflector is \ReflectionClass ? ClassId|AnonymousClassId :
+ *      $reflector is \ReflectionClassConstant ? ClassConstantId :
+ *      $reflector is \ReflectionProperty ? PropertyId :
+ *      $reflector is \ReflectionMethod ? MethodId :
+ *      $reflector is \ReflectionParameter ? ParameterId : never
+ *  )
+ */
+function reflectionId(\Reflector $reflector): DeclarationId
+{
+    return DeclarationId::fromReflection($reflector);
+}
