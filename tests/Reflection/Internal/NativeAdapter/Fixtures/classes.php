@@ -563,3 +563,23 @@ namespace Stringables
 
     abstract class ExplicitlyStringableClass implements \Stringable {}
 }
+
+namespace ParameterInheritedFromTraitAndClass
+{
+    trait T
+    {
+        public function x(string $x): void {}
+    }
+
+    abstract class A
+    {
+        public function y(string $y): void {}
+    }
+
+    class B extends A
+    {
+        use T;
+
+        public function z(string $z): void {}
+    }
+}
