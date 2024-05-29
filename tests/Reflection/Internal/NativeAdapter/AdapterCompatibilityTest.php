@@ -126,11 +126,13 @@ final class AdapterCompatibilityTest extends TestCase
             $this->assertConstantEquals($nativeConstant, $typhoonConstant, "class.getReflectionConstant({$nativeConstant->name})");
         }
 
+        self::assertSame($native->getConstants(0), $typhoon->getConstants(0), 'class.getConstants(0).name');
         self::assertSame($native->getConstants(\ReflectionClassConstant::IS_PUBLIC), $typhoon->getConstants(\ReflectionClassConstant::IS_PUBLIC), 'class.getConstants(IS_PUBLIC).name');
         self::assertSame($native->getConstants(\ReflectionClassConstant::IS_PROTECTED), $typhoon->getConstants(\ReflectionClassConstant::IS_PROTECTED), 'class.getConstants(IS_PROTECTED).name');
         self::assertSame($native->getConstants(\ReflectionClassConstant::IS_PRIVATE), $typhoon->getConstants(\ReflectionClassConstant::IS_PRIVATE), 'class.getConstants(IS_PRIVATE).name');
         self::assertSame($native->getConstants(\ReflectionClassConstant::IS_FINAL), $typhoon->getConstants(\ReflectionClassConstant::IS_FINAL), 'class.getConstants(IS_FINAL).name');
 
+        $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(0), $typhoon->getReflectionConstants(0), 'class.getReflectionConstants(0)');
         $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_PUBLIC), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_PUBLIC), 'class.getReflectionConstants(IS_PUBLIC)');
         $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_PROTECTED), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_PROTECTED), 'class.getReflectionConstants(IS_PROTECTED)');
         $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_PRIVATE), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_PRIVATE), 'class.getReflectionConstants(IS_PRIVATE)');
@@ -145,6 +147,7 @@ final class AdapterCompatibilityTest extends TestCase
             $this->assertPropertyEquals($nativeProperty, $typhoon->getProperty($nativeProperty->name), "class.getProperty({$nativeProperty->name})");
         }
 
+        $this->assertReflectionsEqualNoOrder($native->getProperties(0), $typhoon->getProperties(0), 'class.getProperties(0)');
         $this->assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_PUBLIC), $typhoon->getProperties(\ReflectionProperty::IS_PUBLIC), 'class.getProperties(IS_PUBLIC)');
         $this->assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_PROTECTED), $typhoon->getProperties(\ReflectionProperty::IS_PROTECTED), 'class.getProperties(IS_PROTECTED)');
         $this->assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_PRIVATE), $typhoon->getProperties(\ReflectionProperty::IS_PRIVATE), 'class.getProperties(IS_PRIVATE)');
@@ -160,6 +163,7 @@ final class AdapterCompatibilityTest extends TestCase
             $this->assertMethodEquals($nativeMethod, $typhoon->getMethod($nativeMethod->name), "getMethod({$nativeMethod->name})");
         }
 
+        $this->assertReflectionsEqualNoOrder($native->getMethods(0), $typhoon->getMethods(0), 'class.getMethods(0)');
         $this->assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_FINAL), $typhoon->getMethods(\ReflectionMethod::IS_FINAL), 'class.getMethods(IS_FINAL)');
         $this->assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_ABSTRACT), $typhoon->getMethods(\ReflectionMethod::IS_ABSTRACT), 'class.getMethods(IS_ABSTRACT)');
         $this->assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_PUBLIC), $typhoon->getMethods(\ReflectionMethod::IS_PUBLIC), 'class.getMethods(IS_PUBLIC)');
