@@ -351,7 +351,7 @@ final class AdapterCompatibilityTest extends TestCase
         foreach ($native as $index => $nativeAttr) {
             self::assertArrayHasKey($index, $typhoon);
             $typhoonAttr = $typhoon[$index];
-            // TODO self::assertSame($nativeAttr->__toString(), $typhoonAttr->__toString(), $messagePrefix . '.__toString()');
+            self::assertSame($nativeAttr->__toString(), $typhoonAttr->__toString(), $messagePrefix . '.__toString()');
             self::assertEquals($nativeAttr->getArguments(), $typhoonAttr->getArguments(), $messagePrefix . '.getArguments()');
             self::assertSame($nativeAttr->getName(), $typhoonAttr->getName(), $messagePrefix . '.getName()');
             self::assertSame($nativeAttr->getTarget(), $typhoonAttr->getTarget(), $messagePrefix . '.getTarget()');
