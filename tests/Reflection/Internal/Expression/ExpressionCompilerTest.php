@@ -63,7 +63,7 @@ final class ExpressionCompilerTest extends TestCase
         yield "[1 => 1 + 1, 'a' => 'b' . 'c']";
         yield '[[1, 2, 3]]';
         yield '[...[1, 2, 3]]';
-        // yield '__LINE__';
+        yield '__LINE__';
         // yield '__CLASS__';
         yield '__TRAIT__';
         yield '__FUNCTION__';
