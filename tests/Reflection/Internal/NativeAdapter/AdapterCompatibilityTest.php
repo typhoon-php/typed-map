@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Traits\Trait1;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Variance;
-use function Typhoon\DeclarationId\reflectionId;
+use function Typhoon\DeclarationId\nativeReflectionId;
 
 #[CoversClass(AttributeAdapter::class)]
 #[CoversClass(ClassConstantAdapter::class)]
@@ -374,8 +374,8 @@ final class AdapterCompatibilityTest extends TestCase
     }
 
     /**
-     * @param array<\Reflector> $nativeReflections
-     * @param array<\Reflector> $typhoonReflections
+     * @param array<\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter> $nativeReflections
+     * @param array<\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter> $typhoonReflections
      */
     private function assertReflectionsEqual(array $nativeReflections, array $typhoonReflections, string $message): void
     {
@@ -387,8 +387,8 @@ final class AdapterCompatibilityTest extends TestCase
     }
 
     /**
-     * @param array<\Reflector|\ReflectionClassConstant> $nativeReflections
-     * @param array<\Reflector|\ReflectionClassConstant> $typhoonReflections
+     * @param array<\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter> $nativeReflections
+     * @param array<\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter> $typhoonReflections
      */
     private function assertReflectionsEqualNoOrder(array $nativeReflections, array $typhoonReflections, string $message): void
     {
@@ -400,10 +400,9 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($nativeReflectionStrings, $typhoonReflectionStrings, $message);
     }
 
-    private function reflectionToString(\Reflector|\ReflectionClassConstant $reflector): string
+    private function reflectionToString(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): string
     {
-        /** @psalm-suppress PossiblyInvalidArgument */
-        return reflectionId($reflector)->toString();
+        return nativeReflectionId($reflection)->toString();
     }
 
     private function assertTypeEquals(?\ReflectionType $native, ?\ReflectionType $typhoon, string $messagePrefix): void

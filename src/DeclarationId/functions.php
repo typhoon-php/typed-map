@@ -105,17 +105,44 @@ function templateId(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, st
 
 /**
  * @api
- * @psalm-suppress InvalidReturnType, NoValue
  * @return (
- *      $reflector is \ReflectionFunction ? FunctionId :
- *      $reflector is \ReflectionClass ? ClassId|AnonymousClassId :
- *      $reflector is \ReflectionClassConstant ? ClassConstantId :
- *      $reflector is \ReflectionProperty ? PropertyId :
- *      $reflector is \ReflectionMethod ? MethodId :
- *      $reflector is \ReflectionParameter ? ParameterId : never
- *  )
+ *     $reflection is \ReflectionFunction ? FunctionId :
+ *     $reflection is \ReflectionClass ? ClassId|AnonymousClassId :
+ *     $reflection is \ReflectionClassConstant ? ClassConstantId :
+ *     $reflection is \ReflectionProperty ? PropertyId :
+ *     $reflection is \ReflectionMethod ? MethodId :
+ *     $reflection is \ReflectionParameter ? ParameterId : never
+ * )
+ * @psalm-suppress InvalidReturnType, NoValue
  */
-function reflectionId(\Reflector $reflector): DeclarationId
+function nativeReflectionId(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): DeclarationId
 {
-    return DeclarationId::fromReflection($reflector);
+    return DeclarationId::fromReflection($reflection);
+}
+
+/**
+ * @api
+ * @return (
+ *     $id is FunctionId ? \ReflectionFunction :
+ *     $id is ClassId|AnonymousClassId ? \ReflectionClass :
+ *     $id is ClassConstantId ? \ReflectionClassConstant :
+ *     $id is PropertyId ? \ReflectionProperty :
+ *     $id is MethodId ? \ReflectionMethod :
+ *     $id is ParameterId ? \ReflectionParameter : never
+ *  )
+ * @psalm-suppress ArgumentTypeCoercion
+ */
+function nativeReflectionById(DeclarationId $id): \ReflectionFunction|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionMethod|\ReflectionParameter
+{
+    return match (true) {
+        $id instanceof FunctionId => new \ReflectionFunction($id->name),
+        $id instanceof ClassId, $id instanceof AnonymousClassId => new \ReflectionClass($id->name),
+        $id instanceof ClassConstantId => new \ReflectionClassConstant($id->class->name, $id->name),
+        $id instanceof PropertyId => new \ReflectionProperty($id->class->name, $id->name),
+        $id instanceof MethodId => new \ReflectionMethod($id->class->name, $id->name),
+        $id instanceof ParameterId => new \ReflectionParameter(
+            function: $id->function instanceof FunctionId ? $id->function->name : [$id->function->class->name, $id->function->name],
+            param: $id->name,
+        ),
+    };
 }

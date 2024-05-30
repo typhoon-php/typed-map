@@ -201,50 +201,51 @@ abstract class DeclarationId
      * @internal
      * @psalm-internal Typhoon\DeclarationId
      * @return (
-     *     $reflector is \ReflectionFunction ? FunctionId :
-     *     $reflector is \ReflectionClass ? ClassId|AnonymousClassId :
-     *     $reflector is \ReflectionClassConstant ? ClassConstantId :
-     *     $reflector is \ReflectionProperty ? PropertyId :
-     *     $reflector is \ReflectionMethod ? MethodId :
-     *     $reflector is \ReflectionParameter ? ParameterId : never
+     *     $reflection is \ReflectionFunction ? FunctionId :
+     *     $reflection is \ReflectionClass ? ClassId|AnonymousClassId :
+     *     $reflection is \ReflectionClassConstant ? ClassConstantId :
+     *     $reflection is \ReflectionProperty ? PropertyId :
+     *     $reflection is \ReflectionMethod ? MethodId :
+     *     $reflection is \ReflectionParameter ? ParameterId : never
      * )
      */
-    final public static function fromReflection(\Reflector $reflector): self
+    final public static function fromReflection(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): self
     {
-        if ($reflector instanceof \ReflectionFunction) {
-            \assert($reflector->name !== '');
+        if ($reflection instanceof \ReflectionFunction) {
+            \assert($reflection->name !== '');
 
-            return new FunctionId($reflector->name);
+            return new FunctionId($reflection->name);
         }
 
-        if ($reflector instanceof \ReflectionClass) {
-            if ($reflector->isAnonymous()) {
-                return new AnonymousClassId($reflector->getFileName(), $reflector->getStartLine(), $reflector->name);
+        if ($reflection instanceof \ReflectionClass) {
+            if ($reflection->isAnonymous()) {
+                return new AnonymousClassId($reflection->getFileName(), $reflection->getStartLine(), $reflection->name);
             }
 
-            return new ClassId($reflector->name);
+            return new ClassId($reflection->name);
         }
 
-        if ($reflector instanceof \ReflectionClassConstant) {
-            return new ClassConstantId(self::fromReflection($reflector->getDeclaringClass()), $reflector->name);
+        if ($reflection instanceof \ReflectionClassConstant) {
+            return new ClassConstantId(self::fromReflection($reflection->getDeclaringClass()), $reflection->name);
         }
 
-        if ($reflector instanceof \ReflectionProperty) {
+        if ($reflection instanceof \ReflectionProperty) {
             /** @psalm-suppress RedundantCondition */
-            \assert($reflector->isDefault() && $reflector->name !== '');
+            \assert($reflection->isDefault() && $reflection->name !== '');
 
-            return new PropertyId(self::fromReflection($reflector->getDeclaringClass()), $reflector->name);
+            return new PropertyId(self::fromReflection($reflection->getDeclaringClass()), $reflection->name);
         }
 
-        if ($reflector instanceof \ReflectionMethod) {
-            return new MethodId(self::fromReflection($reflector->getDeclaringClass()), $reflector->name);
+        if ($reflection instanceof \ReflectionMethod) {
+            return new MethodId(self::fromReflection($reflection->getDeclaringClass()), $reflection->name);
         }
 
-        if ($reflector instanceof \ReflectionParameter) {
-            return new ParameterId(self::fromReflection($reflector->getDeclaringFunction()), $reflector->name);
+        if ($reflection instanceof \ReflectionParameter) {
+            return new ParameterId(self::fromReflection($reflection->getDeclaringFunction()), $reflection->name);
         }
 
-        throw new \InvalidArgumentException(sprintf('%s cannot be identified', $reflector::class));
+        /** @var object $reflection */
+        throw new \InvalidArgumentException(sprintf('%s cannot be identified', $reflection::class));
     }
 
     /**
