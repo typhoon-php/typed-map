@@ -41,13 +41,13 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
-    final public static function anyClass(string|object $nameOrObject): ClassId|AnonymousClassId
+    final public static function class(string|object $nameOrObject): ClassId
     {
         if (\is_object($nameOrObject)) {
             $name = $nameOrObject::class;
 
             if (!str_contains($name, '@')) {
-                return new ClassId($name);
+                return new NamedClassId($name);
             }
         } else {
             $name = $nameOrObject;
@@ -55,7 +55,7 @@ abstract class DeclarationId
             if (!str_contains($name, '@')) {
                 \assert(self::isNameValid($name), sprintf('Invalid class name "%s"', $name));
 
-                return new ClassId($name);
+                return new NamedClassId($name);
             }
         }
 
@@ -81,21 +81,21 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
-    final public static function class(string|object $nameOrObject): ClassId
+    final public static function namedClass(string|object $nameOrObject): NamedClassId
     {
         if (\is_object($nameOrObject)) {
             $name = $nameOrObject::class;
 
             \assert(!str_contains($name, '@'), sprintf('Invalid class name "%s"', $name));
 
-            return new ClassId($name);
+            return new NamedClassId($name);
         }
 
         $name = $nameOrObject;
 
         \assert(self::isNameValid($name), sprintf('Invalid class name "%s"', $name));
 
-        return new ClassId($name);
+        return new NamedClassId($name);
     }
 
     /**
@@ -116,10 +116,10 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
-    final public static function classConstant(string|ClassId|AnonymousClassId $class, string $name): ClassConstantId
+    final public static function classConstant(string|ClassId $class, string $name): ClassConstantId
     {
         if (\is_string($class)) {
-            $class = self::anyClass($class);
+            $class = self::class($class);
         }
 
         \assert(self::isLabelValid($name), sprintf('Invalid class constant name "%s"', $name));
@@ -132,10 +132,10 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
-    final public static function property(string|ClassId|AnonymousClassId $class, string $name): PropertyId
+    final public static function property(string|ClassId $class, string $name): PropertyId
     {
         if (\is_string($class)) {
-            $class = self::anyClass($class);
+            $class = self::class($class);
         }
 
         \assert(self::isLabelValid($name), sprintf('Invalid property name "%s"', $name));
@@ -148,10 +148,10 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
-    final public static function method(string|ClassId|AnonymousClassId $class, string $name): MethodId
+    final public static function method(string|ClassId $class, string $name): MethodId
     {
         if (\is_string($class)) {
-            $class = self::anyClass($class);
+            $class = self::class($class);
         }
 
         \assert(self::isLabelValid($name), sprintf('Invalid method name "%s"', $name));
@@ -174,10 +174,10 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
-    final public static function alias(string|ClassId $class, string $name): AliasId
+    final public static function alias(string|NamedClassId $class, string $name): AliasId
     {
         if (\is_string($class)) {
-            $class = self::class($class);
+            $class = self::namedClass($class);
         }
 
         \assert(self::isLabelValid($name), sprintf('Invalid alias name "%s"', $name));
@@ -190,7 +190,7 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
-    final public static function template(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, string $name): TemplateId
+    final public static function template(FunctionId|ClassId|MethodId $declaredAt, string $name): TemplateId
     {
         \assert(self::isLabelValid($name), sprintf('Invalid template name "%s"', $name));
 
@@ -202,7 +202,7 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @return (
      *     $reflection is \ReflectionFunction ? FunctionId :
-     *     $reflection is \ReflectionClass ? ClassId|AnonymousClassId :
+     *     $reflection is \ReflectionClass ? ClassId :
      *     $reflection is \ReflectionClassConstant ? ClassConstantId :
      *     $reflection is \ReflectionProperty ? PropertyId :
      *     $reflection is \ReflectionMethod ? MethodId :
@@ -222,7 +222,7 @@ abstract class DeclarationId
                 return new AnonymousClassId($reflection->getFileName(), $reflection->getStartLine(), $reflection->name);
             }
 
-            return new ClassId($reflection->name);
+            return new NamedClassId($reflection->name);
         }
 
         if ($reflection instanceof \ReflectionClassConstant) {

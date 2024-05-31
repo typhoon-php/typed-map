@@ -6,7 +6,7 @@ namespace Typhoon\Reflection\FunctionalTesting;
 
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertFalse;
-use function Typhoon\DeclarationId\anyClassId;
+use function Typhoon\DeclarationId\classId;
 
 return static function (TyphoonReflector $reflector): void {
     $reflection = $reflector->reflectCode(
@@ -18,7 +18,7 @@ return static function (TyphoonReflector $reflector): void {
                 public function x(): void {}
             }
             PHP,
-    )[anyClassId('A')];
+    )[classId('A')];
 
     assertFalse($reflection->isAbstract());
 };

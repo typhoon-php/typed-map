@@ -64,7 +64,7 @@ final class PhpStormStubsLocator implements Locator
         $relativePath = match (true) {
             $id instanceof ConstantId => PhpStormStubsMap::CONSTANTS[$id->name] ?? null,
             $id instanceof FunctionId => PhpStormStubsMap::FUNCTIONS[$id->name] ?? null,
-            $id instanceof ClassId => PhpStormStubsMap::CLASSES[$id->name] ?? null,
+            default => PhpStormStubsMap::CLASSES[$id->name] ?? null,
         };
 
         if ($relativePath === null) {

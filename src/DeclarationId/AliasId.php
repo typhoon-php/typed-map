@@ -14,7 +14,7 @@ final class AliasId extends DeclarationId
      * @param non-empty-string $name
      */
     protected function __construct(
-        public readonly ClassId $class,
+        public readonly NamedClassId $class,
         public readonly string $name,
     ) {}
 

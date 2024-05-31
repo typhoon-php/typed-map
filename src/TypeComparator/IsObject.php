@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeComparator;
 
-use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ClassId;
 use Typhoon\Type\Type;
 
@@ -19,7 +18,7 @@ final class IsObject extends Comparator
         return true;
     }
 
-    public function namedObject(Type $self, ClassId|AnonymousClassId $class, array $arguments): mixed
+    public function namedObject(Type $self, ClassId $class, array $arguments): mixed
     {
         return true;
     }

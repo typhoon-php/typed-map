@@ -7,7 +7,7 @@ namespace Typhoon\Reflection\FunctionalTesting;
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertTrue;
-use function Typhoon\DeclarationId\anyClassId;
+use function Typhoon\DeclarationId\classId;
 
 return static function (TyphoonReflector $reflector): void {
     $reflection = $reflector->reflectCode(
@@ -24,7 +24,7 @@ return static function (TyphoonReflector $reflector): void {
             
             class X extends A2 {}
             PHP,
-    )[anyClassId('X')];
+    )[classId('X')];
 
     assertFalse($reflection->isInstanceOf(\Iterator::class));
     assertFalse($reflection->isInstanceOf(\stdClass::class));

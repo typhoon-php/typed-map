@@ -8,7 +8,7 @@ namespace Typhoon\DeclarationId;
  * @api
  * @psalm-immutable
  */
-final class ClassId extends DeclarationId
+abstract class ClassId extends DeclarationId
 {
     /**
      * @param non-empty-string $name
@@ -17,14 +17,12 @@ final class ClassId extends DeclarationId
         public readonly string $name,
     ) {}
 
-    public function toString(): string
+    /**
+     * @psalm-suppress InaccessibleProperty
+     * @param non-empty-string $name
+     */
+    final protected function setName(string $name): void
     {
-        return $this->name;
-    }
-
-    public function equals(DeclarationId $id): bool
-    {
-        return $id instanceof self
-            && $id->name === $this->name;
+        $this->name = $name;
     }
 }

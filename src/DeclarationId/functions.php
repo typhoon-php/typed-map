@@ -26,18 +26,18 @@ function functionId(string $name): FunctionId
  * @api
  * @psalm-pure
  */
-function anyClassId(string|object $nameOrObject): ClassId|AnonymousClassId
+function classId(string|object $nameOrObject): ClassId
 {
-    return DeclarationId::anyClass($nameOrObject);
+    return DeclarationId::class($nameOrObject);
 }
 
 /**
  * @api
  * @psalm-pure
  */
-function classId(string|object $nameOrObject): ClassId
+function namedClassId(string|object $nameOrObject): NamedClassId
 {
-    return DeclarationId::class($nameOrObject);
+    return DeclarationId::namedClass($nameOrObject);
 }
 
 /**
@@ -53,7 +53,7 @@ function anonymousClassId(string $file, int $line): AnonymousClassId
  * @api
  * @psalm-pure
  */
-function classConstantId(string|ClassId|AnonymousClassId $class, string $name): ClassConstantId
+function classConstantId(string|ClassId $class, string $name): ClassConstantId
 {
     return DeclarationId::classConstant($class, $name);
 }
@@ -62,7 +62,7 @@ function classConstantId(string|ClassId|AnonymousClassId $class, string $name): 
  * @api
  * @psalm-pure
  */
-function propertyId(string|ClassId|AnonymousClassId $class, string $name): PropertyId
+function propertyId(string|ClassId $class, string $name): PropertyId
 {
     return DeclarationId::property($class, $name);
 }
@@ -71,7 +71,7 @@ function propertyId(string|ClassId|AnonymousClassId $class, string $name): Prope
  * @api
  * @psalm-pure
  */
-function methodId(string|ClassId|AnonymousClassId $class, string $name): MethodId
+function methodId(string|ClassId $class, string $name): MethodId
 {
     return DeclarationId::method($class, $name);
 }
@@ -89,7 +89,7 @@ function parameterId(FunctionId|MethodId $function, string $name): ParameterId
  * @api
  * @psalm-pure
  */
-function aliasId(string|ClassId $class, string $name): AliasId
+function aliasId(string|NamedClassId $class, string $name): AliasId
 {
     return DeclarationId::alias($class, $name);
 }
@@ -98,7 +98,7 @@ function aliasId(string|ClassId $class, string $name): AliasId
  * @api
  * @psalm-pure
  */
-function templateId(FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt, string $name): TemplateId
+function templateId(FunctionId|ClassId|MethodId $declaredAt, string $name): TemplateId
 {
     return DeclarationId::template($declaredAt, $name);
 }
@@ -136,7 +136,7 @@ function nativeReflectionById(DeclarationId $id): \ReflectionFunction|\Reflectio
 {
     return match (true) {
         $id instanceof FunctionId => new \ReflectionFunction($id->name),
-        $id instanceof ClassId, $id instanceof AnonymousClassId => new \ReflectionClass($id->name),
+        $id instanceof NamedClassId, $id instanceof AnonymousClassId => new \ReflectionClass($id->name),
         $id instanceof ClassConstantId => new \ReflectionClassConstant($id->class->name, $id->name),
         $id instanceof PropertyId => new \ReflectionProperty($id->class->name, $id->name),
         $id instanceof MethodId => new \ReflectionMethod($id->class->name, $id->name),

@@ -8,10 +8,10 @@ use Typhoon\Reflection\Kind;
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertTrue;
-use function Typhoon\DeclarationId\anyClassId;
+use function Typhoon\DeclarationId\classId;
 
 return static function (TyphoonReflector $reflector): void {
-    $reflection = $reflector->reflectCode('<?php enum A {}')[anyClassId('A')];
+    $reflection = $reflector->reflectCode('<?php enum A {}')[classId('A')];
 
     assertTrue($reflection->isFinal(Kind::Native));
     assertFalse($reflection->isFinal(Kind::Annotated));

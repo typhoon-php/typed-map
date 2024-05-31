@@ -7,7 +7,7 @@ namespace Typhoon\Reflection\FunctionalTesting;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\types;
 use function PHPUnit\Framework\assertEquals;
-use function Typhoon\DeclarationId\classId;
+use function Typhoon\DeclarationId\namedClassId;
 
 return static function (TyphoonReflector $reflector): void {
     $reflection = $reflector->reflectCode(
@@ -23,7 +23,7 @@ return static function (TyphoonReflector $reflector): void {
                 public function a(): string;
             }
             PHP,
-    )[classId('A')]->methods['a'];
+    )[namedClassId('A')]->methods['a'];
 
     assertEquals(
         types::union(

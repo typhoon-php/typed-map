@@ -7,15 +7,9 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  * @psalm-immutable
- * @property-read non-empty-string $name
  */
-final class AnonymousClassId extends DeclarationId
+final class AnonymousClassId extends ClassId
 {
-    /**
-     * @var ?non-empty-string
-     */
-    private ?string $_name;
-
     /**
      * @param non-empty-string $file
      * @param positive-int $line
@@ -26,30 +20,7 @@ final class AnonymousClassId extends DeclarationId
         public readonly int $line,
         ?string $originalName = null,
     ) {
-        $this->_name = $originalName;
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\DeclarationId
-     */
-    public function __isset(string $name): bool
-    {
-        return $name === 'name';
-    }
-
-    /**
-     * @internal
-     * @psalm-internal Typhoon\DeclarationId
-     */
-    public function __get(string $name)
-    {
-        if ($name === 'name') {
-            /** @psalm-suppress InaccessibleProperty */
-            return $this->_name ??= $this->resolveName();
-        }
-
-        throw new \LogicException(sprintf('Property %s::$%s does not exist', self::class, $name));
+        parent::__construct($originalName ?? $this->resolveName());
     }
 
     public function toString(): string
@@ -60,6 +31,17 @@ final class AnonymousClassId extends DeclarationId
     public function __serialize(): array
     {
         return ['file' => $this->file, 'line' => $this->line];
+    }
+
+    /**
+     * @param array{file: non-empty-string, line: positive-int} $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->file = $data['file'];
+        $this->line = $data['line'];
+        /** @psalm-suppress UnusedMethodCall */
+        $this->setName($this->resolveName());
     }
 
     public function equals(DeclarationId $id): bool

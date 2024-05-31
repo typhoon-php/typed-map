@@ -11,7 +11,7 @@ use function PHPUnit\Framework\assertArrayHasKey;
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertSame;
-use function Typhoon\DeclarationId\classId;
+use function Typhoon\DeclarationId\namedClassId;
 
 return static function (TyphoonReflector $reflector): void {
     $reflection = $reflector->reflectCode(
@@ -25,7 +25,7 @@ return static function (TyphoonReflector $reflector): void {
             {
             }
             PHP,
-    )[classId('A')] ?? throw new \LogicException();
+    )[namedClassId('A')] ?? throw new \LogicException();
 
     $templates = $reflection->templates;
     assertCount(1, $templates);

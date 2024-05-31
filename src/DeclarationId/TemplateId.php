@@ -14,7 +14,7 @@ final class TemplateId extends DeclarationId
      * @param non-empty-string $name
      */
     protected function __construct(
-        public readonly FunctionId|ClassId|AnonymousClassId|MethodId $declaredAt,
+        public readonly FunctionId|ClassId|MethodId $declaredAt,
         public readonly string $name,
     ) {}
 
