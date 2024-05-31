@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Typhoon\TypeComparator;
 
+use Typhoon\DeclarationId\ConstantId;
 use Typhoon\Type\Type;
 
 /**
@@ -17,8 +18,8 @@ final class IsTrue extends Comparator
         return true;
     }
 
-    public function constant(Type $self, string $name): mixed
+    public function constant(Type $self, ConstantId $constant): mixed
     {
-        return mb_strtolower($name) === 'true';
+        return mb_strtolower($constant->name) === 'true';
     }
 }
