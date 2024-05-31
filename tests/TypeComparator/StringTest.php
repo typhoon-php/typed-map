@@ -27,7 +27,7 @@ final class StringTest extends AtomicRelationTestCase
         yield types::stringValue('string');
         yield types::classString(types::object(\stdClass::class));
         yield types::truthyString;
-        yield types::classStringLiteral(\stdClass::class);
+        yield types::classConstant(\stdClass::class, 'class');
         yield types::numericString;
         yield types::union(types::stringValue('a'), types::stringValue('b'));
         yield types::intersection(types::callable, types::string);

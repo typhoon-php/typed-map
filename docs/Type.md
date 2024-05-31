@@ -32,8 +32,8 @@ $type = types::arrayShape([
     'c' => types::object(Traversable::class, types::numericString, types::false),
     'd' => types::callable(
         parameters: [
-            types::classConstant(types::object(PDO::class), '*'),
-            types::param(types::template('TSend', types::atClass(Generator::class)), hasDefault: true),
+            types::classConstant(PDO::class, '*'),
+            types::param(types::classTemplate('TSend', Generator::class), hasDefault: true),
             types::param(types::scalar, variadic: true),
         ],
         return: types::void,

@@ -21,7 +21,7 @@ final class LiteralTest extends RelationTestCase
         yield [types::intValue(1), types::literalInt];
         yield [types::floatValue(M_PI), types::literal(types::float)];
         yield [types::stringValue('abc'), types::literalString];
-        yield [types::classStringLiteral(\stdClass::class), types::literalString];
+        yield [types::classConstant(\stdClass::class, 'class'), types::literalString];
     }
 
     protected static function xNotSubtypeOfY(): iterable

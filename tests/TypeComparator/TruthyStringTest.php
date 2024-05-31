@@ -25,7 +25,7 @@ final class TruthyStringTest extends AtomicRelationTestCase
         yield types::nonEmpty(types::truthyString);
         yield types::classString;
         yield types::classString(types::object(\stdClass::class));
-        yield types::classStringLiteral(\stdClass::class);
+        yield types::classConstant(\stdClass::class, 'class');
     }
 
     protected static function nonSubtypes(): iterable
