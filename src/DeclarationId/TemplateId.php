@@ -6,7 +6,6 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
- * @psalm-immutable
  */
 final class TemplateId extends DeclarationId
 {
@@ -20,7 +19,7 @@ final class TemplateId extends DeclarationId
 
     public function toString(): string
     {
-        return sprintf('%s@%s', $this->name, $this->declaredAt->toString());
+        return sprintf('%s#%s', $this->name, $this->declaredAt->toString());
     }
 
     public function equals(DeclarationId $id): bool

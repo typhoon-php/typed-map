@@ -6,7 +6,6 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
- * @psalm-immutable
  */
 final class MethodId extends DeclarationId
 {
@@ -28,5 +27,11 @@ final class MethodId extends DeclarationId
         return $id instanceof self
             && $id->class->equals($this->class)
             && $id->name === $this->name;
+    }
+
+    public function reflect(): \ReflectionMethod
+    {
+        /** @psalm-suppress ArgumentTypeCoercion */
+        return new \ReflectionMethod($this->class->name, $this->name);
     }
 }

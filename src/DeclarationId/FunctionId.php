@@ -6,7 +6,6 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
- * @psalm-immutable
  */
 abstract class FunctionId extends DeclarationId
 {
@@ -16,4 +15,10 @@ abstract class FunctionId extends DeclarationId
     protected function __construct(
         public readonly string $name,
     ) {}
+
+    final public function reflect(): \ReflectionFunction
+    {
+        /** @psalm-suppress ArgumentTypeCoercion */
+        return new \ReflectionFunction($this->name);
+    }
 }

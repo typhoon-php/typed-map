@@ -6,7 +6,6 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
- * @psalm-immutable
  */
 final class ParameterId extends DeclarationId
 {
@@ -28,5 +27,14 @@ final class ParameterId extends DeclarationId
         return $id instanceof self
             && $id->function->equals($this->function)
             && $id->name === $this->name;
+    }
+
+    public function reflect(): \ReflectionParameter
+    {
+        if ($this->function instanceof FunctionId) {
+            return new \ReflectionParameter($this->function->name, $this->name);
+        }
+
+        return new \ReflectionParameter([$this->function->class->name, $this->function->name], $this->name);
     }
 }

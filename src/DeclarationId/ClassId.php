@@ -6,23 +6,24 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
- * @psalm-immutable
  */
 abstract class ClassId extends DeclarationId
 {
     /**
-     * @param non-empty-string $name
+     * @var non-empty-string
      */
-    protected function __construct(
-        public readonly string $name,
-    ) {}
+    public readonly string $name;
 
     /**
-     * @psalm-suppress InaccessibleProperty
      * @param non-empty-string $name
      */
-    final protected function setName(string $name): void
+    protected function __construct(string $name)
     {
         $this->name = $name;
+    }
+
+    final public function reflect(): \ReflectionClass
+    {
+        return new \ReflectionClass($this->name);
     }
 }

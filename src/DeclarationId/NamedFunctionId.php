@@ -6,10 +6,16 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
- * @psalm-immutable
  */
 final class NamedFunctionId extends FunctionId
 {
+    protected static function doFromReflection(\ReflectionFunction $reflection): self
+    {
+        \assert($reflection->name !== '');
+
+        return new self($reflection->name);
+    }
+
     public function toString(): string
     {
         return $this->name . '()';

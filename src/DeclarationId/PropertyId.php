@@ -6,7 +6,6 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
- * @psalm-immutable
  */
 final class PropertyId extends DeclarationId
 {
@@ -18,6 +17,13 @@ final class PropertyId extends DeclarationId
         public readonly string $name,
     ) {}
 
+    protected static function doFromReflection(\ReflectionProperty $property): self
+    {
+        \assert($property->name !== '');
+
+        return new self(self::fromReflection($property->getDeclaringClass()), $property->name);
+    }
+
     public function toString(): string
     {
         return sprintf('%s::$%s', $this->class->toString(), $this->name);
@@ -28,5 +34,11 @@ final class PropertyId extends DeclarationId
         return $id instanceof self
             && $id->class->equals($this->class)
             && $id->name === $this->name;
+    }
+
+    public function reflect(): \ReflectionProperty
+    {
+        /** @psalm-suppress ArgumentTypeCoercion */
+        return new \ReflectionProperty($this->class->name, $this->name);
     }
 }

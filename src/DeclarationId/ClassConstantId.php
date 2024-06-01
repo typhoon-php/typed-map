@@ -6,7 +6,6 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
- * @psalm-immutable
  */
 final class ClassConstantId extends DeclarationId
 {
@@ -20,7 +19,7 @@ final class ClassConstantId extends DeclarationId
 
     public function toString(): string
     {
-        return sprintf('%s::%s)', $this->class->toString(), $this->name);
+        return sprintf('%s::%s', $this->class->toString(), $this->name);
     }
 
     public function equals(DeclarationId $id): bool
@@ -28,5 +27,11 @@ final class ClassConstantId extends DeclarationId
         return $id instanceof self
             && $id->class->equals($this->class)
             && $id->name === $this->name;
+    }
+
+    public function reflect(): \ReflectionClassConstant
+    {
+        /** @psalm-suppress ArgumentTypeCoercion */
+        return new \ReflectionClassConstant($this->class->name, $this->name);
     }
 }

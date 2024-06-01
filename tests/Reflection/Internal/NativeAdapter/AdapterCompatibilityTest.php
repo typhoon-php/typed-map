@@ -9,9 +9,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Traits\Trait1;
+use Typhoon\DeclarationId\DeclarationId;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Variance;
-use function Typhoon\DeclarationId\nativeReflectionId;
 
 #[CoversClass(AttributeAdapter::class)]
 #[CoversClass(ClassConstantAdapter::class)]
@@ -400,9 +400,12 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($nativeReflectionStrings, $typhoonReflectionStrings, $message);
     }
 
+    /**
+     * @return non-empty-string
+     */
     private function reflectionToString(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): string
     {
-        return nativeReflectionId($reflection)->toString();
+        return DeclarationId::fromReflection($reflection)->toString();
     }
 
     private function assertTypeEquals(?\ReflectionType $native, ?\ReflectionType $typhoon, string $messagePrefix): void
