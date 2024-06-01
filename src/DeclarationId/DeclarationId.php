@@ -41,6 +41,20 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
+    final public static function anonymousFunction(string $file, int $line, ?int $column = null): AnonymousFunctionId
+    {
+        \assert($file !== '', 'Anonymous function file must not be empty');
+        \assert($line > 0, 'Anonymous function line must be a positive int');
+        \assert($column === null || $column > 0, 'Anonymous function column must be null or a positive int');
+
+        return new AnonymousFunctionId($file, $line, $column);
+    }
+
+    /**
+     * @internal
+     * @psalm-internal Typhoon\DeclarationId
+     * @psalm-pure
+     */
     final public static function class(string|object $nameOrObject): ClassId
     {
         if (\is_object($nameOrObject)) {
@@ -213,6 +227,15 @@ abstract class DeclarationId
     {
         if ($reflection instanceof \ReflectionFunction) {
             \assert($reflection->name !== '');
+
+            if ($reflection->name === '{closure}') {
+                $file = $reflection->getFileName();
+                \assert($file !== false);
+                $line = $reflection->getStartLine();
+                \assert($line !== false);
+
+                return new AnonymousFunctionId($file, $line);
+            }
 
             return new NamedFunctionId($reflection->name);
         }
