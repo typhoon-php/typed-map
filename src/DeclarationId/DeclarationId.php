@@ -29,11 +29,11 @@ abstract class DeclarationId
      * @psalm-internal Typhoon\DeclarationId
      * @psalm-pure
      */
-    final public static function function(string $name): FunctionId
+    final public static function namedFunction(string $name): NamedFunctionId
     {
         \assert(self::isNameValid($name), sprintf('Invalid function name "%s"', $name));
 
-        return new FunctionId($name);
+        return new NamedFunctionId($name);
     }
 
     /**
@@ -214,7 +214,7 @@ abstract class DeclarationId
         if ($reflection instanceof \ReflectionFunction) {
             \assert($reflection->name !== '');
 
-            return new FunctionId($reflection->name);
+            return new NamedFunctionId($reflection->name);
         }
 
         if ($reflection instanceof \ReflectionClass) {

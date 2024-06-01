@@ -17,9 +17,9 @@ function constantId(string $name): ConstantId
  * @api
  * @psalm-pure
  */
-function functionId(string $name): FunctionId
+function namedFunctionId(string $name): FunctionId
 {
-    return DeclarationId::function($name);
+    return DeclarationId::namedFunction($name);
 }
 
 /**
