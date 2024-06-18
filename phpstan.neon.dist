@@ -5,9 +5,7 @@ parameters:
     level: 9
     paths:
         - src/Type
-        - src/TypeComparator
         - src/TypeStringifier
-        - tests/TypeComparator
         - tests/TypeStringifier
     tmpDir: var/phpstan
     ignoreErrors:
