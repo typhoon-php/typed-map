@@ -133,8 +133,8 @@ final class TypeStringifierTest extends TestCase
         yield [types::offset(types::classTemplate('A', 'T'), types::stringValue('abc')), "T#A['abc']"];
         yield [types::alias(DeclarationId::alias('Some', 'A')), 'A@Some'];
         yield [types::static(), 'static'];
-        yield [types::static('X\\Y'), 'static@X\\Y'];
-        yield [types::static('X\\Y', types::string), 'static@X\\Y<string>'];
+        yield [types::static('X\Y'), 'static@X\Y'];
+        yield [types::static('X\Y', types::string), 'static@X\Y<string>'];
     }
 
     #[DataProvider('types')]

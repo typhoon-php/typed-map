@@ -16,7 +16,7 @@ use Typhoon\TypedMap\TypedMap;
  */
 final class ApplyTentativeTypeAttribute implements ReflectionHook
 {
-    private const TENTATIVE_TYPE_ATTRIBUTE = 'JetBrains\\PhpStorm\\Internal\\TentativeType';
+    private const TENTATIVE_TYPE_ATTRIBUTE = 'JetBrains\PhpStorm\Internal\TentativeType';
 
     public function reflect(FunctionId|ClassId $id, TypedMap $data): TypedMap
     {
