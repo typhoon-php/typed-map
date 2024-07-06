@@ -30,6 +30,6 @@ return static function (TyphoonReflector $reflector): void {
     )[namedClassId('B')]->methods['a'];
 
     assertEquals(types::string, $reflection->returnType(Kind::Native));
-    assertEquals(types::stringValue('a'), $reflection->returnType(Kind::Annotated));
-    assertEquals(types::stringValue('a'), $reflection->returnType(Kind::Resolved));
+    assertEquals(types::string('a'), $reflection->returnType(Kind::Annotated));
+    assertEquals(types::string('a'), $reflection->returnType(Kind::Resolved));
 };
