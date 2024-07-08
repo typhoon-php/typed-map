@@ -34,7 +34,6 @@
             "Typhoon\\": "src/"
         },
         "files": [
-            "src/DeclarationId/functions.php",
             "src/TypeStringifier/functions.php"
         ]
     },

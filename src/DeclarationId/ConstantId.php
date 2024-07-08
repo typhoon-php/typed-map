@@ -7,7 +7,7 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  */
-final class ConstantId extends DeclarationId
+final class ConstantId extends Id
 {
     /**
      * @param non-empty-string $name
@@ -21,9 +21,9 @@ final class ConstantId extends DeclarationId
         return 'const:' . $this->name;
     }
 
-    public function equals(DeclarationId $id): bool
+    public function equals(mixed $value): bool
     {
-        return $id instanceof self
-            && $id->name === $this->name;
+        return $value instanceof self
+            && $value->name === $this->name;
     }
 }

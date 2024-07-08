@@ -24,21 +24,27 @@ final class AnonymousClassId extends ClassId
         parent::__construct($name ?? $this->toString());
     }
 
+    /**
+     * @throws InvalidClassName
+     */
     protected static function fromName(string $name): self
     {
         if (preg_match('/anonymous\x00(.+):(\d+)/', $name, $matches) !== 1) {
-            throw new \InvalidArgumentException(sprintf('Invalid anonymous class name "%s"', $name));
+            throw new InvalidClassName(sprintf('Invalid anonymous class name "%s"', $name));
         }
 
         /** @var non-empty-string $file */
         $file = $matches[1];
         $line = (int) $matches[2];
-        \assert($line > 0);
+
+        if ($line <= 0) {
+            throw new InvalidClassName(sprintf('Invalid anonymous class name "%s"', $name));
+        }
 
         return new self(
             file: $file,
             line: $line,
-            column: self::resolveColumn($file, $line),
+            column: self::resolveColumn($name, $file, $line),
             name: class_exists($name, autoload: false) ? $name : null,
         );
     }
@@ -54,7 +60,7 @@ final class AnonymousClassId extends ClassId
         return new self(
             file: $file,
             line: $line,
-            column: self::resolveColumn($file, $line),
+            column: self::resolveColumn($reflection->name, $file, $line),
             name: $reflection->name,
         );
     }
@@ -64,12 +70,15 @@ final class AnonymousClassId extends ClassId
      * @param positive-int $line
      * @return positive-int
      */
-    private static function resolveColumn(string $file, int $line): int
+    private static function resolveColumn(string $name, string $file, int $line): int
     {
         $code = @file_get_contents($file);
 
         if ($code === false) {
-            throw new \RuntimeException(sprintf('File %s does not exist or is not readable', $file));
+            throw new InvalidClassName(sprintf(
+                'File specified in anonymous class name "%s" does not exist or is not readable',
+                $name,
+            ));
         }
 
         $previous = null;
@@ -82,7 +91,7 @@ final class AnonymousClassId extends ClassId
 
             if ($token->line === $line && $token->id === T_CLASS && $previous?->id === T_NEW) {
                 if ($position !== null) {
-                    throw new \LogicException('Two anonymous classes');
+                    throw new \LogicException(sprintf('Multiple anonymous classes declared at %s::%d. Use Id::anonymousClass() to create AnonymousClassId', $file, $line));
                 }
 
                 $position = $token->pos;
@@ -96,7 +105,7 @@ final class AnonymousClassId extends ClassId
         }
 
         if ($position === null) {
-            throw new \LogicException('No anonymous class');
+            throw new InvalidClassName(sprintf('No anonymous classes declared at %s::%d', $file, $line));
         }
 
         $lineStartPosition = strrpos($code, "\n", $position - \strlen($code));
@@ -112,12 +121,12 @@ final class AnonymousClassId extends ClassId
         return sprintf('anon.class:%s:%d:%d', $this->file, $this->line, $this->column);
     }
 
-    public function equals(DeclarationId $id): bool
+    public function equals(mixed $value): bool
     {
-        return $id instanceof self
-            && $id->file === $this->file
-            && $id->line === $this->line
-            && $id->column === $this->column;
+        return $value instanceof self
+            && $value->file === $this->file
+            && $value->line === $this->line
+            && $value->column === $this->column;
     }
 
     public function __serialize(): array
@@ -126,7 +135,20 @@ final class AnonymousClassId extends ClassId
             'file' => $this->file,
             'line' => $this->line,
             'column' => $this->column,
-            'name' => $this->toString(),
         ];
+    }
+
+    /**
+     * @param array{file: non-empty-string, line: positive-int, column: positive-int} $data
+     */
+    public function __unserialize(array $data): void
+    {
+        [
+            'file' => $this->file,
+            'line' => $this->line,
+            'column' => $this->column,
+        ] = $data;
+        /** @psalm-suppress PossiblyNullFunctionCall */
+        (function (): void { $this->name = $this->toString(); })->bindTo($this, parent::class)();
     }
 }

@@ -57,7 +57,7 @@ final class AnonymousFunctionId extends FunctionId
                 'More than one anonymous function defined at %s:%d. Use %s::anonymousFunction() instead',
                 $file,
                 $line,
-                DeclarationId::class,
+                Id::class,
             ));
         }
 
@@ -69,11 +69,11 @@ final class AnonymousFunctionId extends FunctionId
         return $this->name . '()';
     }
 
-    public function equals(DeclarationId $id): bool
+    public function equals(mixed $value): bool
     {
-        return $id instanceof self
-            && $id->file === $this->file
-            && $id->line === $this->line
-            && $id->column === $this->column;
+        return $value instanceof self
+            && $value->file === $this->file
+            && $value->line === $this->line
+            && $value->column === $this->column;
     }
 }

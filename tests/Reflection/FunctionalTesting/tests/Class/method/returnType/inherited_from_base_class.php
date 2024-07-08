@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection\FunctionalTesting;
 
+use Typhoon\DeclarationId\Id;
 use Typhoon\Reflection\Kind;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\types;
 use function PHPUnit\Framework\assertEquals;
-use function Typhoon\DeclarationId\namedClassId;
 
 return static function (TyphoonReflector $reflector): void {
     $reflection = $reflector->reflectCode(
@@ -27,7 +27,7 @@ return static function (TyphoonReflector $reflector): void {
             {
             }
             PHP,
-    )[namedClassId('B')]->methods()['a'];
+    )[Id::namedClass('B')]->methods()['a'];
 
     assertEquals(types::string, $reflection->returnType(Kind::Native));
     assertEquals(types::string('a'), $reflection->returnType(Kind::Annotated));

@@ -7,7 +7,7 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  */
-abstract class FunctionId extends DeclarationId
+abstract class FunctionId extends Id
 {
     /**
      * @param non-empty-string $name

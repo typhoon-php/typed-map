@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection\FunctionalTesting;
 
+use Typhoon\DeclarationId\Id;
 use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertSame;
-use function Typhoon\DeclarationId\classId;
 
 return static function (TyphoonReflector $reflector): void {
     $reflection = $reflector->reflectCode(
@@ -17,7 +17,7 @@ return static function (TyphoonReflector $reflector): void {
             
             class A {}
             PHP,
-    )[classId('X\Y\A')];
+    )[Id::class('X\Y\A')];
 
     assertSame('X\Y\A', $reflection->name);
 };

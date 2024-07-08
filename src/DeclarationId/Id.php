@@ -7,18 +7,22 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  */
-abstract class DeclarationId
+abstract class Id
 {
     final public static function constant(string $name): ConstantId
     {
-        \assert(self::isNameValid($name), sprintf('Invalid constant name "%s"', $name));
+        if (!self::isNameValid($name)) {
+            throw new InvalidConstantName(sprintf('Invalid constant name "%s"', $name));
+        }
 
         return new ConstantId($name);
     }
 
     final public static function namedFunction(string $name): NamedFunctionId
     {
-        \assert(self::isNameValid($name), sprintf('Invalid function name "%s"', $name));
+        if (!self::isNameValid($name)) {
+            throw new InvalidName('function', $name);
+        }
 
         return new NamedFunctionId($name);
     }
@@ -32,6 +36,9 @@ abstract class DeclarationId
         return new AnonymousFunctionId($file, $line, $column);
     }
 
+    /**
+     * @throws InvalidClassName
+     */
     final public static function class(string|object $nameOrObject): ClassId
     {
         if (\is_object($nameOrObject)) {
@@ -43,25 +50,32 @@ abstract class DeclarationId
         }
 
         if (str_contains($nameOrObject, '@')) {
-            \assert(class_exists($nameOrObject, false));
-
             return AnonymousClassId::fromName($nameOrObject);
         }
 
-        \assert(self::isNameValid($nameOrObject));
+        if (!self::isNameValid($nameOrObject)) {
+            throw new InvalidClassName(sprintf('Invalid class name "%s"', $nameOrObject));
+        }
 
         return new NamedClassId($nameOrObject);
     }
 
+    /**
+     * @throws InvalidClassName
+     */
     final public static function namedClass(string|object $nameOrObject): NamedClassId
     {
         if (\is_object($nameOrObject)) {
-            \assert(!str_contains($nameOrObject::class, '@'));
+            if (str_contains($nameOrObject::class, '@')) {
+                throw new InvalidClassName(sprintf('Invalid non-anonymous class name "%s"', $nameOrObject::class));
+            }
 
             return new NamedClassId($nameOrObject::class);
         }
 
-        \assert(self::isNameValid($nameOrObject));
+        if (!self::isNameValid($nameOrObject)) {
+            throw new InvalidClassName(sprintf('Invalid non-anonymous class name "%s"', $nameOrObject));
+        }
 
         return new NamedClassId($nameOrObject);
     }
@@ -163,7 +177,7 @@ abstract class DeclarationId
      * @psalm-pure
      * @psalm-assert-if-true non-empty-string $name
      */
-    protected static function isNameValid(string $name): bool
+    private static function isNameValid(string $name): bool
     {
         return preg_match('/^[a-zA-Z\x80-\xff_][a-zA-Z0-9\x80-\xff_]*(\\\[a-zA-Z\x80-\xff_][a-zA-Z0-9\x80-\xff_]*)*$/', $name) === 1;
     }
@@ -172,7 +186,7 @@ abstract class DeclarationId
      * @psalm-pure
      * @psalm-assert-if-true non-empty-string $name
      */
-    protected static function isLabelValid(string $name): bool
+    private static function isLabelValid(string $name): bool
     {
         return preg_match('/^[a-zA-Z\x80-\xff_][a-zA-Z0-9\x80-\xff_]*$/', $name) === 1;
     }
@@ -190,5 +204,5 @@ abstract class DeclarationId
      */
     abstract public function toString(): string;
 
-    abstract public function equals(self $id): bool;
+    abstract public function equals(mixed $value): bool;
 }

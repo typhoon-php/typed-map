@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Typhoon\DeclarationId\DeclarationId;
+use Typhoon\DeclarationId\Id;
 use Typhoon\Type\Type;
 use Typhoon\Type\types;
 use Typhoon\Type\Variance;
@@ -114,7 +114,7 @@ final class TypeStringifierTest extends TestCase
         yield [types::closure([types::param(types::string, variadic: true)], types::never), 'Closure(string...): never'];
         yield [types::functionTemplate('trim', 'T'), 'T#trim()'];
         yield [types::classTemplate(\stdClass::class, 'T'), 'T#stdClass'];
-        yield [types::classTemplate(DeclarationId::anonymousClass('file', 1, 13), 'T'), 'T#anon.class:file:1:13'];
+        yield [types::classTemplate(Id::anonymousClass('file', 1, 13), 'T'), 'T#anon.class:file:1:13'];
         yield [types::methodTemplate(\stdClass::class, 'm', 'T'), 'T#stdClass::m()'];
         yield [types::literalString, 'literal-string'];
         yield [types::literalInt, 'literal-int'];
@@ -133,7 +133,7 @@ final class TypeStringifierTest extends TestCase
         yield [types::conditional(types::functionTemplate('trim', 'T'), if: types::string, then: types::int, else: types::float), '(T#trim() is string ? int : float)'];
         yield [types::array(value: types::varianceAware(types::int, Variance::Covariant)), 'array<covariant int>'];
         yield [types::offset(types::classTemplate('A', 'T'), types::string('abc')), "T#A['abc']"];
-        yield [types::alias(DeclarationId::alias('Some', 'A')), 'A@Some'];
+        yield [types::alias(Id::alias('Some', 'A')), 'A@Some'];
         yield [types::static(), 'static'];
         yield [types::static('X\Y'), 'static@X\Y'];
         yield [types::static('X\Y', types::string), 'static@X\Y<string>'];

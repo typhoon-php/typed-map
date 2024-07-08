@@ -7,7 +7,7 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  */
-final class ParameterId extends DeclarationId
+final class ParameterId extends Id
 {
     /**
      * @param non-empty-string $name
@@ -22,11 +22,11 @@ final class ParameterId extends DeclarationId
         return sprintf('%s$%s)', substr($this->function->toString(), 0, -1), $this->name);
     }
 
-    public function equals(DeclarationId $id): bool
+    public function equals(mixed $value): bool
     {
-        return $id instanceof self
-            && $id->function->equals($this->function)
-            && $id->name === $this->name;
+        return $value instanceof self
+            && $value->function->equals($this->function)
+            && $value->name === $this->name;
     }
 
     public function reflect(): \ReflectionParameter

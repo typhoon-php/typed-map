@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Traits\Trait1;
-use Typhoon\DeclarationId\DeclarationId;
+use Typhoon\DeclarationId\Id;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Variance;
 
@@ -409,7 +409,7 @@ final class AdapterCompatibilityTest extends TestCase
      */
     private function reflectionToString(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): string
     {
-        return DeclarationId::fromReflection($reflection)->toString();
+        return Id::fromReflection($reflection)->toString();
     }
 
     private function assertTypeEquals(?\ReflectionType $native, ?\ReflectionType $typhoon, string $messagePrefix): void

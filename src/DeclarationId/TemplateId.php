@@ -7,7 +7,7 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  */
-final class TemplateId extends DeclarationId
+final class TemplateId extends Id
 {
     /**
      * @param non-empty-string $name
@@ -22,10 +22,10 @@ final class TemplateId extends DeclarationId
         return sprintf('%s#%s', $this->name, $this->declaredAt->toString());
     }
 
-    public function equals(DeclarationId $id): bool
+    public function equals(mixed $value): bool
     {
-        return $id instanceof self
-            && $id->declaredAt->equals($this->declaredAt)
-            && $id->name === $this->name;
+        return $value instanceof self
+            && $value->declaredAt->equals($this->declaredAt)
+            && $value->name === $this->name;
     }
 }
