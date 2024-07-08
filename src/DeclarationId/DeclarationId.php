@@ -9,8 +9,6 @@ namespace Typhoon\DeclarationId;
  */
 abstract class DeclarationId
 {
-    protected function __construct() {}
-
     final public static function constant(string $name): ConstantId
     {
         \assert(self::isNameValid($name), sprintf('Invalid constant name "%s"', $name));
