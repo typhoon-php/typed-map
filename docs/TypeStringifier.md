@@ -15,7 +15,7 @@ use function Typhoon\TypeStringifier\stringify;
 echo stringify(
     types::arrayShape([
         'a' => types::nonEmptyString,
-        'b' => types::arrayElement(types::union(types::int, types::float), optional: true),
+        'b' => types::optional(types::union(types::int, types::float)),
         'c' => types::object(Traversable::class, types::numericString, types::false),
         'd' => types::callable(
             parameters: [

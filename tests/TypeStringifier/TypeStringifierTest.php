@@ -64,9 +64,9 @@ final class TypeStringifierTest extends TestCase
         yield [types::listShapeSealed([types::int]), 'list{int}'];
         yield [types::listShapeSealed([types::int, 2 => types::string]), 'list{0: int, 2: string}'];
         yield [types::listShape([types::int, 3 => types::string], value: types::mixed), 'list{0: int, 3: string, ...}'];
-        yield [types::listShapeSealed([types::arrayElement(types::int, optional: true)]), 'list{0?: int}'];
-        yield [types::listShape([types::arrayElement(types::int, optional: true)], value: types::mixed), 'list{0?: int, ...}'];
-        yield [types::listShapeSealed([3 => types::arrayElement(types::int, optional: true)]), 'list{3?: int}'];
+        yield [types::listShapeSealed([types::optional(types::int)]), 'list{0?: int}'];
+        yield [types::listShape([types::optional(types::int)], value: types::mixed), 'list{0?: int, ...}'];
+        yield [types::listShapeSealed([3 => types::optional(types::int)]), 'list{3?: int}'];
         yield [types::listShape([4 => types::float], value: types::string), 'list{4: float, ...<string>}'];
         yield [types::nonEmptyArray(), 'non-empty-array'];
         yield [types::nonEmptyArray(value: types::string), 'non-empty-array<string>'];
@@ -84,9 +84,9 @@ final class TypeStringifierTest extends TestCase
         yield [types::arrayShapeSealed(['\'' => types::string]), "array{'\\'': string}"];
         yield [types::arrayShapeSealed(["\n" => types::string]), "array{'\\n': string}"];
         yield [types::arrayShape([types::int, 'a' => types::string], value: types::mixed), 'array{0: int, a: string, ...}'];
-        yield [types::arrayShapeSealed([types::arrayElement(types::int, optional: true)]), 'array{0?: int}'];
-        yield [types::arrayShape([types::arrayElement(types::int, optional: true)], value: types::mixed), 'array{0?: int, ...}'];
-        yield [types::arrayShapeSealed(['a' => types::arrayElement(types::int, optional: true)]), 'array{a?: int}'];
+        yield [types::arrayShapeSealed([types::optional(types::int)]), 'array{0?: int}'];
+        yield [types::arrayShape([types::optional(types::int)], value: types::mixed), 'array{0?: int, ...}'];
+        yield [types::arrayShapeSealed(['a' => types::optional(types::int)]), 'array{a?: int}'];
         yield [types::arrayShape(['a' => types::float], key: types::int, value: types::string), 'array{a: float, ...<int, string>}'];
         yield [types::object, 'object'];
         yield [types::object(\ArrayObject::class), 'ArrayObject'];
@@ -122,7 +122,7 @@ final class TypeStringifierTest extends TestCase
         yield [types::classString, 'class-string'];
         yield [types::objectShape(), 'object'];
         yield [types::objectShape(['name' => types::string, 'obj' => types::object(\stdClass::class)]), 'object{name: string, obj: stdClass}'];
-        yield [types::objectShape(['name' => types::prop(types::string, optional: true)]), 'object{name?: string}'];
+        yield [types::objectShape(['name' => types::optional(types::string)]), 'object{name?: string}'];
         yield [types::objectShape(['n\'ame' => types::string]), "object{'n\\'ame': string}"];
         yield [types::objectShape(["\n" => types::string]), "object{'\\n': string}"];
         yield [types::constant('test'), 'const<test>'];
