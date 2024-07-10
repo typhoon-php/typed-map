@@ -13,7 +13,7 @@ final class AliasId extends Id
      * @param non-empty-string $name
      */
     protected function __construct(
-        public readonly NamedClassId $class,
+        public readonly NamedClassId|AnonymousClassId $class,
         public readonly string $name,
     ) {}
 

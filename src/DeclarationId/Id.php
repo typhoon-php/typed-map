@@ -129,10 +129,10 @@ abstract class Id
         return new ParameterId($function, $name);
     }
 
-    final public static function alias(string|NamedClassId $class, string $name): AliasId
+    final public static function alias(string|NamedClassId|AnonymousClassId $class, string $name): AliasId
     {
         if (\is_string($class)) {
-            $class = self::namedClass($class);
+            $class = self::class($class);
         }
 
         \assert(self::isLabelValid($name), sprintf('Invalid alias name "%s"', $name));
