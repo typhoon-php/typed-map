@@ -31,7 +31,12 @@ final class ClassConstantId extends Id
 
     public function reflect(): \ReflectionClassConstant
     {
+        $class = $this->class->name ?? throw new AnonymousClassNameNotAvailable(sprintf(
+            "Cannot reflect anonymous class %s, because it's runtime name is not available",
+            $this->class->toString(),
+        ));
+
         /** @psalm-suppress ArgumentTypeCoercion */
-        return new \ReflectionClassConstant($this->class->name, $this->name);
+        return new \ReflectionClassConstant($class, $this->name);
     }
 }

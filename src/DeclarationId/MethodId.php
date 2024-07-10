@@ -31,7 +31,12 @@ final class MethodId extends Id
 
     public function reflect(): \ReflectionMethod
     {
+        $class = $this->class->name ?? throw new AnonymousClassNameNotAvailable(sprintf(
+            "Cannot reflect anonymous class %s, because it's runtime name is not available",
+            $this->class->toString(),
+        ));
+
         /** @psalm-suppress ArgumentTypeCoercion */
-        return new \ReflectionMethod($this->class->name, $this->name);
+        return new \ReflectionMethod($class, $this->name);
     }
 }

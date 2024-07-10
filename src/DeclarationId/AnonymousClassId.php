@@ -10,11 +10,6 @@ namespace Typhoon\DeclarationId;
 final class AnonymousClassId extends Id
 {
     /**
-     * @var non-empty-string
-     */
-    public readonly string $name;
-
-    /**
      * @param non-empty-string $file
      * @param positive-int $line
      * @param positive-int $column
@@ -24,17 +19,15 @@ final class AnonymousClassId extends Id
         public readonly string $file,
         public readonly int $line,
         public readonly int $column,
-        ?string $name = null,
-    ) {
-        $this->name = $name ?? $this->toString();
-    }
+        public readonly ?string $name = null,
+    ) {}
 
     /**
      * @throws InvalidClassName
      */
     protected static function fromName(string $name): self
     {
-        if (preg_match('/anonymous\x00(.+):(\d+)/', $name, $matches) !== 1) {
+        if (preg_match('/@anonymous\x00(.+):(\d+)/', $name, $matches) !== 1) {
             throw new InvalidClassName(sprintf('Invalid anonymous class name "%s"', $name));
         }
 
@@ -136,6 +129,13 @@ final class AnonymousClassId extends Id
 
     public function reflect(): \ReflectionClass
     {
+        if ($this->name === null) {
+            throw new AnonymousClassNameNotAvailable(sprintf(
+                "Cannot reflect anonymous class %s, because it's runtime name is not available",
+                $this->toString(),
+            ));
+        }
+
         return new \ReflectionClass($this->name);
     }
 
@@ -153,12 +153,7 @@ final class AnonymousClassId extends Id
      */
     public function __unserialize(array $data): void
     {
-        [
-            'file' => $this->file,
-            'line' => $this->line,
-            'column' => $this->column,
-        ] = $data;
-        /** @psalm-suppress PossiblyNullFunctionCall */
-        (function (): void { $this->name = $this->toString(); })->bindTo($this, parent::class)();
+        ['file' => $this->file, 'line' => $this->line, 'column' => $this->column] = $data;
+        $this->name = null;
     }
 }

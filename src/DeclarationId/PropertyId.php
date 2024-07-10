@@ -38,7 +38,12 @@ final class PropertyId extends Id
 
     public function reflect(): \ReflectionProperty
     {
+        $class = $this->class->name ?? throw new AnonymousClassNameNotAvailable(sprintf(
+            "Cannot reflect anonymous class %s, because it's runtime name is not available",
+            $this->class->toString(),
+        ));
+
         /** @psalm-suppress ArgumentTypeCoercion */
-        return new \ReflectionProperty($this->class->name, $this->name);
+        return new \ReflectionProperty($class, $this->name);
     }
 }

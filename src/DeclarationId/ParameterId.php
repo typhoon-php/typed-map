@@ -35,6 +35,11 @@ final class ParameterId extends Id
             return new \ReflectionParameter($this->function->name, $this->name);
         }
 
-        return new \ReflectionParameter([$this->function->class->name, $this->function->name], $this->name);
+        $class = $this->function->class->name ?? throw new AnonymousClassNameNotAvailable(sprintf(
+            "Cannot reflect anonymous class %s, because it's runtime name is not available",
+            $this->function->class->toString(),
+        ));
+
+        return new \ReflectionParameter([$class, $this->function->name], $this->name);
     }
 }
