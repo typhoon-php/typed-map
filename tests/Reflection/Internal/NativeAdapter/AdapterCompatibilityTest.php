@@ -181,7 +181,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->class, $typhoon->class, $messagePrefix . '.class');
         self::assertSame($native->name, $typhoon->name, $messagePrefix . '.name');
         self::assertSame($native->__toString(), $typhoon->__toString(), $messagePrefix . '.__toString()');
-        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . 'getAttributes()');
+        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . '.getAttributes()');
         self::assertSame($native->getDeclaringClass()->name, $typhoon->getDeclaringClass()->name, $messagePrefix . '.getDeclaringClass()');
         self::assertSame($native->getDocComment(), $typhoon->getDocComment(), $messagePrefix . '.getDocComment()');
         self::assertSame($native->getModifiers(), $typhoon->getModifiers(), $messagePrefix . '.getModifiers()');
@@ -209,7 +209,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->class, $typhoon->class, $messagePrefix . '.class');
         self::assertSame($native->name, $typhoon->name, $messagePrefix . '.name');
         self::assertSame($native->__toString(), $typhoon->__toString(), $messagePrefix . '.__toString()');
-        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . 'getAttributes()');
+        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . '.getAttributes()');
         self::assertSame($native->getDeclaringClass()->name, $typhoon->getDeclaringClass()->name, $messagePrefix . '.getDeclaringClass()');
         self::assertSame($native->getDefaultValue(), $typhoon->getDefaultValue(), $messagePrefix . '.getDefaultValue()');
         self::assertSame($native->getDocComment(), $typhoon->getDocComment(), $messagePrefix . '.getDocComment()');
@@ -235,7 +235,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->class, $typhoon->class, $messagePrefix . '.class');
         self::assertSame($native->name, $typhoon->name, $messagePrefix . '.name');
         self::assertSame($native->__toString(), $typhoon->__toString(), $messagePrefix . '.__toString()');
-        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . 'getAttributes()');
+        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . '.getAttributes()');
         if ($native->isStatic()) {
             $this->assertMethodClosureEquals($native->getClosure(), $typhoon->getClosure(), $messagePrefix . '.getClosure()');
         } elseif ($this->canCreateMockObject($native->getDeclaringClass())) {
@@ -318,7 +318,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->__toString(), $typhoon->__toString(), $messagePrefix . '.__toString()');
         self::assertSame($native->allowsNull(), $typhoon->allowsNull(), $messagePrefix . '.allowsNull()');
         self::assertSame($native->canBePassedByValue(), $typhoon->canBePassedByValue(), $messagePrefix . '.canBePassedByValue()');
-        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . 'getAttributes()');
+        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . '.getAttributes()');
         self::assertSame($native->getClass()?->name, $typhoon->getClass()?->name, $messagePrefix . '.getClass().name');
         self::assertSame($this->reflectionToString($native->getDeclaringFunction()), $this->reflectionToString($typhoon->getDeclaringFunction()), $messagePrefix . '.getDeclaringFunction()');
         self::assertSame($native->getDeclaringClass()?->name, $typhoon->getDeclaringClass()?->name, $messagePrefix . '.getDeclaringClass().name');
