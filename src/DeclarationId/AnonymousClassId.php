@@ -7,8 +7,13 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  */
-final class AnonymousClassId extends ClassId
+final class AnonymousClassId extends Id
 {
+    /**
+     * @var non-empty-string
+     */
+    public readonly string $name;
+
     /**
      * @param non-empty-string $file
      * @param positive-int $line
@@ -21,7 +26,7 @@ final class AnonymousClassId extends ClassId
         public readonly int $column,
         ?string $name = null,
     ) {
-        parent::__construct($name ?? $this->toString());
+        $this->name = $name ?? $this->toString();
     }
 
     /**
@@ -127,6 +132,11 @@ final class AnonymousClassId extends ClassId
             && $value->file === $this->file
             && $value->line === $this->line
             && $value->column === $this->column;
+    }
+
+    public function reflect(): \ReflectionClass
+    {
+        return new \ReflectionClass($this->name);
     }
 
     public function __serialize(): array

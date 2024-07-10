@@ -13,7 +13,7 @@ final class PropertyId extends Id
      * @param non-empty-string $name
      */
     protected function __construct(
-        public readonly ClassId $class,
+        public readonly NamedClassId|AnonymousClassId $class,
         public readonly string $name,
     ) {}
 

@@ -39,7 +39,7 @@ abstract class Id
     /**
      * @throws InvalidClassName
      */
-    final public static function class(string|object $nameOrObject): ClassId
+    final public static function class(string|object $nameOrObject): NamedClassId|AnonymousClassId
     {
         if (\is_object($nameOrObject)) {
             if (str_contains($nameOrObject::class, '@')) {
@@ -89,7 +89,7 @@ abstract class Id
         return new AnonymousClassId($file, $line, $column);
     }
 
-    final public static function classConstant(string|ClassId $class, string $name): ClassConstantId
+    final public static function classConstant(string|NamedClassId|AnonymousClassId $class, string $name): ClassConstantId
     {
         if (\is_string($class)) {
             $class = self::class($class);
@@ -100,7 +100,7 @@ abstract class Id
         return new ClassConstantId($class, $name);
     }
 
-    final public static function property(string|ClassId $class, string $name): PropertyId
+    final public static function property(string|NamedClassId|AnonymousClassId $class, string $name): PropertyId
     {
         if (\is_string($class)) {
             $class = self::class($class);
@@ -111,7 +111,7 @@ abstract class Id
         return new PropertyId($class, $name);
     }
 
-    final public static function method(string|ClassId $class, string $name): MethodId
+    final public static function method(string|NamedClassId|AnonymousClassId $class, string $name): MethodId
     {
         if (\is_string($class)) {
             $class = self::class($class);
@@ -140,7 +140,7 @@ abstract class Id
         return new AliasId($class, $name);
     }
 
-    final public static function template(FunctionId|ClassId|MethodId $id, string $name): TemplateId
+    final public static function template(FunctionId|NamedClassId|AnonymousClassId|MethodId $id, string $name): TemplateId
     {
         \assert(self::isLabelValid($name));
 
@@ -150,7 +150,7 @@ abstract class Id
     /**
      * @return (
      *     $reflection is \ReflectionFunction ? FunctionId :
-     *     $reflection is \ReflectionClass ? ClassId|AnonymousClassId :
+     *     $reflection is \ReflectionClass ? NamedClassId|AnonymousClassId :
      *     $reflection is \ReflectionClassConstant ? ClassConstantId :
      *     $reflection is \ReflectionProperty ? PropertyId :
      *     $reflection is \ReflectionMethod ? MethodId :
@@ -160,12 +160,8 @@ abstract class Id
     final public static function fromReflection(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): self
     {
         return match (true) {
-            $reflection instanceof \ReflectionFunction => $reflection->name === '{closure}'
-                ? AnonymousFunctionId::doFromReflection($reflection)
-                : NamedFunctionId::doFromReflection($reflection),
-            $reflection instanceof \ReflectionClass => $reflection->isAnonymous()
-                ? AnonymousClassId::doFromReflection($reflection)
-                : new NamedClassId($reflection->name),
+            $reflection instanceof \ReflectionFunction => $reflection->name === '{closure}' ? AnonymousFunctionId::doFromReflection($reflection) : NamedFunctionId::doFromReflection($reflection),
+            $reflection instanceof \ReflectionClass => $reflection->isAnonymous() ? AnonymousClassId::doFromReflection($reflection) : new NamedClassId($reflection->name),
             $reflection instanceof \ReflectionClassConstant => new ClassConstantId(self::fromReflection($reflection->getDeclaringClass()), $reflection->name),
             $reflection instanceof \ReflectionProperty => PropertyId::doFromReflection($reflection),
             $reflection instanceof \ReflectionMethod => new MethodId(self::fromReflection($reflection->getDeclaringClass()), $reflection->name),
