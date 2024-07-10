@@ -37,7 +37,7 @@ final readonly class Article
 }
 
 $reflector = TyphoonReflector::build();
-$articleTagsType = $reflector->reflectClass(Article::class)->property('tags')?->type();
+$articleTagsType = $reflector->reflectClass(Article::class)->properties()['tags']->type();
 
 var_dump(stringify($articleTagsType)); // non-empty-list<TTag@Article>
 ```
