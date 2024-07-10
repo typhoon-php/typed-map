@@ -11,7 +11,6 @@ use PhpParser\ParserFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Typhoon\Reflection\Reflection;
 use Typhoon\Reflection\Reflector;
 
 #[CoversClass(ExpressionCompiler::class)]
@@ -80,7 +79,7 @@ final class ExpressionCompilerTest extends TestCase
         $expected = $this->evalExpression($expressionCode);
         $compiled = (new ExpressionCompiler())->compile($expressionNode);
 
-        $value = $compiled->evaluate($this->createMock(Reflection::class), $this->createMock(Reflector::class));
+        $value = $compiled->evaluate($this->createMock(Reflector::class));
 
         self::assertEquals($expected, $value);
     }
@@ -92,7 +91,7 @@ final class ExpressionCompilerTest extends TestCase
         $expressionNode = $this->parseExpression("('Array'.'Object')::{'ARRAY'.'_AS_PROPS'}");
         $compiled = (new ExpressionCompiler())->compile($expressionNode);
 
-        $value = $compiled->evaluate($this->createMock(Reflection::class), $this->createMock(Reflector::class));
+        $value = $compiled->evaluate($this->createMock(Reflector::class));
 
         self::assertEquals(\ArrayObject::ARRAY_AS_PROPS, $value);
     }

@@ -28,6 +28,7 @@ $config = (new Config())
     /** @see TypeInheritanceResolver */
     'strict_comparison' => false,
     'logical_operators' => false,
+    'ordered_class_elements' => ['order' => ['use_trait']],
 ]);
 
 return $config;
