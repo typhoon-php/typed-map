@@ -27,7 +27,7 @@ return static function (TyphoonReflector $reflector): void {
             PHP,
     )[namedClassId('A')] ?? throw new \LogicException();
 
-    $templates = $reflection->templates;
+    $templates = $reflection->templates();
     assertCount(1, $templates);
     assertArrayHasKey('T', $templates);
     $template = $templates['T'];

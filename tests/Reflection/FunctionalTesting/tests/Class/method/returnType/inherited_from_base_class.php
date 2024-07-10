@@ -27,7 +27,7 @@ return static function (TyphoonReflector $reflector): void {
             {
             }
             PHP,
-    )[namedClassId('B')]->methods['a'];
+    )[namedClassId('B')]->methods()['a'];
 
     assertEquals(types::string, $reflection->returnType(Kind::Native));
     assertEquals(types::string('a'), $reflection->returnType(Kind::Annotated));
