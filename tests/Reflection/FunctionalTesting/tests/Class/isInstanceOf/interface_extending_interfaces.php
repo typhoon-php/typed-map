@@ -18,7 +18,7 @@ return static function (TyphoonReflector $reflector): void {
             
             interface I2 extends I1 {}
             PHP,
-    )[Id::class('I2')];
+    )[Id::namedClass('I2')];
 
     assertFalse($reflection->isInstanceOf(\Iterator::class));
     assertFalse($reflection->isInstanceOf(\stdClass::class));

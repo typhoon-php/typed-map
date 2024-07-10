@@ -11,7 +11,7 @@ use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertTrue;
 
 return static function (TyphoonReflector $reflector): void {
-    $reflection = $reflector->reflectCode('<?php final class A {}')[Id::class('A')];
+    $reflection = $reflector->reflectCode('<?php final class A {}')[Id::namedClass('A')];
 
     assertTrue($reflection->isFinal(Kind::Native));
     assertFalse($reflection->isFinal(Kind::Annotated));

@@ -24,7 +24,7 @@ return static function (TyphoonReflector $reflector): void {
             
             class X extends A2 {}
             PHP,
-    )[Id::class('X')];
+    )[Id::namedClass('X')];
 
     assertFalse($reflection->isInstanceOf(\Iterator::class));
     assertFalse($reflection->isInstanceOf(\stdClass::class));

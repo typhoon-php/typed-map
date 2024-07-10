@@ -17,7 +17,7 @@ return static function (TyphoonReflector $reflector): void {
             
             class A {}
             PHP,
-    )[Id::class('X\Y\A')];
+    )[Id::namedClass('X\Y\A')];
 
     assertSame('X\Y\A', $reflection->name);
 };

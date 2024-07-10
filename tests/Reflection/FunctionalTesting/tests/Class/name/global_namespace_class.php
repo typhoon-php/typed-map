@@ -9,7 +9,7 @@ use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertSame;
 
 return static function (TyphoonReflector $reflector): void {
-    $reflection = $reflector->reflectCode('<?php class A {}')[Id::class('A')];
+    $reflection = $reflector->reflectCode('<?php class A {}')[Id::namedClass('A')];
 
     assertSame('A', $reflection->name);
 };

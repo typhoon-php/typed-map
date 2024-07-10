@@ -9,7 +9,7 @@ use Typhoon\Reflection\TyphoonReflector;
 use function PHPUnit\Framework\assertTrue;
 
 return static function (TyphoonReflector $reflector): void {
-    $reflection = $reflector->reflectCode('<?php abstract class A {}')[Id::class('A')];
+    $reflection = $reflector->reflectCode('<?php abstract class A {}')[Id::namedClass('A')];
 
     assertTrue($reflection->isAbstract());
 };

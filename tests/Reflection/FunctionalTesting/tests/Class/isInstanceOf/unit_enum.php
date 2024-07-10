@@ -10,7 +10,7 @@ use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertTrue;
 
 return static function (TyphoonReflector $reflector): void {
-    $reflection = $reflector->reflectCode('<?php enum A {}')[Id::class('A')];
+    $reflection = $reflector->reflectCode('<?php enum A {}')[Id::namedClass('A')];
 
     assertFalse($reflection->isInstanceOf(\Iterator::class));
     assertFalse($reflection->isInstanceOf(\stdClass::class));

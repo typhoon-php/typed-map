@@ -18,7 +18,7 @@ return static function (TyphoonReflector $reflector): void {
                 abstract public function x(): void;
             }
             PHP,
-    )[Id::class('A')];
+    )[Id::namedClass('A')];
 
     assertTrue($reflection->isAbstract());
 };
