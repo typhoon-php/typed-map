@@ -21,19 +21,6 @@ abstract class Id implements \JsonSerializable
     protected const CODE_PROPERTY = 'p';
     protected const CODE_METHOD = 'm';
     protected const CODE_PARAMETER = 'pa';
-    private const CODE_CLASSES = [
-        self::CODE_CONSTANT => ConstantId::class,
-        self::CODE_NAMED_FUNCTION => NamedFunctionId::class,
-        self::CODE_ANONYMOUS_FUNCTION => AnonymousFunctionId::class,
-        self::CODE_NAMED_CLASS => NamedClassId::class,
-        self::CODE_ANONYMOUS_CLASS => AnonymousClassId::class,
-        self::CODE_ALIAS => AliasId::class,
-        self::CODE_TEMPLATE => TemplateId::class,
-        self::CODE_CLASS_CONSTANT => ClassConstantId::class,
-        self::CODE_PROPERTY => PropertyId::class,
-        self::CODE_METHOD => MethodId::class,
-        self::CODE_PARAMETER => ParameterId::class,
-    ];
 
     /**
      * @param non-empty-string $name
@@ -203,10 +190,22 @@ abstract class Id implements \JsonSerializable
         }
 
         $code = array_shift($data);
-        \assert(\is_string($code));
-        $class = self::CODE_CLASSES[$code] ?? throw new \InvalidArgumentException();
+        $args = array_map(self::doDecode(...), $data);
 
-        return new $class(...array_map(self::doDecode(...), $data));
+        /** @psalm-suppress MixedArgument, UnhandledMatchCondition */
+        return match ($code) {
+            self::CODE_CONSTANT => new ConstantId(...$args),
+            self::CODE_NAMED_FUNCTION => new NamedFunctionId(...$args),
+            self::CODE_ANONYMOUS_FUNCTION => new AnonymousFunctionId(...$args),
+            self::CODE_NAMED_CLASS => new NamedClassId(...$args),
+            self::CODE_ANONYMOUS_CLASS => new AnonymousClassId(...$args),
+            self::CODE_ALIAS => new AliasId(...$args),
+            self::CODE_TEMPLATE => new TemplateId(...$args),
+            self::CODE_CLASS_CONSTANT => new ClassConstantId(...$args),
+            self::CODE_PROPERTY => new PropertyId(...$args),
+            self::CODE_METHOD => new MethodId(...$args),
+            self::CODE_PARAMETER => new ParameterId(...$args),
+        };
     }
 
     /**
@@ -227,7 +226,7 @@ abstract class Id implements \JsonSerializable
      */
     final public function encode(): string
     {
-        return json_encode($this);
+        return json_encode($this, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 
     abstract public function equals(mixed $value): bool;
