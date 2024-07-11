@@ -28,9 +28,9 @@ abstract class Id
     /**
      * @param non-empty-string $file
      * @param positive-int $line
-     * @param positive-int $column
+     * @param ?positive-int $column
      */
-    final public static function anonymousFunction(string $file, int $line, int $column): AnonymousFunctionId
+    final public static function anonymousFunction(string $file, int $line, ?int $column = null): AnonymousFunctionId
     {
         return new AnonymousFunctionId($file, $line, $column);
     }
@@ -116,7 +116,7 @@ abstract class Id
     /**
      * @param non-empty-string $name
      */
-    final public static function parameter(FunctionId|MethodId $function, string $name): ParameterId
+    final public static function parameter(NamedFunctionId|AnonymousFunctionId|MethodId $function, string $name): ParameterId
     {
         return new ParameterId($function, $name);
     }
@@ -137,14 +137,14 @@ abstract class Id
     /**
      * @param non-empty-string $name
      */
-    final public static function template(FunctionId|NamedClassId|AnonymousClassId|MethodId $site, string $name): TemplateId
+    final public static function template(NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId|MethodId $site, string $name): TemplateId
     {
         return new TemplateId($site, $name);
     }
 
     /**
      * @return (
-     *     $reflection is \ReflectionFunction ? FunctionId :
+     *     $reflection is \ReflectionFunction ? NamedFunctionId|AnonymousFunctionId :
      *     $reflection is \ReflectionClass ? NamedClassId|AnonymousClassId :
      *     $reflection is \ReflectionClassConstant ? ClassConstantId :
      *     $reflection is \ReflectionProperty ? PropertyId :

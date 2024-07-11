@@ -7,8 +7,15 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  */
-final class NamedFunctionId extends FunctionId
+final class NamedFunctionId extends Id
 {
+    /**
+     * @param non-empty-string $name
+     */
+    public function __construct(
+        public readonly string $name,
+    ) {}
+
     protected static function doFromReflection(\ReflectionFunction $reflection): self
     {
         \assert($reflection->name !== '');
@@ -25,5 +32,11 @@ final class NamedFunctionId extends FunctionId
     {
         return $value instanceof self
             && $value->name === $this->name;
+    }
+
+    public function reflect(): \ReflectionFunction
+    {
+        /** @psalm-suppress ArgumentTypeCoercion */
+        return new \ReflectionFunction($this->name);
     }
 }

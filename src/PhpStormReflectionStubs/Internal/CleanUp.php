@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Typhoon\PhpStormReflectionStubs\Internal;
 
 use Typhoon\DeclarationId\AnonymousClassId;
-use Typhoon\DeclarationId\FunctionId;
+use Typhoon\DeclarationId\AnonymousFunctionId;
 use Typhoon\DeclarationId\NamedClassId;
+use Typhoon\DeclarationId\NamedFunctionId;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\DataReflector;
 use Typhoon\Reflection\Internal\ReflectionHook;
@@ -20,9 +21,9 @@ final class CleanUp implements ReflectionHook
 {
     private const ATTRIBUTE_PREFIX = 'JetBrains\\';
 
-    public function reflect(FunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, DataReflector $reflector): TypedMap
+    public function reflect(NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, DataReflector $reflector): TypedMap
     {
-        if ($id->name === \Traversable::class) {
+        if ($id instanceof NamedClassId && $id->name === \Traversable::class) {
             $data = $data->unset(Data::UnresolvedInterfaces);
         }
 

@@ -13,7 +13,7 @@ final class TemplateId extends Id
      * @param non-empty-string $name
      */
     protected function __construct(
-        public readonly FunctionId|NamedClassId|AnonymousClassId|MethodId $site,
+        public readonly NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId|MethodId $site,
         public readonly string $name,
     ) {}
 

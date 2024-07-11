@@ -13,7 +13,7 @@ final class ParameterId extends Id
      * @param non-empty-string $name
      */
     protected function __construct(
-        public readonly FunctionId|MethodId $function,
+        public readonly NamedFunctionId|AnonymousFunctionId|MethodId $function,
         public readonly string $name,
     ) {}
 
@@ -31,8 +31,12 @@ final class ParameterId extends Id
 
     public function reflect(): \ReflectionParameter
     {
-        if ($this->function instanceof FunctionId) {
+        if ($this->function instanceof NamedFunctionId) {
             return new \ReflectionParameter($this->function->name, $this->name);
+        }
+
+        if ($this->function instanceof AnonymousFunctionId) {
+            throw new \LogicException(sprintf('Cannot reflect %s', $this->toString()));
         }
 
         $class = $this->function->class->name ?? throw new \LogicException(sprintf(
