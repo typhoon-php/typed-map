@@ -8,21 +8,22 @@ use JetBrains\PHPStormStub\PhpStormStubsMap;
 use Typhoon\ChangeDetector\ChangeDetector;
 use Typhoon\ChangeDetector\ComposerPackageChangeDetector;
 use Typhoon\ChangeDetector\FileChangeDetector;
-use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\DeclarationId\NamedFunctionId;
 use Typhoon\PhpStormReflectionStubs\Internal\ApplyTentativeTypeAttribute;
 use Typhoon\PhpStormReflectionStubs\Internal\CleanUp;
 use Typhoon\Reflection\Internal\Data;
-use Typhoon\Reflection\Locator;
+use Typhoon\Reflection\Locator\ConstantLocator;
+use Typhoon\Reflection\Locator\NamedClassLocator;
+use Typhoon\Reflection\Locator\NamedFunctionLocator;
 use Typhoon\Reflection\Resource;
 use Typhoon\TypedMap\TypedMap;
 
 /**
  * @api
  */
-final class PhpStormStubsLocator implements Locator
+final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocator, NamedClassLocator
 {
     private const PACKAGE = 'jetbrains/phpstorm-stubs';
 
@@ -61,13 +62,12 @@ final class PhpStormStubsLocator implements Locator
         return self::$directory = \dirname($file);
     }
 
-    public function locate(ConstantId|NamedFunctionId|NamedClassId|AnonymousClassId $id): ?Resource
+    public function locate(ConstantId|NamedFunctionId|NamedClassId $id): ?Resource
     {
         $relativePath = match (true) {
             $id instanceof ConstantId => PhpStormStubsMap::CONSTANTS[$id->name] ?? null,
             $id instanceof NamedFunctionId => PhpStormStubsMap::FUNCTIONS[$id->name] ?? null,
             $id instanceof NamedClassId => PhpStormStubsMap::CLASSES[$id->name] ?? null,
-            default => null,
         };
 
         if ($relativePath === null) {
