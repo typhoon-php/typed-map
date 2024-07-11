@@ -13,19 +13,19 @@ final class TemplateId extends Id
      * @param non-empty-string $name
      */
     protected function __construct(
-        public readonly FunctionId|NamedClassId|AnonymousClassId|MethodId $declaredAt,
+        public readonly FunctionId|NamedClassId|AnonymousClassId|MethodId $site,
         public readonly string $name,
     ) {}
 
     public function toString(): string
     {
-        return sprintf('%s#%s', $this->name, $this->declaredAt->toString());
+        return sprintf('%s#%s', $this->name, $this->site->toString());
     }
 
     public function equals(mixed $value): bool
     {
         return $value instanceof self
-            && $value->declaredAt->equals($this->declaredAt)
+            && $value->site->equals($this->site)
             && $value->name === $this->name;
     }
 }

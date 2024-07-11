@@ -137,9 +137,9 @@ abstract class Id
     /**
      * @param non-empty-string $name
      */
-    final public static function template(FunctionId|NamedClassId|AnonymousClassId|MethodId $id, string $name): TemplateId
+    final public static function template(FunctionId|NamedClassId|AnonymousClassId|MethodId $site, string $name): TemplateId
     {
-        return new TemplateId($id, $name);
+        return new TemplateId($site, $name);
     }
 
     /**
