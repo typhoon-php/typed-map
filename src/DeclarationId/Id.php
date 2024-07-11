@@ -66,11 +66,12 @@ abstract class Id
     /**
      * @param non-empty-string $file
      * @param positive-int $line
-     * @param positive-int $column
+     * @param ?positive-int $column
+     * @param ?class-string $name
      */
-    final public static function anonymousClass(string $file, int $line, int $column): AnonymousClassId
+    final public static function anonymousClass(string $file, int $line, ?int $column = null, ?string $name = null): AnonymousClassId
     {
-        return new AnonymousClassId($file, $line, $column);
+        return new AnonymousClassId($file, $line, $column, $name);
     }
 
     /**
