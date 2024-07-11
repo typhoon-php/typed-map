@@ -46,4 +46,9 @@ final class PropertyId extends Id
         /** @psalm-suppress ArgumentTypeCoercion */
         return new \ReflectionProperty($class, $this->name);
     }
+
+    public function jsonSerialize(): array
+    {
+        return [self::CODE_PROPERTY, $this->class, $this->name];
+    }
 }

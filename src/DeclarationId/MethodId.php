@@ -39,4 +39,9 @@ final class MethodId extends Id
         /** @psalm-suppress ArgumentTypeCoercion */
         return new \ReflectionMethod($class, $this->name);
     }
+
+    public function jsonSerialize(): array
+    {
+        return [self::CODE_METHOD, $this->class, $this->name];
+    }
 }

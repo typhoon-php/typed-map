@@ -26,4 +26,9 @@ final class ConstantId extends Id
         return $value instanceof self
             && $value->name === $this->name;
     }
+
+    public function jsonSerialize(): array
+    {
+        return [self::CODE_CONSTANT, $this->name];
+    }
 }

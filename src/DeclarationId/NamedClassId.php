@@ -31,4 +31,9 @@ final class NamedClassId extends Id
     {
         return new \ReflectionClass($this->name);
     }
+
+    public function jsonSerialize(): array
+    {
+        return [self::CODE_NAMED_CLASS, $this->name];
+    }
 }

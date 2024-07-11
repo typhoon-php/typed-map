@@ -46,4 +46,9 @@ final class ParameterId extends Id
 
         return new \ReflectionParameter([$class, $this->function->name], $this->name);
     }
+
+    public function jsonSerialize(): array
+    {
+        return [self::CODE_PARAMETER, $this->function, $this->name];
+    }
 }

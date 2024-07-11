@@ -114,7 +114,8 @@ final class TypeStringifierTest extends TestCase
         yield [types::closure([types::param(types::string, variadic: true)], types::never), 'Closure(string...): never'];
         yield [types::functionTemplate('trim', 'T'), 'T#trim()'];
         yield [types::classTemplate(\stdClass::class, 'T'), 'T#stdClass'];
-        yield [types::classTemplate(Id::anonymousClass('file', 1, 13), 'T'), 'T#anon.class:file:1:13'];
+        yield [types::classTemplate(Id::anonymousClass('file', 1, 13), 'T'), 'T#anonymous-class:file:1:13'];
+        yield [types::classTemplate(Id::anonymousClass('file', 1), 'T'), 'T#anonymous-class:file:1'];
         yield [types::methodTemplate(\stdClass::class, 'm', 'T'), 'T#stdClass::m()'];
         yield [types::literalString, 'literal-string'];
         yield [types::literalInt, 'literal-int'];

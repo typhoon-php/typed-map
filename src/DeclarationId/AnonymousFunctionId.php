@@ -43,4 +43,15 @@ final class AnonymousFunctionId extends Id
             && $value->line === $this->line
             && $value->column === $this->column;
     }
+
+    public function jsonSerialize(): array
+    {
+        $data = [self::CODE_ANONYMOUS_FUNCTION, $this->file, $this->line];
+
+        if ($this->column !== null) {
+            $data[] = $this->column;
+        }
+
+        return $data;
+    }
 }

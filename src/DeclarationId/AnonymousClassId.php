@@ -109,4 +109,15 @@ final class AnonymousClassId extends Id
             'name' => null,
         ];
     }
+
+    public function jsonSerialize(): array
+    {
+        $data = [self::CODE_ANONYMOUS_CLASS, $this->file, $this->line];
+
+        if ($this->column !== null) {
+            $data[] = $this->column;
+        }
+
+        return $data;
+    }
 }

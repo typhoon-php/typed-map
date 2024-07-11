@@ -7,8 +7,34 @@ namespace Typhoon\DeclarationId;
 /**
  * @api
  */
-abstract class Id
+abstract class Id implements \JsonSerializable
 {
+    private const ANONYMOUS_CLOSURE_NAME = '{closure}';
+    protected const CODE_CONSTANT = 'c';
+    protected const CODE_NAMED_FUNCTION = 'nf';
+    protected const CODE_ANONYMOUS_FUNCTION = 'af';
+    protected const CODE_NAMED_CLASS = 'nc';
+    protected const CODE_ANONYMOUS_CLASS = 'ac';
+    protected const CODE_ALIAS = 'a';
+    protected const CODE_TEMPLATE = 't';
+    protected const CODE_CLASS_CONSTANT = 'cc';
+    protected const CODE_PROPERTY = 'p';
+    protected const CODE_METHOD = 'm';
+    protected const CODE_PARAMETER = 'pa';
+    private const CODE_CLASSES = [
+        self::CODE_CONSTANT => ConstantId::class,
+        self::CODE_NAMED_FUNCTION => NamedFunctionId::class,
+        self::CODE_ANONYMOUS_FUNCTION => AnonymousFunctionId::class,
+        self::CODE_NAMED_CLASS => NamedClassId::class,
+        self::CODE_ANONYMOUS_CLASS => AnonymousClassId::class,
+        self::CODE_ALIAS => AliasId::class,
+        self::CODE_TEMPLATE => TemplateId::class,
+        self::CODE_CLASS_CONSTANT => ClassConstantId::class,
+        self::CODE_PROPERTY => PropertyId::class,
+        self::CODE_METHOD => MethodId::class,
+        self::CODE_PARAMETER => ParameterId::class,
+    ];
+
     /**
      * @param non-empty-string $name
      */
@@ -155,13 +181,32 @@ abstract class Id
     final public static function fromReflection(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): self
     {
         return match (true) {
-            $reflection instanceof \ReflectionFunction => $reflection->name === '{closure}' ? AnonymousFunctionId::doFromReflection($reflection) : NamedFunctionId::doFromReflection($reflection),
+            $reflection instanceof \ReflectionFunction => $reflection->name === self::ANONYMOUS_CLOSURE_NAME ? AnonymousFunctionId::doFromReflection($reflection) : NamedFunctionId::doFromReflection($reflection),
             $reflection instanceof \ReflectionClass => $reflection->isAnonymous() ? AnonymousClassId::doFromReflection($reflection) : new NamedClassId($reflection->name),
             $reflection instanceof \ReflectionClassConstant => new ClassConstantId(self::fromReflection($reflection->getDeclaringClass()), $reflection->name),
             $reflection instanceof \ReflectionProperty => PropertyId::doFromReflection($reflection),
             $reflection instanceof \ReflectionMethod => new MethodId(self::fromReflection($reflection->getDeclaringClass()), $reflection->name),
             $reflection instanceof \ReflectionParameter => new ParameterId(self::fromReflection($reflection->getDeclaringFunction()), $reflection->name),
         };
+    }
+
+    final public static function decode(string $code): self
+    {
+        /** @var self */
+        return self::doDecode(json_decode($code, associative: true, flags: JSON_THROW_ON_ERROR));
+    }
+
+    private static function doDecode(mixed $data): mixed
+    {
+        if (!\is_array($data)) {
+            return $data;
+        }
+
+        $code = array_shift($data);
+        \assert(\is_string($code));
+        $class = self::CODE_CLASSES[$code] ?? throw new \InvalidArgumentException();
+
+        return new $class(...array_map(self::doDecode(...), $data));
     }
 
     /**
@@ -176,6 +221,14 @@ abstract class Id
      * @return non-empty-string
      */
     abstract public function toString(): string;
+
+    /**
+     * @return non-empty-string
+     */
+    final public function encode(): string
+    {
+        return json_encode($this);
+    }
 
     abstract public function equals(mixed $value): bool;
 }

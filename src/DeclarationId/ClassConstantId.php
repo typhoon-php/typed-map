@@ -39,4 +39,9 @@ final class ClassConstantId extends Id
         /** @psalm-suppress ArgumentTypeCoercion */
         return new \ReflectionClassConstant($class, $this->name);
     }
+
+    public function jsonSerialize(): array
+    {
+        return [self::CODE_CLASS_CONSTANT, $this->class, $this->name];
+    }
 }

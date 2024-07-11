@@ -28,4 +28,9 @@ final class AliasId extends Id
             && $value->class->equals($this->class)
             && $value->name === $this->name;
     }
+
+    public function jsonSerialize(): array
+    {
+        return [self::CODE_ALIAS, $this->class, $this->name];
+    }
 }

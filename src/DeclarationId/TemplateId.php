@@ -28,4 +28,9 @@ final class TemplateId extends Id
             && $value->site->equals($this->site)
             && $value->name === $this->name;
     }
+
+    public function jsonSerialize(): array
+    {
+        return [self::CODE_TEMPLATE, $this->site, $this->name];
+    }
 }

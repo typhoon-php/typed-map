@@ -39,4 +39,9 @@ final class NamedFunctionId extends Id
         /** @psalm-suppress ArgumentTypeCoercion */
         return new \ReflectionFunction($this->name);
     }
+
+    public function jsonSerialize(): array
+    {
+        return [self::CODE_NAMED_FUNCTION, $this->name];
+    }
 }
