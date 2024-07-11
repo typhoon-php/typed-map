@@ -8,6 +8,7 @@ use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\FunctionId;
 use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\Reflection\Internal\Data;
+use Typhoon\Reflection\Internal\DataReflector;
 use Typhoon\Reflection\Internal\ReflectionHook;
 use Typhoon\TypedMap\TypedMap;
 
@@ -19,7 +20,7 @@ final class ApplyTentativeTypeAttribute implements ReflectionHook
 {
     private const TENTATIVE_TYPE_ATTRIBUTE = 'JetBrains\PhpStorm\Internal\TentativeType';
 
-    public function reflect(FunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data): TypedMap
+    public function reflect(FunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, DataReflector $reflector): TypedMap
     {
         return $data->modifyIfSet(Data::Methods, fn(array $methods): array => array_map(
             function (TypedMap $method): TypedMap {

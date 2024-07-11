@@ -8,6 +8,7 @@ use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\FunctionId;
 use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\Reflection\Internal\Data;
+use Typhoon\Reflection\Internal\DataReflector;
 use Typhoon\Reflection\Internal\ReflectionHook;
 use Typhoon\TypedMap\TypedMap;
 
@@ -19,7 +20,7 @@ final class CleanUp implements ReflectionHook
 {
     private const ATTRIBUTE_PREFIX = 'JetBrains\\';
 
-    public function reflect(FunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data): TypedMap
+    public function reflect(FunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, DataReflector $reflector): TypedMap
     {
         if ($id->name === \Traversable::class) {
             $data = $data->unset(Data::UnresolvedInterfaces);

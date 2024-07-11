@@ -7,6 +7,7 @@ namespace Typhoon\PhpStormReflectionStubs;
 use JetBrains\PHPStormStub\PhpStormStubsMap;
 use Typhoon\ChangeDetector\ChangeDetector;
 use Typhoon\ChangeDetector\ComposerPackageChangeDetector;
+use Typhoon\ChangeDetector\FileChangeDetector;
 use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\NamedClassId;
@@ -73,19 +74,18 @@ final class PhpStormStubsLocator implements Locator
             return null;
         }
 
-        $baseData = (new TypedMap())
-            ->set(Data::PhpExtension, \dirname($relativePath))
-            ->set(Data::InternallyDefined, true);
-
+        $file = self::directory() . '/' . $relativePath;
+        $code = Resource::readFile(self::directory() . '/' . $relativePath);
         $packageChangeDetector = self::packageChangeDetector();
 
-        if ($packageChangeDetector !== null) {
-            $baseData = $baseData->set(Data::UnresolvedChangeDetectors, [$packageChangeDetector]);
-        }
-
         return new Resource(
-            file: self::directory() . '/' . $relativePath,
-            baseData: $baseData,
+            code: $code,
+            baseData: (new TypedMap())
+                ->set(Data::PhpExtension, \dirname($relativePath))
+                ->set(Data::InternallyDefined, true)
+                ->set(Data::UnresolvedChangeDetectors, [
+                    $packageChangeDetector ?? FileChangeDetector::fromFileAndContents($file, $code),
+                ]),
             hooks: [
                 new ApplyTentativeTypeAttribute(),
                 new CleanUp(),
