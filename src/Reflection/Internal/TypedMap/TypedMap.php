@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypedMap;
+namespace Typhoon\Reflection\Internal\TypedMap;
 
 /**
- * @api
+ * @internal
+ * @psalm-internal Typhoon
  * @readonly
  * @implements \ArrayAccess<Key, mixed>
  * @implements \IteratorAggregate<Key, mixed>

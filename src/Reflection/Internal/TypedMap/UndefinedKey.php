@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypedMap;
+namespace Typhoon\Reflection\Internal\TypedMap;
 
 /**
- * @api
+ * @internal
+ * @psalm-internal Typhoon
  */
 final class UndefinedKey extends \RuntimeException
 {
-    public function __construct(
-        public readonly Key $key,
-    ) {
+    public function __construct(Key $key)
+    {
         parent::__construct(sprintf('Key %s::%s is not defined in type map', $key::class, $key->name));
     }
 }
