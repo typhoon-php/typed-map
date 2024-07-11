@@ -18,7 +18,7 @@ final class ConstantId extends Id
 
     public function toString(): string
     {
-        return 'const:' . $this->name;
+        return 'constant:' . $this->name;
     }
 
     public function equals(mixed $value): bool

@@ -33,7 +33,7 @@ final class AnonymousFunctionId extends Id
 
     public function toString(): string
     {
-        return sprintf('anon.function:%s:%d%s()', $this->file, $this->line, $this->column === null ? '' : ':' . $this->column);
+        return sprintf('anonymous-function:%s:%d%s()', $this->file, $this->line, $this->column === null ? '' : ':' . $this->column);
     }
 
     public function equals(mixed $value): bool
