@@ -5,42 +5,40 @@ declare(strict_types=1);
 namespace Typhoon\PhpStormReflectionStubs\Internal;
 
 use Typhoon\DeclarationId\AnonymousClassId;
-use Typhoon\DeclarationId\AnonymousFunctionId;
 use Typhoon\DeclarationId\NamedClassId;
-use Typhoon\DeclarationId\NamedFunctionId;
+use Typhoon\Reflection\Internal\ClassReflectionHook;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\DataReflector;
-use Typhoon\Reflection\Internal\ReflectionHook;
 use Typhoon\TypedMap\TypedMap;
 
 /**
  * @internal
  * @psalm-internal Typhoon\PhpStormReflectionStubs
  */
-final class ApplyTentativeTypeAttribute implements ReflectionHook
+final class ApplyTentativeTypeAttribute implements ClassReflectionHook
 {
     private const TENTATIVE_TYPE_ATTRIBUTE = 'JetBrains\PhpStorm\Internal\TentativeType';
 
-    public function reflect(NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, DataReflector $reflector): TypedMap
+    public function process(NamedClassId|AnonymousClassId $id, TypedMap $data, DataReflector $reflector): TypedMap
     {
-        return $data->modifyIfSet(Data::Methods, fn(array $methods): array => array_map(
-            function (TypedMap $method): TypedMap {
+        return $data->set(Data::Methods, array_map(
+            static function (TypedMap $method): TypedMap {
                 $type = $method[Data::Type];
 
-                if ($type->native === null || !$this->hasTentativeAttribute($method[Data::Attributes] ?? [])) {
+                if ($type->native === null || !self::hasTentativeAttribute($method[Data::Attributes] ?? [])) {
                     return $method;
                 }
 
                 return $method->set(Data::Type, $type->withTentative($type->native)->withNative(null));
             },
-            $methods,
+            $data[Data::Methods],
         ));
     }
 
     /**
      * @param list<TypedMap> $attributes
      */
-    private function hasTentativeAttribute(array $attributes): bool
+    private static function hasTentativeAttribute(array $attributes): bool
     {
         foreach ($attributes as $attribute) {
             if ($attribute[Data::AttributeClassName] === self::TENTATIVE_TYPE_ATTRIBUTE) {

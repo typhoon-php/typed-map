@@ -6,22 +6,25 @@ namespace Typhoon\PhpStormReflectionStubs\Internal;
 
 use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\AnonymousFunctionId;
+use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\DeclarationId\NamedFunctionId;
+use Typhoon\Reflection\Internal\ClassReflectionHook;
+use Typhoon\Reflection\Internal\ConstantReflectionHook;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\DataReflector;
-use Typhoon\Reflection\Internal\ReflectionHook;
+use Typhoon\Reflection\Internal\FunctionReflectionHook;
 use Typhoon\TypedMap\TypedMap;
 
 /**
  * @internal
  * @psalm-internal Typhoon\PhpStormReflectionStubs
  */
-final class CleanUp implements ReflectionHook
+final class CleanUp implements ConstantReflectionHook, FunctionReflectionHook, ClassReflectionHook
 {
     private const ATTRIBUTE_PREFIX = 'JetBrains\\';
 
-    public function reflect(NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, DataReflector $reflector): TypedMap
+    public function process(ConstantId|NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, DataReflector $reflector): TypedMap
     {
         if ($id instanceof NamedClassId && $id->name === \Traversable::class) {
             $data = $data->unset(Data::UnresolvedInterfaces);
