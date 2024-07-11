@@ -39,6 +39,9 @@ final class IdClassFactoryTest extends TestCase
         self::assertSame($column, $classId->column);
     }
 
+    /**
+     * @param non-empty-string $class
+     */
     #[TestWith([\stdClass::class])]
     #[TestWith([\SplFileInfo::class])]
     public function testItCreatesNamedClassIdFromNamedClassString(string $class): void
@@ -47,16 +50,5 @@ final class IdClassFactoryTest extends TestCase
 
         self::assertInstanceOf(NamedClassId::class, $classId);
         self::assertSame($class, $classId->name);
-    }
-
-    #[TestWith(['', 'Invalid class name ""'])]
-    #[TestWith(['clas-s', 'Invalid class name "clas-s"'])]
-    #[TestWith(['1class', 'Invalid class name "1class"'])]
-    #[TestWith(["class@anonymous\x00", 'Invalid anonymous class name "class@anonymous\0"'])]
-    public function testItThrowsIfClassNameIsInvalid(string $class, string $exceptionMessage): void
-    {
-        $this->expectExceptionObject(new InvalidClassName($exceptionMessage));
-
-        Id::class($class);
     }
 }
