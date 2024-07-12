@@ -25,7 +25,7 @@ $config = (new Config())
 (new PhpCsFixerCodingStandard())->applyTo($config, [
     'final_public_method_for_abstract_class' => false,
     'no_unset_on_property' => false,
-    /** @see TypeInheritanceResolver */
+    /** @see TypeInheritance */
     'strict_comparison' => false,
     'logical_operators' => false,
     'ordered_class_elements' => ['order' => ['use_trait']],
