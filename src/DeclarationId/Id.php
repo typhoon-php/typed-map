@@ -80,11 +80,10 @@ abstract class Id implements \JsonSerializable
      * @param non-empty-string $file
      * @param positive-int $line
      * @param ?positive-int $column
-     * @param ?class-string $name
      */
-    final public static function anonymousClass(string $file, int $line, ?int $column = null, ?string $name = null): AnonymousClassId
+    final public static function anonymousClass(string $file, int $line, ?int $column = null): AnonymousClassId
     {
-        return new AnonymousClassId($file, $line, $column, $name);
+        return new AnonymousClassId($file, $line, $column);
     }
 
     /**

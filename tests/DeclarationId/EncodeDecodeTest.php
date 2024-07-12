@@ -34,7 +34,7 @@ final class EncodeDecodeTest extends TestCase
         yield [Id::namedClass('class'), '["nc","class"]'];
         yield [Id::anonymousClass('file', 12), '["ac","file",12]'];
         yield [Id::anonymousClass('file', 12, 33), '["ac","file",12,33]'];
-        yield [Id::anonymousClass('file', 12, 33, \stdClass::class), '["ac","file",12,33]'];
+        yield [Id::anonymousClass('file', 12, 33), '["ac","file",12,33]'];
         yield [Id::parameter(Id::namedFunction('test'), 'a'), '["pa",["nf","test"],"a"]'];
         yield [Id::parameter(Id::anonymousFunction('file', 10, 23), 'a'), '["pa",["af","file",10,23],"a"]'];
         yield [Id::parameter(Id::method(\stdClass::class, 'test'), 'a'), '["pa",["m",["nc","stdClass"],"test"],"a"]'];
