@@ -537,7 +537,6 @@ namespace Types
         public float|string $floatOrString;
         public null|string|object $nullOrStringOrObject;
         public iterable $iterable;
-        public ?iterable $nullableIterable;
         public iterable|int $iterableOrInt;
         public int|false $intOrFalse;
         public ?string $nullableString;
