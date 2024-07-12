@@ -537,7 +537,9 @@ namespace Types
         public float|string $floatOrString;
         public null|string|object $nullOrStringOrObject;
         public iterable $iterable;
-        public iterable|int $iterableOrInt;
+        // iterable is reflected differently in PHP 8.1 and 8.3 and breaks CI pipeline
+        // public ?iterable $nullableIterable;
+        // public iterable|int $iterableOrInt;
         public int|false $intOrFalse;
         public ?string $nullableString;
         public self $self;
