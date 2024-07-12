@@ -47,7 +47,7 @@ var_dump(stringify($articleTagsType)); // non-empty-list<TTag@Article>
 By default, Typhoon Reflection uses in-memory LRU cache which should be enough for the majority of use cases.
 
 However, if you need persistent cache, you can use any [PSR-16](https://www.php-fig.org/psr/psr-16/) implementation. We highly recommend [Typhoon OPcache](https://github.com/typhoon-php/opcache).
-It stores values as php files that could be opcached. It is much faster than an average file cache implementation that uses `serialize`. 
+It stores values as php files that could be opcached. It is much faster than an average file cache implementation that uses `serialize`.
 
 ```php
 use Typhoon\Reflection\TyphoonReflector;

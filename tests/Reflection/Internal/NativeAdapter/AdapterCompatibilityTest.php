@@ -46,7 +46,7 @@ final class AdapterCompatibilityTest extends TestCase
     {
         $native = new \ReflectionClass($class);
 
-        $typhoon = self::$typhoonReflector->reflectClassLike($class)->toNative();
+        $typhoon = self::$typhoonReflector->reflectClass($class)->toNative();
 
         $this->assertClassEquals($native, $typhoon);
     }
