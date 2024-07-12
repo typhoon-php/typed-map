@@ -95,6 +95,7 @@
         <file name="tests/Reflection/Internal/NativeAdapter/Fixtures/classes.php" preloadClasses="true"/>
         <file name="tests/Reflection/Internal/NativeAdapter/Fixtures/classes_php82.php" preloadClasses="true"/>
         <file name="tests/Reflection/Internal/NativeAdapter/Fixtures/classes_php83.php" preloadClasses="true"/>
+        <file name="stubs/ReflectionAttribute.phpstub"/>
         <file name="stubs/PhpParser/Node/Expr/Variable.phpstub"/>
         <file name="stubs/PhpParser/Node/Identifier.phpstub"/>
         <file name="stubs/PhpParser/Node/IntersectionType.phpstub"/>

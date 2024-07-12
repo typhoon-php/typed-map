@@ -299,6 +299,7 @@ namespace Attributes
     final class Attr
     {
         public function __construct(public readonly string $value) {}
+        public function __toString(): string { return __FILE__; }
     }
 
     #[Attr('class')]
@@ -345,7 +346,8 @@ namespace ParameterTypes
             null|int|float $nullIntFloat,
             mixed $mixed,
             float $implicitlyNullable = null,
-            int $defaultConstant = self::A,
+            int $defaultClassConstant = self::A,
+            int $defaultConstant = \PHP_INT_MAX,
         ) {}
     }
 }
@@ -534,6 +536,9 @@ namespace Types
         public int|string $intOrString;
         public float|string $floatOrString;
         public null|string|object $nullOrStringOrObject;
+        public iterable $iterable;
+        public ?iterable $nullableIterable;
+        public iterable|int $iterableOrInt;
         public int|false $intOrFalse;
         public ?string $nullableString;
         public self $self;

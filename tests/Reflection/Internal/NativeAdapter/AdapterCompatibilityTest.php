@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection\Internal\NativeAdapter;
 
+use Attributes\Attr;
 use Mockery\Loader\RequireLoader;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
@@ -48,14 +49,16 @@ final class AdapterCompatibilityTest extends TestCase
 
         $typhoon = self::$typhoonReflector->reflectClass($class)->toNative();
 
-        $this->assertClassEquals($native, $typhoon);
+        self::assertClassEquals($native, $typhoon);
     }
 
-    private function assertClassEquals(\ReflectionClass $native, \ReflectionClass $typhoon): void
+    private static function assertClassEquals(\ReflectionClass $native, \ReflectionClass $typhoon): void
     {
+        /** @psalm-suppress RedundantCondition */
+        self::assertTrue(isset($typhoon->name), 'isset(class.name)');
         self::assertSame($native->name, $typhoon->name, 'class.name');
         self::assertSame($native->__toString(), $typhoon->__toString(), 'class.__toString()');
-        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), 'class.getAttributes()');
+        self::assertGetAttributes($native, $typhoon, 'c');
         self::assertSame($native->getConstructor()?->name, $typhoon->getConstructor()?->name, 'class.getConstructor().name');
         self::assertSame($native->getDefaultProperties(), $typhoon->getDefaultProperties(), 'class.getDefaultProperties()');
         self::assertSame($native->getDocComment(), $typhoon->getDocComment(), 'class.getDocComment()');
@@ -64,7 +67,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertEquals($native->getExtensionName(), $typhoon->getExtensionName(), 'class.getExtensionName()');
         self::assertSame($native->getFileName(), $typhoon->getFileName(), 'class.getFileName()');
         self::assertSame($native->getInterfaceNames(), $typhoon->getInterfaceNames(), 'class.getInterfaceNames()');
-        $this->assertReflectionsEqual($native->getInterfaces(), $typhoon->getInterfaces(), 'class.getInterfaces()');
+        self::assertReflectionsEqual($native->getInterfaces(), $typhoon->getInterfaces(), 'class.getInterfaces()');
         self::assertSame($native->getModifiers(), $typhoon->getModifiers(), 'class.getModifiers()');
         self::assertSame($native->getName(), $typhoon->getName(), 'class.getName()');
         self::assertSame($native->getNamespaceName(), $typhoon->getNamespaceName(), 'class.getNamespaceName()');
@@ -75,9 +78,9 @@ final class AdapterCompatibilityTest extends TestCase
         // TODO getStaticPropertyValue()
         self::assertSame($native->getTraitAliases(), $typhoon->getTraitAliases(), 'class.getTraitAliases()');
         self::assertSame($native->getTraitNames(), $typhoon->getTraitNames(), 'class.getTraitNames()');
-        $this->assertReflectionsEqual($native->getTraits(), $typhoon->getTraits(), 'class.getTraits()');
-        foreach ($this->getClasses($native) as $class) {
-            $this->assertResultOrExceptionEqual(
+        self::assertReflectionsEqual($native->getTraits(), $typhoon->getTraits(), 'class.getTraits()');
+        foreach (self::getClasses($native) as $class) {
+            self::assertResultOrExceptionEqual(
                 native: static fn(): bool => $native->implementsInterface($class),
                 typhoon: static fn(): bool => $typhoon->implementsInterface($class),
                 messagePrefix: "class.implementsInterface({$class})",
@@ -89,8 +92,8 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->isCloneable(), $typhoon->isCloneable(), 'class.isCloneable()');
         self::assertSame($native->isEnum(), $typhoon->isEnum(), 'class.isEnum()');
         self::assertSame($native->isFinal(), $typhoon->isFinal(), 'class.isFinal()');
-        if ($this->canCreateMockObject($native)) {
-            self::assertSame($native->isInstance($this->createMockObject($native)), $typhoon->isInstance($this->createMockObject($native)), 'class.isInstance()');
+        if (self::canCreateMockObject($native)) {
+            self::assertSame($native->isInstance(self::createMockObject($native)), $typhoon->isInstance(self::createMockObject($native)), 'class.isInstance()');
         }
         self::assertSame($native->isInstantiable(), $typhoon->isInstantiable(), 'class.isInstantiable()');
         self::assertSame($native->isInterface(), $typhoon->isInterface(), 'class.isInterface()');
@@ -101,8 +104,8 @@ final class AdapterCompatibilityTest extends TestCase
             /** @psalm-suppress MixedArgument, UnusedPsalmSuppress */
             self::assertSame($native->isReadOnly(), $typhoon->isReadOnly(), 'class.isReadOnly()');
         }
-        foreach ($this->getClasses($native) as $class) {
-            $this->assertResultOrExceptionEqual(
+        foreach (self::getClasses($native) as $class) {
+            self::assertResultOrExceptionEqual(
                 native: static fn(): bool => $native->isSubclassOf($class),
                 typhoon: static fn(): bool => $typhoon->isSubclassOf($class),
                 messagePrefix: "class.isSubclassOf({$class})",
@@ -121,14 +124,14 @@ final class AdapterCompatibilityTest extends TestCase
 
         self::assertSame($native->getConstants(), $typhoon->getConstants(), 'class.getConstants().name');
 
-        $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(), $typhoon->getReflectionConstants(), 'class.getReflectionConstants()');
+        self::assertReflectionsEqualNoOrder($native->getReflectionConstants(), $typhoon->getReflectionConstants(), 'class.getReflectionConstants()');
 
         foreach ($native->getReflectionConstants() as $nativeConstant) {
             self::assertTrue($typhoon->hasConstant($nativeConstant->name), "class.hasConstant({$nativeConstant->name})");
             self::assertSame($native->getConstant($nativeConstant->name), $typhoon->getConstant($nativeConstant->name), "class.getConstant({$nativeConstant->name})");
             $typhoonConstant = $typhoon->getReflectionConstant($nativeConstant->name);
             self::assertNotFalse($typhoonConstant);
-            $this->assertConstantEquals($nativeConstant, $typhoonConstant, "class.getReflectionConstant({$nativeConstant->name})");
+            self::assertConstantEquals($nativeConstant, $typhoonConstant, "class.getReflectionConstant({$nativeConstant->name})");
         }
 
         self::assertSame($native->getConstants(0), $typhoon->getConstants(0), 'class.getConstants(0).name');
@@ -137,62 +140,64 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->getConstants(\ReflectionClassConstant::IS_PRIVATE), $typhoon->getConstants(\ReflectionClassConstant::IS_PRIVATE), 'class.getConstants(IS_PRIVATE).name');
         self::assertSame($native->getConstants(\ReflectionClassConstant::IS_FINAL), $typhoon->getConstants(\ReflectionClassConstant::IS_FINAL), 'class.getConstants(IS_FINAL).name');
 
-        $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(0), $typhoon->getReflectionConstants(0), 'class.getReflectionConstants(0)');
-        $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_PUBLIC), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_PUBLIC), 'class.getReflectionConstants(IS_PUBLIC)');
-        $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_PROTECTED), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_PROTECTED), 'class.getReflectionConstants(IS_PROTECTED)');
-        $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_PRIVATE), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_PRIVATE), 'class.getReflectionConstants(IS_PRIVATE)');
-        $this->assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_FINAL), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_FINAL), 'class.getReflectionConstants(IS_FINAL)');
+        self::assertReflectionsEqualNoOrder($native->getReflectionConstants(0), $typhoon->getReflectionConstants(0), 'class.getReflectionConstants(0)');
+        self::assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_PUBLIC), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_PUBLIC), 'class.getReflectionConstants(IS_PUBLIC)');
+        self::assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_PROTECTED), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_PROTECTED), 'class.getReflectionConstants(IS_PROTECTED)');
+        self::assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_PRIVATE), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_PRIVATE), 'class.getReflectionConstants(IS_PRIVATE)');
+        self::assertReflectionsEqualNoOrder($native->getReflectionConstants(\ReflectionClassConstant::IS_FINAL), $typhoon->getReflectionConstants(\ReflectionClassConstant::IS_FINAL), 'class.getReflectionConstants(IS_FINAL)');
 
         // PROPERTIES
 
-        $this->assertReflectionsEqualNoOrder($native->getProperties(), $typhoon->getProperties(), 'class.getProperties()');
+        self::assertReflectionsEqualNoOrder($native->getProperties(), $typhoon->getProperties(), 'class.getProperties()');
 
         foreach ($native->getProperties() as $nativeProperty) {
             self::assertTrue($typhoon->hasProperty($nativeProperty->name), "class.hasProperty({$nativeProperty->name})");
-            $this->assertPropertyEquals($nativeProperty, $typhoon->getProperty($nativeProperty->name), "class.getProperty({$nativeProperty->name})");
+            self::assertPropertyEquals($nativeProperty, $typhoon->getProperty($nativeProperty->name), "class.getProperty({$nativeProperty->name})");
         }
 
-        $this->assertReflectionsEqualNoOrder($native->getProperties(0), $typhoon->getProperties(0), 'class.getProperties(0)');
-        $this->assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_PUBLIC), $typhoon->getProperties(\ReflectionProperty::IS_PUBLIC), 'class.getProperties(IS_PUBLIC)');
-        $this->assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_PROTECTED), $typhoon->getProperties(\ReflectionProperty::IS_PROTECTED), 'class.getProperties(IS_PROTECTED)');
-        $this->assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_PRIVATE), $typhoon->getProperties(\ReflectionProperty::IS_PRIVATE), 'class.getProperties(IS_PRIVATE)');
-        $this->assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_STATIC), $typhoon->getProperties(\ReflectionProperty::IS_STATIC), 'class.getProperties(IS_STATIC)');
-        $this->assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_READONLY), $typhoon->getProperties(\ReflectionProperty::IS_READONLY), 'class.getProperties(IS_READONLY)');
+        self::assertReflectionsEqualNoOrder($native->getProperties(0), $typhoon->getProperties(0), 'class.getProperties(0)');
+        self::assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_PUBLIC), $typhoon->getProperties(\ReflectionProperty::IS_PUBLIC), 'class.getProperties(IS_PUBLIC)');
+        self::assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_PROTECTED), $typhoon->getProperties(\ReflectionProperty::IS_PROTECTED), 'class.getProperties(IS_PROTECTED)');
+        self::assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_PRIVATE), $typhoon->getProperties(\ReflectionProperty::IS_PRIVATE), 'class.getProperties(IS_PRIVATE)');
+        self::assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_STATIC), $typhoon->getProperties(\ReflectionProperty::IS_STATIC), 'class.getProperties(IS_STATIC)');
+        self::assertReflectionsEqualNoOrder($native->getProperties(\ReflectionProperty::IS_READONLY), $typhoon->getProperties(\ReflectionProperty::IS_READONLY), 'class.getProperties(IS_READONLY)');
 
         // METHODS
 
-        $this->assertReflectionsEqualNoOrder($native->getMethods(), $typhoon->getMethods(), 'class.getMethods()');
+        self::assertReflectionsEqualNoOrder($native->getMethods(), $typhoon->getMethods(), 'class.getMethods()');
 
         foreach ($native->getMethods() as $nativeMethod) {
             self::assertTrue($typhoon->hasMethod($nativeMethod->name), "hasMethod({$nativeMethod->name})");
-            $this->assertMethodEquals($nativeMethod, $typhoon->getMethod($nativeMethod->name), "getMethod({$nativeMethod->name})");
+            self::assertMethodEquals($nativeMethod, $typhoon->getMethod($nativeMethod->name), "getMethod({$nativeMethod->name})");
         }
 
-        $this->assertReflectionsEqualNoOrder($native->getMethods(0), $typhoon->getMethods(0), 'class.getMethods(0)');
-        $this->assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_FINAL), $typhoon->getMethods(\ReflectionMethod::IS_FINAL), 'class.getMethods(IS_FINAL)');
-        $this->assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_ABSTRACT), $typhoon->getMethods(\ReflectionMethod::IS_ABSTRACT), 'class.getMethods(IS_ABSTRACT)');
-        $this->assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_PUBLIC), $typhoon->getMethods(\ReflectionMethod::IS_PUBLIC), 'class.getMethods(IS_PUBLIC)');
-        $this->assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_PROTECTED), $typhoon->getMethods(\ReflectionMethod::IS_PROTECTED), 'class.getMethods(IS_PROTECTED)');
-        $this->assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_PRIVATE), $typhoon->getMethods(\ReflectionMethod::IS_PRIVATE), 'class.getMethods(IS_PRIVATE)');
-        $this->assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_STATIC), $typhoon->getMethods(\ReflectionMethod::IS_STATIC), 'class.getMethods(IS_STATIC)');
+        self::assertReflectionsEqualNoOrder($native->getMethods(0), $typhoon->getMethods(0), 'class.getMethods(0)');
+        self::assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_FINAL), $typhoon->getMethods(\ReflectionMethod::IS_FINAL), 'class.getMethods(IS_FINAL)');
+        self::assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_ABSTRACT), $typhoon->getMethods(\ReflectionMethod::IS_ABSTRACT), 'class.getMethods(IS_ABSTRACT)');
+        self::assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_PUBLIC), $typhoon->getMethods(\ReflectionMethod::IS_PUBLIC), 'class.getMethods(IS_PUBLIC)');
+        self::assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_PROTECTED), $typhoon->getMethods(\ReflectionMethod::IS_PROTECTED), 'class.getMethods(IS_PROTECTED)');
+        self::assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_PRIVATE), $typhoon->getMethods(\ReflectionMethod::IS_PRIVATE), 'class.getMethods(IS_PRIVATE)');
+        self::assertReflectionsEqualNoOrder($native->getMethods(\ReflectionMethod::IS_STATIC), $typhoon->getMethods(\ReflectionMethod::IS_STATIC), 'class.getMethods(IS_STATIC)');
     }
 
-    private function assertConstantEquals(\ReflectionClassConstant $native, \ReflectionClassConstant $typhoon, string $messagePrefix): void
+    private static function assertConstantEquals(\ReflectionClassConstant $native, \ReflectionClassConstant $typhoon, string $messagePrefix): void
     {
         self::assertSame($native->class, $typhoon->class, $messagePrefix . '.class');
+        /** @psalm-suppress RedundantCondition */
+        self::assertTrue(isset($typhoon->name), "isset({$messagePrefix}.name)");
         self::assertSame($native->name, $typhoon->name, $messagePrefix . '.name');
         self::assertSame($native->__toString(), $typhoon->__toString(), $messagePrefix . '.__toString()');
-        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . '.getAttributes()');
+        self::assertGetAttributes($native, $typhoon, $messagePrefix);
         self::assertSame($native->getDeclaringClass()->name, $typhoon->getDeclaringClass()->name, $messagePrefix . '.getDeclaringClass()');
         self::assertSame($native->getDocComment(), $typhoon->getDocComment(), $messagePrefix . '.getDocComment()');
         self::assertSame($native->getModifiers(), $typhoon->getModifiers(), $messagePrefix . '.getModifiers()');
         self::assertSame($native->getName(), $typhoon->getName(), $messagePrefix . '.getName()');
         if (method_exists(\ReflectionClassConstant::class, 'getType')) {
             $nativeType = $native->getType();
-            $typhoonType = $native->getType();
+            $typhoonType = $typhoon->getType();
             \assert($nativeType === null || $nativeType instanceof \ReflectionType);
             \assert($typhoonType === null || $typhoonType instanceof \ReflectionType);
-            $this->assertTypeEquals($nativeType, $typhoonType, $messagePrefix . '.getType()');
+            self::assertTypeEquals($nativeType, $typhoonType, $messagePrefix . '.getType()');
         }
         self::assertEquals($native->getValue(), $typhoon->getValue(), $messagePrefix . '.getValue()');
         if (method_exists(\ReflectionClassConstant::class, 'hasType')) {
@@ -205,18 +210,20 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->isPublic(), $typhoon->isPublic(), $messagePrefix . '.isPublic()');
     }
 
-    private function assertPropertyEquals(\ReflectionProperty $native, \ReflectionProperty $typhoon, string $messagePrefix): void
+    private static function assertPropertyEquals(\ReflectionProperty $native, \ReflectionProperty $typhoon, string $messagePrefix): void
     {
         self::assertSame($native->class, $typhoon->class, $messagePrefix . '.class');
+        /** @psalm-suppress RedundantCondition */
+        self::assertTrue(isset($typhoon->name), "isset({$messagePrefix}.name)");
         self::assertSame($native->name, $typhoon->name, $messagePrefix . '.name');
         self::assertSame($native->__toString(), $typhoon->__toString(), $messagePrefix . '.__toString()');
-        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . '.getAttributes()');
+        self::assertGetAttributes($native, $typhoon, $messagePrefix);
         self::assertSame($native->getDeclaringClass()->name, $typhoon->getDeclaringClass()->name, $messagePrefix . '.getDeclaringClass()');
         self::assertSame($native->getDefaultValue(), $typhoon->getDefaultValue(), $messagePrefix . '.getDefaultValue()');
         self::assertSame($native->getDocComment(), $typhoon->getDocComment(), $messagePrefix . '.getDocComment()');
         self::assertSame($native->getModifiers(), $typhoon->getModifiers(), $messagePrefix . '.getModifiers()');
         self::assertSame($native->getName(), $typhoon->getName(), $messagePrefix . '.getName()');
-        $this->assertTypeEquals($native->getType(), $typhoon->getType(), $messagePrefix . '.getType()');
+        self::assertTypeEquals($native->getType(), $typhoon->getType(), $messagePrefix . '.getType()');
         // TODO getValue()
         self::assertSame($native->hasDefaultValue(), $typhoon->hasDefaultValue(), $messagePrefix . '.hasDefaultValue()');
         self::assertSame($native->hasType(), $typhoon->hasType(), $messagePrefix . '.hasType()');
@@ -231,17 +238,19 @@ final class AdapterCompatibilityTest extends TestCase
         // TODO setValue()
     }
 
-    private function assertMethodEquals(\ReflectionMethod $native, \ReflectionMethod $typhoon, string $messagePrefix): void
+    private static function assertMethodEquals(\ReflectionMethod $native, \ReflectionMethod $typhoon, string $messagePrefix): void
     {
         self::assertSame($native->class, $typhoon->class, $messagePrefix . '.class');
+        /** @psalm-suppress RedundantCondition */
+        self::assertTrue(isset($typhoon->name), "isset({$messagePrefix}.name)");
         self::assertSame($native->name, $typhoon->name, $messagePrefix . '.name');
         self::assertSame($native->__toString(), $typhoon->__toString(), $messagePrefix . '.__toString()');
-        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . '.getAttributes()');
+        self::assertGetAttributes($native, $typhoon, $messagePrefix);
         if ($native->isStatic()) {
-            $this->assertMethodClosureEquals($native->getClosure(), $typhoon->getClosure(), $messagePrefix . '.getClosure()');
-        } elseif ($this->canCreateMockObject($native->getDeclaringClass())) {
-            $object = $this->createMockObject($native->getDeclaringClass());
-            $this->assertMethodClosureEquals($native->getClosure($object), $typhoon->getClosure($object), $messagePrefix . '.getClosure($object)');
+            self::assertMethodClosureEquals($native->getClosure(), $typhoon->getClosure(), $messagePrefix . '.getClosure()');
+        } elseif (self::canCreateMockObject($native->getDeclaringClass())) {
+            $object = self::createMockObject($native->getDeclaringClass());
+            self::assertMethodClosureEquals($native->getClosure($object), $typhoon->getClosure($object), $messagePrefix . '.getClosure($object)');
         }
         self::assertSame($native->getClosureCalledClass(), $typhoon->getClosureCalledClass(), $messagePrefix . '.getClosureCalledClass()');
         self::assertSame($native->getClosureScopeClass(), $typhoon->getClosureScopeClass(), $messagePrefix . '.getClosureScopeClass()');
@@ -258,13 +267,13 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->getNamespaceName(), $typhoon->getNamespaceName(), $messagePrefix . '.getNamespaceName()');
         self::assertSame($native->getNumberOfParameters(), $typhoon->getNumberOfParameters(), $messagePrefix . '.getNumberOfParameters()');
         self::assertSame($native->getNumberOfRequiredParameters(), $typhoon->getNumberOfRequiredParameters(), $messagePrefix . '.getNumberOfRequiredParameters()');
-        $this->assertParametersEqual($native->getParameters(), $typhoon->getParameters(), $messagePrefix . '.getParameters()');
-        $this->assertResultOrExceptionEqual(
+        self::assertParametersEqual($native->getParameters(), $typhoon->getParameters(), $messagePrefix . '.getParameters()');
+        self::assertResultOrExceptionEqual(
             native: static fn(): string => $native->getPrototype()->class,
             typhoon: static fn(): string => $typhoon->getPrototype()->class,
             messagePrefix: $messagePrefix . '.getPrototype().class',
         );
-        $this->assertResultOrExceptionEqual(
+        self::assertResultOrExceptionEqual(
             native: static fn(): string => $native->getPrototype()->name,
             typhoon: static fn(): string => $typhoon->getPrototype()->name,
             messagePrefix: $messagePrefix . '.getPrototype().name',
@@ -272,8 +281,8 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->getShortName(), $typhoon->getShortName(), $messagePrefix . '.getShortName()');
         // TODO self::assertSame($native->getStartLine(), $typhoon->getStartLine(), $messagePrefix . '.getStartLine()');
         self::assertSame($native->getStaticVariables(), $typhoon->getStaticVariables(), $messagePrefix . '.getStaticVariables()');
-        $this->assertTypeEquals($native->getReturnType(), $typhoon->getReturnType(), $messagePrefix . '.getReturnType()');
-        $this->assertTypeEquals($native->getTentativeReturnType(), $typhoon->getTentativeReturnType(), $messagePrefix . '.getTentativeReturnType()');
+        self::assertTypeEquals($native->getReturnType(), $typhoon->getReturnType(), $messagePrefix . '.getReturnType()');
+        self::assertTypeEquals($native->getTentativeReturnType(), $typhoon->getTentativeReturnType(), $messagePrefix . '.getTentativeReturnType()');
         if (method_exists(\ReflectionMethod::class, 'hasPrototype')) {
             /** @psalm-suppress MixedArgument, UnusedPsalmSuppress */
             self::assertSame($native->hasPrototype(), $typhoon->hasPrototype(), $messagePrefix . '.hasPrototype()');
@@ -304,24 +313,26 @@ final class AdapterCompatibilityTest extends TestCase
      * @param array<\ReflectionParameter> $native
      * @param array<\ReflectionParameter> $typhoon
      */
-    private function assertParametersEqual(array $native, array $typhoon, string $messagePrefix, bool $assertType = true): void
+    private static function assertParametersEqual(array $native, array $typhoon, string $messagePrefix, bool $assertType = true): void
     {
-        $this->assertReflectionsEqual($native, $typhoon, $messagePrefix);
+        self::assertReflectionsEqual($native, $typhoon, $messagePrefix);
 
         foreach ($native as $index => $parameter) {
-            $this->assertParameterEquals($parameter, $typhoon[$index], $messagePrefix . ".getParameter()[{$index} ({$parameter->name})]", $assertType);
+            self::assertParameterEquals($parameter, $typhoon[$index], $messagePrefix . ".getParameter()[{$index} ({$parameter->name})]", $assertType);
         }
     }
 
-    private function assertParameterEquals(\ReflectionParameter $native, \ReflectionParameter $typhoon, string $messagePrefix, bool $assertType = true): void
+    private static function assertParameterEquals(\ReflectionParameter $native, \ReflectionParameter $typhoon, string $messagePrefix, bool $assertType = true): void
     {
+        /** @psalm-suppress RedundantCondition */
+        self::assertTrue(isset($typhoon->name), "isset({$messagePrefix}.name)");
         self::assertSame($native->name, $typhoon->name, $messagePrefix . '.name');
         self::assertSame($native->__toString(), $typhoon->__toString(), $messagePrefix . '.__toString()');
         self::assertSame($native->allowsNull(), $typhoon->allowsNull(), $messagePrefix . '.allowsNull()');
         self::assertSame($native->canBePassedByValue(), $typhoon->canBePassedByValue(), $messagePrefix . '.canBePassedByValue()');
-        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . '.getAttributes()');
+        self::assertGetAttributes($native, $typhoon, $messagePrefix);
         self::assertSame($native->getClass()?->name, $typhoon->getClass()?->name, $messagePrefix . '.getClass().name');
-        self::assertSame($this->reflectionToString($native->getDeclaringFunction()), $this->reflectionToString($typhoon->getDeclaringFunction()), $messagePrefix . '.getDeclaringFunction()');
+        self::assertSame(self::reflectionToString($native->getDeclaringFunction()), self::reflectionToString($typhoon->getDeclaringFunction()), $messagePrefix . '.getDeclaringFunction()');
         self::assertSame($native->getDeclaringClass()?->name, $typhoon->getDeclaringClass()?->name, $messagePrefix . '.getDeclaringClass().name');
         if ($native->isDefaultValueAvailable()) {
             self::assertSame($native->getDefaultValueConstantName(), $typhoon->getDefaultValueConstantName(), $messagePrefix . '.getDefaultValueConstantName()');
@@ -329,7 +340,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->getName(), $typhoon->getName(), $messagePrefix . '.getName()');
         self::assertSame($native->getPosition(), $typhoon->getPosition(), $messagePrefix . '.getPosition()');
         if ($assertType) {
-            $this->assertTypeEquals($native->getType(), $typhoon->getType(), $messagePrefix . '.getType()');
+            self::assertTypeEquals($native->getType(), $typhoon->getType(), $messagePrefix . '.getType()');
         }
         self::assertSame($native->hasType(), $typhoon->hasType(), $messagePrefix . '.hasType()');
         self::assertSame($native->isArray(), $typhoon->isArray(), $messagePrefix . '.isArray()');
@@ -345,11 +356,30 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->isVariadic(), $typhoon->isVariadic(), $messagePrefix . '.isVariadic()');
     }
 
+    private static function assertGetAttributes(
+        \ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $native,
+        \ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $typhoon,
+        string $messagePrefix,
+    ): void {
+        self::assertAttributesEqual($native->getAttributes(), $typhoon->getAttributes(), $messagePrefix . '.getAttributes()');
+        self::assertAttributesEqual($native->getAttributes(Attr::class), $typhoon->getAttributes(Attr::class), $messagePrefix . '.getAttributes(Attr)');
+        self::assertAttributesEqual(
+            $native->getAttributes(Attr::class, \ReflectionAttribute::IS_INSTANCEOF),
+            $typhoon->getAttributes(Attr::class, \ReflectionAttribute::IS_INSTANCEOF),
+            $messagePrefix . '.getAttributes(Attr, IS_INSTANCEOF)',
+        );
+        self::assertAttributesEqual(
+            $native->getAttributes(\Stringable::class, \ReflectionAttribute::IS_INSTANCEOF),
+            $typhoon->getAttributes(\Stringable::class, \ReflectionAttribute::IS_INSTANCEOF),
+            $messagePrefix . '.getAttributes(Stringable, IS_INSTANCEOF)',
+        );
+    }
+
     /**
      * @param array<\ReflectionAttribute> $native
      * @param array<\ReflectionAttribute> $typhoon
      */
-    private function assertAttributesEqual(array $native, array $typhoon, string $messagePrefix): void
+    private static function assertAttributesEqual(array $native, array $typhoon, string $messagePrefix): void
     {
         self::assertCount(\count($native), $typhoon, $messagePrefix . '.count');
 
@@ -365,7 +395,7 @@ final class AdapterCompatibilityTest extends TestCase
         }
     }
 
-    private function assertMethodClosureEquals(\Closure $native, \Closure $typhoon, string $messagePrefix): void
+    private static function assertMethodClosureEquals(\Closure $native, \Closure $typhoon, string $messagePrefix): void
     {
         $nativeReflection = new \ReflectionFunction($native);
         $typhoonReflection = new \ReflectionFunction($typhoon);
@@ -375,18 +405,18 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($nativeReflection->getClosureScopeClass()?->name, $typhoonReflection->getClosureScopeClass()?->name, $messagePrefix . '.getClosureCalledClass()');
         self::assertSame($nativeReflection->getClosureThis(), $typhoonReflection->getClosureThis(), $messagePrefix . '.getClosureThis()');
         // TODO remove assertType when functions ready
-        $this->assertParametersEqual($nativeReflection->getParameters(), $typhoonReflection->getParameters(), $messagePrefix . '.getParameters()', assertType: false);
+        self::assertParametersEqual($nativeReflection->getParameters(), $typhoonReflection->getParameters(), $messagePrefix . '.getParameters()', assertType: false);
     }
 
     /**
      * @param array<\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter> $nativeReflections
      * @param array<\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter> $typhoonReflections
      */
-    private function assertReflectionsEqual(array $nativeReflections, array $typhoonReflections, string $message): void
+    private static function assertReflectionsEqual(array $nativeReflections, array $typhoonReflections, string $message): void
     {
         self::assertSame(
-            array_map($this->reflectionToString(...), $nativeReflections),
-            array_map($this->reflectionToString(...), $typhoonReflections),
+            array_map(self::reflectionToString(...), $nativeReflections),
+            array_map(self::reflectionToString(...), $typhoonReflections),
             $message,
         );
     }
@@ -395,11 +425,11 @@ final class AdapterCompatibilityTest extends TestCase
      * @param array<\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter> $nativeReflections
      * @param array<\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter> $typhoonReflections
      */
-    private function assertReflectionsEqualNoOrder(array $nativeReflections, array $typhoonReflections, string $message): void
+    private static function assertReflectionsEqualNoOrder(array $nativeReflections, array $typhoonReflections, string $message): void
     {
-        $nativeReflectionStrings = array_map($this->reflectionToString(...), $nativeReflections);
+        $nativeReflectionStrings = array_map(self::reflectionToString(...), $nativeReflections);
         sort($nativeReflectionStrings);
-        $typhoonReflectionStrings = array_map($this->reflectionToString(...), $typhoonReflections);
+        $typhoonReflectionStrings = array_map(self::reflectionToString(...), $typhoonReflections);
         sort($typhoonReflectionStrings);
 
         self::assertSame($nativeReflectionStrings, $typhoonReflectionStrings, $message);
@@ -408,20 +438,20 @@ final class AdapterCompatibilityTest extends TestCase
     /**
      * @return non-empty-string
      */
-    private function reflectionToString(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): string
+    private static function reflectionToString(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): string
     {
         return Id::fromReflection($reflection)->toString();
     }
 
-    private function assertTypeEquals(?\ReflectionType $native, ?\ReflectionType $typhoon, string $messagePrefix): void
+    private static function assertTypeEquals(?\ReflectionType $native, ?\ReflectionType $typhoon, string $messagePrefix): void
     {
-        self::assertSame($this->normalizeType($native), $this->normalizeType($typhoon), $messagePrefix);
+        self::assertSame(self::normalizeType($native), self::normalizeType($typhoon), $messagePrefix);
     }
 
     /**
      * @return ($type is null ? null : array)
      */
-    private function normalizeType(?\ReflectionType $type): ?array
+    private static function normalizeType(?\ReflectionType $type): ?array
     {
         if ($type === null) {
             return null;
@@ -433,12 +463,13 @@ final class AdapterCompatibilityTest extends TestCase
                 'getName' => $type->getName(),
                 'isBuiltin' => $type->isBuiltin(),
                 'allowsNull' => $type->allowsNull(),
+                '__toString()' => $type->__toString(),
             ];
         }
 
         \assert($type instanceof \ReflectionUnionType || $type instanceof \ReflectionIntersectionType);
 
-        $normalizedTypes = array_map($this->normalizeType(...), $type->getTypes());
+        $normalizedTypes = array_map(self::normalizeType(...), $type->getTypes());
         sort($normalizedTypes);
 
         return [
@@ -448,7 +479,7 @@ final class AdapterCompatibilityTest extends TestCase
         ];
     }
 
-    private function canCreateMockObject(\ReflectionClass $class): bool
+    private static function canCreateMockObject(\ReflectionClass $class): bool
     {
         if (method_exists($class, 'isReadonly') && $class->isReadonly()) {
             return false;
@@ -475,7 +506,7 @@ final class AdapterCompatibilityTest extends TestCase
      * @return \Generator<int, class-string>
      * @psalm-suppress MoreSpecificReturnType
      */
-    private function getClasses(\ReflectionClass $class): \Generator
+    private static function getClasses(\ReflectionClass $class): \Generator
     {
         yield '';
         yield 'HELLO!';
@@ -503,7 +534,7 @@ final class AdapterCompatibilityTest extends TestCase
      * @param \ReflectionClass<T> $class
      * @return T
      */
-    private function createMockObject(\ReflectionClass $class): object
+    private static function createMockObject(\ReflectionClass $class): object
     {
         if ($class->isAbstract() || $class->isInterface()) {
             /** @var T */
@@ -527,7 +558,7 @@ final class AdapterCompatibilityTest extends TestCase
         return $class->newInstanceWithoutConstructor();
     }
 
-    private function assertResultOrExceptionEqual(\Closure $native, \Closure $typhoon, string $messagePrefix): void
+    private static function assertResultOrExceptionEqual(\Closure $native, \Closure $typhoon, string $messagePrefix): void
     {
         $nativeException = null;
         $nativeResult = null;

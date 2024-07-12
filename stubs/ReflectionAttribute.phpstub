@@ -1,0 +1,6 @@
+<?php
+
+/**
+ * @template-covariant TClass as object
+ */
+class ReflectionAttribute {}
