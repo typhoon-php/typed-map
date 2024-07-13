@@ -10,10 +10,10 @@ use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\DeclarationId\NamedFunctionId;
 use Typhoon\Reflection\Internal\Data\Data;
-use Typhoon\Reflection\Internal\DataReflector;
 use Typhoon\Reflection\Internal\ReflectionHook\ClassReflectionHook;
 use Typhoon\Reflection\Internal\ReflectionHook\ConstantReflectionHook;
 use Typhoon\Reflection\Internal\ReflectionHook\FunctionReflectionHook;
+use Typhoon\Reflection\Internal\Reflector;
 use Typhoon\Reflection\Internal\TypedMap\TypedMap;
 
 /**
@@ -24,7 +24,7 @@ final class CleanUp implements ConstantReflectionHook, FunctionReflectionHook, C
 {
     private const ATTRIBUTE_PREFIX = 'JetBrains\\';
 
-    public function process(ConstantId|NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, DataReflector $reflector): TypedMap
+    public function process(ConstantId|NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap
     {
         if ($id instanceof NamedClassId && $id->name === \Traversable::class) {
             $data = $data->unset(Data::UnresolvedInterfaces);

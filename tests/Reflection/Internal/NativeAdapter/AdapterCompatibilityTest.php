@@ -12,7 +12,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Traits\Trait1;
 use Typhoon\DeclarationId\Id;
-use Typhoon\Reflection\Reflector;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Variance;
 
@@ -30,7 +29,7 @@ final class AdapterCompatibilityTest extends TestCase
 {
     private const MOCKS_DIR = __DIR__ . '/../../../../var/mocks';
 
-    private static Reflector $typhoonReflector;
+    private static TyphoonReflector $typhoonReflector;
 
     public static function setUpBeforeClass(): void
     {
