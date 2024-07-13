@@ -41,8 +41,8 @@ final class AdapterCompatibilityTest extends TestCase
     /**
      * @param class-string $class
      */
-    #[DataProviderExternal(FixturesProvider::class, 'classes')]
-    public function testItReflectsClassesCompatiblyViaPhpParserReflector(string $class): void
+    #[DataProviderExternal(ClassFixtures::class, 'get')]
+    public function testClasses(string $class): void
     {
         $native = new \ReflectionClass($class);
 
