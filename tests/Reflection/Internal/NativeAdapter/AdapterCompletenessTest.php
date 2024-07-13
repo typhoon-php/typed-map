@@ -9,13 +9,14 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 #[CoversNothing]
-final class AdapterFullnessTest extends TestCase
+final class AdapterCompletenessTest extends TestCase
 {
     /**
      * @return \Generator<class-string, array{class-string}>
      */
     public static function adapterClasses(): \Generator
     {
+        yield FunctionAdapter::class => [FunctionAdapter::class];
         yield AttributeAdapter::class => [AttributeAdapter::class];
         yield ClassConstantAdapter::class => [ClassConstantAdapter::class];
         yield ClassAdapter::class => [ClassAdapter::class];
