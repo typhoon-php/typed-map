@@ -16,6 +16,9 @@ jobs:
     strategy:
       matrix:
         package:
+          - { namespace: ChangeDetector, repo: change-detector }
+          - { namespace: DeclarationId, repo: declaration-id }
+          - { namespace: PhpStormReflectionStubs, repo: php-storm-reflection-stubs }
           - { namespace: Reflection, repo: reflection }
           - { namespace: Type, repo: type }
     steps:
