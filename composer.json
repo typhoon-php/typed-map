@@ -14,7 +14,7 @@
         "composer-runtime-api": "*",
         "jetbrains/phpstorm-stubs": "^2024.1",
         "nikic/php-parser": "^4.18 || ^5.0",
-        "phpstan/phpdoc-parser": "^1.0",
+        "phpstan/phpdoc-parser": "^1.20",
         "psr/simple-cache": "^3.0",
         "symfony/deprecation-contracts": "^3"
     },
