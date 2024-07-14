@@ -59,8 +59,12 @@
     },
     "scripts": {
         "check-require": [
+            "@composer install --working-dir=src/ChangeDetector",
+            "tools/composer-require-checker/vendor/bin/composer-require-checker check src/ChangeDetector/composer.json --config-file=src/ChangeDetector/composer-require-checker.json",
             "@composer install --working-dir=src/DeclarationId",
             "tools/composer-require-checker/vendor/bin/composer-require-checker check src/DeclarationId/composer.json",
+            "@composer install --working-dir=src/PhpStormReflectionStubs",
+            "tools/composer-require-checker/vendor/bin/composer-require-checker check src/PhpStormReflectionStubs/composer.json",
             "@composer install --working-dir=src/Reflection",
             "tools/composer-require-checker/vendor/bin/composer-require-checker check src/Reflection/composer.json --config-file=src/Reflection/composer-require-checker.json",
             "@composer install --working-dir=src/Type",
@@ -69,7 +73,9 @@
         "fixcs": "php-cs-fixer fix -v",
         "normalize-all": [
             "@composer normalize --diff",
+            "@composer normalize --diff src/ChangeDetector/composer.json",
             "@composer normalize --diff src/DeclarationId/composer.json",
+            "@composer normalize --diff src/PhpStormReflectionStubs/composer.json",
             "@composer normalize --diff src/Reflection/composer.json",
             "@composer normalize --diff src/Type/composer.json",
             "@composer normalize --diff tools/composer-require-checker/composer.json",
@@ -81,7 +87,9 @@
         "test": "phpunit",
         "validate-all": [
             "@composer validate --strict --no-check-publish",
+            "@composer validate --strict src/ChangeDetector/composer.json",
             "@composer validate --strict src/DeclarationId/composer.json",
+            "@composer validate --strict src/PhpStormReflectionStubs/composer.json",
             "@composer validate --strict src/Reflection/composer.json",
             "@composer validate --strict src/Type/composer.json"
         ]
