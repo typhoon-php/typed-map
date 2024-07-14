@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeStringifier;
+namespace Typhoon\Type\Visitor;
 
 use Typhoon\DeclarationId\AliasId;
 use Typhoon\DeclarationId\AnonymousClassId;
@@ -15,11 +15,10 @@ use Typhoon\Type\ShapeElement;
 use Typhoon\Type\Type;
 use Typhoon\Type\TypeVisitor;
 use Typhoon\Type\Variance;
-use Typhoon\Type\Visitor\DefaultTypeVisitor;
 
 /**
  * @internal
- * @psalm-internal Typhoon\TypeStringifier
+ * @psalm-internal Typhoon\Type
  * @implements TypeVisitor<non-empty-string>
  */
 enum TypeStringifier implements TypeVisitor

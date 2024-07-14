@@ -2,20 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeStringifier;
+namespace Typhoon\Type;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Typhoon\DeclarationId\Id;
-use Typhoon\Type\Type;
-use Typhoon\Type\types;
-use Typhoon\Type\Variance;
+use Typhoon\Type\Visitor\TypeStringifier;
 
 #[CoversClass(TypeStringifier::class)]
-#[CoversFunction('Typhoon\TypeStringifier\stringify')]
-final class TypeStringifierTest extends TestCase
+#[CoversFunction('Typhoon\Type\stringify')]
+final class StringifyTest extends TestCase
 {
     /**
      * @return \Generator<array-key, array{Type, string}>

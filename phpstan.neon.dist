@@ -5,8 +5,7 @@ parameters:
     level: 9
     paths:
         - src/Type
-        - src/TypeStringifier
-        - tests/TypeStringifier
+        - tests/Type
     tmpDir: var/phpstan
     ignoreErrors:
         - { identifier: missingType.generics }

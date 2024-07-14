@@ -10,7 +10,7 @@ composer require typhoon/type-stringifier
 
 ```php
 use Typhoon\Type\types;
-use function Typhoon\TypeStringifier\stringify;
+use function Typhoon\Type\stringify;
 
 echo stringify(
     types::arrayShape([

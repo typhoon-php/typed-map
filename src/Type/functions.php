@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\TypeStringifier;
+namespace Typhoon\Type;
 
-use Typhoon\Type\Type;
+use Typhoon\Type\Visitor\TypeStringifier;
 
 /**
  * @api

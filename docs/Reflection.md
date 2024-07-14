@@ -21,7 +21,7 @@ Installing `jetbrains/phpstorm-stubs` is highly recommended. Without stubs core 
 
 ```php
 use Typhoon\Reflection\TyphoonReflector;
-use function Typhoon\TypeStringifier\stringify;
+use function Typhoon\Type\stringify;
 
 /**
  * @template TTag of non-empty-string

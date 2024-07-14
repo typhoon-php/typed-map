@@ -18,7 +18,6 @@ jobs:
         package:
           - { namespace: Reflection, repo: reflection }
           - { namespace: Type, repo: type }
-          - { namespace: TypeStringifier, repo: type-stringifier }
     steps:
       - uses: actions/checkout@v4
         with:
