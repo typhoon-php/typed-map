@@ -49,12 +49,13 @@ abstract class Id implements \JsonSerializable
     }
 
     /**
-     * @param non-empty-string|object $nameOrObject
+     * @template TName of non-empty-string
+     * @param TName $name
+     * @return NamedClassId<TName>|(TName is class-string ? AnonymousClassId<TName> : AnonymousClassId<null>)
+     * @psalm-suppress InvalidReturnType, InvalidReturnStatement
      */
-    final public static function class(string|object $nameOrObject): NamedClassId|AnonymousClassId
+    final public static function class(string $name): NamedClassId|AnonymousClassId
     {
-        $name = \is_string($nameOrObject) ? $nameOrObject : $nameOrObject::class;
-
         if (str_contains($name, '@')) {
             return AnonymousClassId::fromName($name);
         }
@@ -63,12 +64,12 @@ abstract class Id implements \JsonSerializable
     }
 
     /**
-     * @param non-empty-string|object $nameOrObject
+     * @template TName of non-empty-string
+     * @param TName $name
+     * @return NamedClassId<TName>
      */
-    final public static function namedClass(string|object $nameOrObject): NamedClassId
+    final public static function namedClass(string $name): NamedClassId
     {
-        $name = \is_string($nameOrObject) ? $nameOrObject : $nameOrObject::class;
-
         if (str_contains($name, '@')) {
             throw new \InvalidArgumentException();
         }
@@ -80,6 +81,7 @@ abstract class Id implements \JsonSerializable
      * @param non-empty-string $file
      * @param positive-int $line
      * @param ?positive-int $column
+     * @return AnonymousClassId<null>
      */
     final public static function anonymousClass(string $file, int $line, ?int $column = null): AnonymousClassId
     {

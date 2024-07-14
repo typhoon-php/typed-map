@@ -6,6 +6,7 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
+ * @template-covariant TName of ?non-empty-string
  */
 final class AnonymousClassId extends Id
 {
@@ -13,7 +14,7 @@ final class AnonymousClassId extends Id
      * @param non-empty-string $file
      * @param positive-int $line
      * @param ?positive-int $column
-     * @param ?class-string $name
+     * @param TName $name
      */
     protected function __construct(
         public readonly string $file,
@@ -33,7 +34,9 @@ final class AnonymousClassId extends Id
     }
 
     /**
-     * @param non-empty-string $name
+     * @template TTName of non-empty-string
+     * @param TTName $name
+     * @return (TTName is class-string ? self<TTName> : self<null>)
      */
     protected static function fromName(string $name): self
     {
@@ -49,11 +52,13 @@ final class AnonymousClassId extends Id
             throw new \InvalidArgumentException(sprintf('Invalid anonymous class name "%s"', self::normalizeClassNameForException($name)));
         }
 
-        return new self(
-            file: $file,
-            line: $line,
-            name: class_exists($name, autoload: false) ? $name : null,
-        );
+        if (class_exists($name, autoload: false)) {
+            /** @var self<TTName> */
+            return new self(file: $file, line: $line, name: $name);
+        }
+
+        /** @var self<null> */
+        return new self(file: $file, line: $line);
     }
 
     protected static function doFromReflection(\ReflectionClass $reflection): self
@@ -84,20 +89,16 @@ final class AnonymousClassId extends Id
             && $value->column === $this->column;
     }
 
-    /**
-     * @return class-string
-     */
-    protected function requireNameForReflection(): string
-    {
-        return $this->name ?? throw new \LogicException(sprintf(
-            "Cannot reflect %s, because it's runtime name is not available",
-            $this->toString(),
-        ));
-    }
-
     public function reflect(): \ReflectionClass
     {
-        return new \ReflectionClass($this->requireNameForReflection());
+        if ($this->name === null) {
+            throw new \LogicException(sprintf(
+                "Cannot reflect %s, because it's runtime name is not available",
+                $this->toString(),
+            ));
+        }
+
+        return new \ReflectionClass($this->name);
     }
 
     public function __serialize(): array

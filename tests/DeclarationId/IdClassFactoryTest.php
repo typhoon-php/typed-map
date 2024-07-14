@@ -11,33 +11,24 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Id::class)]
 final class IdClassFactoryTest extends TestCase
 {
-    #[TestWith([new \stdClass()])]
-    #[TestWith([new \SplFileInfo(__FILE__)])]
-    public function testItCreatesNamedClassIdFromObjectOfNamedClass(object $object): void
-    {
-        $classId = Id::class($object);
-
-        self::assertInstanceOf(NamedClassId::class, $classId);
-        self::assertSame($object::class, $classId->name);
-    }
-
     #[TestWith([__DIR__ . '/Fixtures/anonymous_class_3_12.php', 3])]
     #[TestWith([__DIR__ . '/Fixtures/anonymous_array_object_5_5.php', 5])]
-    public function testItCreatesAnonymousClassIdFromObjectOfNamedClass(string $file, int $line): void
+    public function testItCreatesAnonymousClassIdFromAnonymousClassName(string $file, int $line): void
     {
         /**
          * @psalm-suppress UnresolvableInclude
          * @var object
          */
         $object = require_once $file;
+        $name = $object::class;
 
-        $classId = Id::class($object);
+        $classId = Id::class($name);
 
         self::assertInstanceOf(AnonymousClassId::class, $classId);
         self::assertSame($file, $classId->file);
         self::assertSame($line, $classId->line);
         self::assertNull($classId->column);
-        self::assertSame($object::class, $classId->name);
+        self::assertSame($name, $classId->name);
     }
 
     /**
@@ -51,5 +42,30 @@ final class IdClassFactoryTest extends TestCase
 
         self::assertInstanceOf(NamedClassId::class, $classId);
         self::assertSame($class, $classId->name);
+    }
+
+    public function staticAnalysisTestItInfersExistingClassName(): void
+    {
+        $id = Id::class(\stdClass::class);
+        /** @psalm-check-type-exact $id = NamedClassId<\stdClass::class>|AnonymousClassId<\stdClass::class> */
+        $_name = $id->name;
+        /** @psalm-check-type-exact $_name = \stdClass::class */
+    }
+
+    public function staticAnalysisTestItInfersObjectClassName(): void
+    {
+        $object = new \ArrayObject(['a']);
+        $id = Id::class($object::class);
+        /** @psalm-check-type-exact $id = NamedClassId<class-string<\ArrayObject<0, 'a'>>>|AnonymousClassId<class-string<\ArrayObject<0, 'a'>>> */
+        $_name = $id->name;
+        /** @psalm-check-type-exact $_name = class-string<\ArrayObject<0, 'a'>> */
+    }
+
+    public function staticAnalysisTestItInfersStringName(): void
+    {
+        $id = Id::class('someClass');
+        /** @psalm-check-type-exact $id = NamedClassId<'someClass'>|AnonymousClassId<null> */
+        $_name = $id->name;
+        /** @psalm-check-type-exact $_name = ?'someClass' */
     }
 }
