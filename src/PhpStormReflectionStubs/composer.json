@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "jetbrains/phpstorm-stubs": "^2023.3",
+        "jetbrains/phpstorm-stubs": "^2024.1",
         "typhoon/change-detector": "^0.4",
         "typhoon/declaration-id": "^0.4",
         "typhoon/reflection": "^0.4"

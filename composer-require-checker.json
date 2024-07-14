@@ -1,0 +1,9 @@
+{
+    "symbol-whitelist" : [
+        "Composer\\Autoload\\ClassLoader",
+        "Composer\\InstalledVersions",
+        "PhpParser\\Node\\Scalar\\DNumber",
+        "PhpParser\\Node\\Scalar\\LNumber",
+        "PhpParser\\Node\\Stmt\\PropertyProperty"
+    ]
+}
