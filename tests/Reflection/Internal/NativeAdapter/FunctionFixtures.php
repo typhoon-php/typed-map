@@ -39,7 +39,9 @@ final class FunctionFixtures
         self::$functions = [];
 
         foreach ($functions as $function) {
-            self::$functions[$function] = [$function];
+            /** @var callable-string */
+            $realFunctionName = (new \ReflectionFunction($function))->name;
+            self::$functions[$realFunctionName] = [$realFunctionName];
         }
 
         return self::$functions;

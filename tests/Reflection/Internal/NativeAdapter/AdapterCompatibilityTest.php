@@ -47,8 +47,7 @@ final class AdapterCompatibilityTest extends TestCase
     {
         $native = new \ReflectionFunction($name);
 
-        /** @psalm-suppress ArgumentTypeCoercion */
-        $typhoon = self::$typhoonReflector->reflectFunction($native->name)->toNative();
+        $typhoon = self::$typhoonReflector->reflectFunction($name)->toNative();
 
         self::assertFunctionEquals($native, $typhoon);
     }
