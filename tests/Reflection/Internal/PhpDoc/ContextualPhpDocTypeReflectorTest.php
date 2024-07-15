@@ -44,6 +44,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['int-mask', types::intMaskOf(types::never)];
         yield ['int-mask<1>', types::intMask(1)];
         yield ['int-mask<1|2>', types::intMask(1, 2)];
+        yield ['int-mask-of<stdClass::CON_*>', types::intMaskOf(types::classConstantMask(\stdClass::class, 'CON_'))];
         yield ['int<0, 1>', types::intRange(0, 1)];
         yield ['int<-10, -23>', types::intRange(-10, -23)];
         yield ['int<min, 123>', types::intRange(max: 123)];
@@ -69,6 +70,8 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['\stdClass::class', types::classString(types::object(\stdClass::class))];
         yield ['class-string<\stdClass>', types::classString(types::object(\stdClass::class))];
         yield ['float', types::float];
+        yield ['lowercase-string', types::lowercaseString];
+        yield ['non-empty-lowercase-string', types::intersection(types::nonEmptyString, types::lowercaseString)];
         yield ['literal-string', types::literalString];
         yield ['literal-float', types::literalFloat];
         yield ['numeric-string', types::numericString];
@@ -94,6 +97,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['list<mixed>', types::list()];
         yield ['list<int>', types::list(types::int)];
         yield ['list<int, string>', new InvalidPhpDocType('list type should have at most 1 argument, got 2')];
+        yield ['non-empty-list', types::nonEmptyList()];
         yield ['non-empty-list<mixed>', types::nonEmptyList()];
         yield ['non-empty-list<int>', types::nonEmptyList(types::int)];
         yield ['non-empty-list<int, string>', new InvalidPhpDocType('list type should have at most 1 argument, got 2')];
@@ -133,6 +137,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['object{a: int}', types::objectShape(['a' => types::int])];
         yield ['object{a?: int}', types::objectShape(['a' => types::optional(types::int)])];
         yield ['\stdClass::C', types::classConstant(types::object(\stdClass::class), 'C')];
+        yield ['\stdClass::C_*', types::classConstantMask(types::object(\stdClass::class), 'C_')];
         yield ['key-of<array>', types::key(types::array())];
         yield ['key-of', new InvalidPhpDocType('key-of type should have 1 argument, got 0')];
         yield ['key-of<array, array>', new InvalidPhpDocType('key-of type should have 1 argument, got 2')];
