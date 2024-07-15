@@ -11,19 +11,6 @@ namespace Typhoon\DeclarationId;
 final class AnonymousClassId extends Id
 {
     /**
-     * @param non-empty-string $file
-     * @param positive-int $line
-     * @param ?positive-int $column
-     * @param TName $name
-     */
-    protected function __construct(
-        public readonly string $file,
-        public readonly int $line,
-        public readonly ?int $column = null,
-        public readonly ?string $name = null,
-    ) {}
-
-    /**
      * @param non-empty-string $name
      * @return non-empty-string
      */
@@ -73,6 +60,45 @@ final class AnonymousClassId extends Id
             file: $file,
             line: $line,
             name: $reflection->name,
+        );
+    }
+
+    /**
+     * @param non-empty-string $file
+     * @param positive-int $line
+     * @param ?positive-int $column
+     * @param TName $name
+     */
+    protected function __construct(
+        public readonly string $file,
+        public readonly int $line,
+        public readonly ?int $column = null,
+        public readonly ?string $name = null,
+    ) {}
+
+    /**
+     * @param positive-int $column
+     * @return self<TName>
+     */
+    public function withColumn(int $column): self
+    {
+        return new self(
+            file: $this->file,
+            line: $this->line,
+            column: $column,
+            name: $this->name,
+        );
+    }
+
+    /**
+     * @return self<TName>
+     */
+    public function withoutColumn(): self
+    {
+        return new self(
+            file: $this->file,
+            line: $this->line,
+            name: $this->name,
         );
     }
 
