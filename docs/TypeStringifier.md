@@ -13,7 +13,7 @@ use Typhoon\Type\types;
 use function Typhoon\Type\stringify;
 
 echo stringify(
-    types::arrayShape([
+    types::arrayShapeUnsealed([
         'a' => types::nonEmptyString,
         'b' => types::optional(types::union(types::int, types::float)),
         'c' => types::object(Traversable::class, types::numericString, types::false),
