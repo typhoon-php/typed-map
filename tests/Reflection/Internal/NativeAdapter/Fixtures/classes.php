@@ -18,6 +18,13 @@ namespace Simple
 
     enum JustEnum {}
 
+    enum UnitEnum
+    {
+        case X;
+        case Y;
+        case Z;
+    }
+
     enum EmptyIntEnum: int {}
 
     enum IntEnum: int

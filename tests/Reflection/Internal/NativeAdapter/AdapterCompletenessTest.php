@@ -5,30 +5,27 @@ declare(strict_types=1);
 namespace Typhoon\Reflection\Internal\NativeAdapter;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
-use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 #[CoversNothing]
 final class AdapterCompletenessTest extends TestCase
 {
     /**
-     * @return \Generator<class-string, array{class-string}>
+     * @param class-string $class
      */
-    public static function adapterClasses(): \Generator
-    {
-        yield FunctionAdapter::class => [FunctionAdapter::class];
-        yield AttributeAdapter::class => [AttributeAdapter::class];
-        yield ClassConstantAdapter::class => [ClassConstantAdapter::class];
-        yield ClassAdapter::class => [ClassAdapter::class];
-        yield MethodAdapter::class => [MethodAdapter::class];
-        yield ParameterAdapter::class => [ParameterAdapter::class];
-        yield PropertyAdapter::class => [PropertyAdapter::class];
-        yield NamedTypeAdapter::class => [NamedTypeAdapter::class];
-        yield UnionTypeAdapter::class => [UnionTypeAdapter::class];
-        yield IntersectionTypeAdapter::class => [IntersectionTypeAdapter::class];
-    }
-
-    #[DataProvider('adapterClasses')]
+    #[TestWith([FunctionAdapter::class])]
+    #[TestWith([AttributeAdapter::class])]
+    #[TestWith([ClassConstantAdapter::class])]
+    #[TestWith([ClassAdapter::class])]
+    #[TestWith([EnumAdapter::class])]
+    #[TestWith([MethodAdapter::class])]
+    #[TestWith([ParameterAdapter::class])]
+    #[TestWith([PropertyAdapter::class])]
+    #[TestWith([NamedTypeAdapter::class])]
+    #[TestWith([UnionTypeAdapter::class])]
+    #[TestWith([IntersectionTypeAdapter::class])]
+    #[TestWith([EnumBackedCaseAdapter::class])]
     public function testAllMethodsImplemented(string $class): void
     {
         foreach ((new \ReflectionClass($class))->getMethods() as $method) {

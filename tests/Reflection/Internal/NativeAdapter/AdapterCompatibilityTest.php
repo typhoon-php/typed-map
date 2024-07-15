@@ -16,16 +16,19 @@ use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Variance;
 
 #[CoversClass(AttributeAdapter::class)]
-#[CoversClass(ClassConstantAdapter::class)]
-#[CoversClass(ClassAdapter::class)]
-#[CoversClass(MethodAdapter::class)]
+#[CoversClass(FunctionAdapter::class)]
 #[CoversClass(ParameterAdapter::class)]
+#[CoversClass(ClassAdapter::class)]
+#[CoversClass(EnumAdapter::class)]
+#[CoversClass(ClassConstantAdapter::class)]
+#[CoversClass(EnumUnitCaseAdapter::class)]
+#[CoversClass(EnumBackedCaseAdapter::class)]
 #[CoversClass(PropertyAdapter::class)]
-#[CoversClass(NamedTypeAdapter::class)]
+#[CoversClass(MethodAdapter::class)]
 #[CoversClass(ToNativeTypeConverter::class)]
+#[CoversClass(NamedTypeAdapter::class)]
 #[CoversClass(UnionTypeAdapter::class)]
 #[CoversClass(IntersectionTypeAdapter::class)]
-#[CoversClass(FunctionAdapter::class)]
 final class AdapterCompatibilityTest extends TestCase
 {
     private const MOCKS_DIR = __DIR__ . '/../../../../var/mocks';
@@ -59,6 +62,7 @@ final class AdapterCompatibilityTest extends TestCase
     public function testClasses(string $name): void
     {
         $native = new \ReflectionClass($name);
+        $native = $native->isEnum() ? new \ReflectionEnum($name) : $native;
 
         $typhoon = self::$typhoonReflector->reflectClass($name)->toNative();
 
@@ -180,6 +184,18 @@ final class AdapterCompatibilityTest extends TestCase
         }
         // TODO setStaticPropertyValue()
 
+        if ($native instanceof \ReflectionEnum) {
+            self::assertInstanceOf(\ReflectionEnum::class, $typhoon, 'class::class');
+            self::assertReflectionsEqualNoOrder($native->getCases(), $typhoon->getCases(), 'class.getCases()');
+            self::assertTypeEquals($native->getBackingType(), $typhoon->getBackingType(), 'class.getBackingType()');
+
+            foreach ($native->getCases() as $nativeCase) {
+                self::assertTrue($typhoon->hasCase($nativeCase->name), "class.hasCase({$nativeCase->name})");
+                $typhoonCase = $typhoon->getCase($nativeCase->name);
+                self::assertConstantEquals($nativeCase, $typhoonCase, "class.getCase({$nativeCase->name})");
+            }
+        }
+
         // CONSTANTS
 
         self::assertSame($native->getConstants(), $typhoon->getConstants(), 'class.getConstants().name');
@@ -268,6 +284,16 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->isPrivate(), $typhoon->isPrivate(), $messagePrefix . '.isPrivate()');
         self::assertSame($native->isProtected(), $typhoon->isProtected(), $messagePrefix . '.isProtected()');
         self::assertSame($native->isPublic(), $typhoon->isPublic(), $messagePrefix . '.isPublic()');
+
+        if ($native instanceof \ReflectionEnumUnitCase) {
+            self::assertInstanceOf(\ReflectionEnumUnitCase::class, $typhoon, $messagePrefix . '::class');
+            self::assertReflectionsEqualNoOrder([$native->getEnum()], [$typhoon->getEnum()], $messagePrefix . '.getEnum()');
+
+            if ($native instanceof \ReflectionEnumBackedCase) {
+                self::assertInstanceOf(\ReflectionEnumBackedCase::class, $typhoon, $messagePrefix . '::class');
+                self::assertSame($native->getBackingValue(), $typhoon->getBackingValue(), $messagePrefix . '.getBackingValue()');
+            }
+        }
     }
 
     private static function assertPropertyEquals(\ReflectionProperty $native, \ReflectionProperty $typhoon, string $messagePrefix): void
