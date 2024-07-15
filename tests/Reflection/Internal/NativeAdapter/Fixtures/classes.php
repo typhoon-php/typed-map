@@ -155,6 +155,7 @@ namespace Properties
              * I am promoted property!
              */
             private readonly string $promotedWithPhpDoc,
+            private readonly string $promotedWithDefault = '',
         ) {
         }
     }
