@@ -15,6 +15,7 @@ final class DefaultTypeVisitorTest extends TestCase
     {
         $this->expectNotToPerformAssertions();
 
+        /** @phpstan-ignore expr.resultUnused */
         new /** @extends DefaultTypeVisitor<null> */ class () extends DefaultTypeVisitor {
             protected function default(Type $type): mixed
             {
