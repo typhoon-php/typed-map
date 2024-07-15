@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace
 {
-    function rootNamespaceFunction() {}
+    function adapterCompatibilityTestRootNamespaceFunction() {}
 }
 
-namespace FunctionsIn\Namespace {
+namespace AdapterCompatibilityTest\FunctionsInNamespace {
 
     function functionWitALotOfTypes(
         $noType,
@@ -40,4 +40,17 @@ namespace FunctionsIn\Namespace {
     function &byReference(string &$a): int {}
 
     function variadic(string ...$a): void {}
+
+    #[\Attribute(\Attribute::TARGET_ALL|\Attribute::IS_REPEATABLE)]
+    final class Attr
+    {
+        public function __construct(public readonly string $value) {}
+        public function __toString(): string { return __FILE__; }
+    }
+
+    #[Attr('function')]
+    function functionWitAttributes(
+        #[Attr('param')]
+        string $param
+    ): void {}
 }
