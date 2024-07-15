@@ -8,12 +8,13 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Finder\Finder;
-use Typhoon\PhpStormReflectionStubs\PhpStormStubsLocator;
 use Typhoon\Reflection\TyphoonReflector;
 
 #[CoversNothing]
 final class TyphoonReflectorFunctionalTest extends TestCase
 {
+    private static ?TyphoonReflector $reflector = null;
+
     /**
      * @return \Generator<string, array{string}>
      */
@@ -27,9 +28,11 @@ final class TyphoonReflectorFunctionalTest extends TestCase
     #[DataProvider('files')]
     public function test(string $file): void
     {
+        self::$reflector ??= TyphoonReflector::build();
         /** @psalm-suppress UnresolvableInclude */
         $test = require_once $file;
         \assert($test instanceof \Closure);
-        $test(TyphoonReflector::build(locators: [new PhpStormStubsLocator()]));
+
+        $test(self::$reflector, $this);
     }
 }
