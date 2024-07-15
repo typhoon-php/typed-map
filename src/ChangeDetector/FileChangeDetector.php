@@ -22,6 +22,20 @@ final class FileChangeDetector implements ChangeDetector
     /**
      * @param non-empty-string $file
      */
+    public static function fromFile(string $file): self
+    {
+        $contents = @file_get_contents($file);
+
+        if ($contents === false) {
+            throw new \RuntimeException(sprintf('File "%s" does not exist or is not readable', $file));
+        }
+
+        return self::fromFileAndContents($file, $contents);
+    }
+
+    /**
+     * @param non-empty-string $file
+     */
     public static function fromFileAndContents(string $file, string $contents): self
     {
         $mtime = @filemtime($file);
