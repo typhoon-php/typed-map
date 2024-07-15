@@ -1,0 +1,7 @@
+<?php
+
+/**
+ * @template-covariant TEnum of UnitEnum
+ * @extends ReflectionClass<TEnum>
+ */
+class ReflectionEnum {}
