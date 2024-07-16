@@ -41,6 +41,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['negative-int', types::negativeInt];
         yield ['non-positive-int', types::nonPositiveInt];
         yield ['non-negative-int', types::nonNegativeInt];
+        yield ['non-zero-int', types::nonZeroInt];
         yield ['int-mask', types::intMaskOf(types::never)];
         yield ['int-mask<1>', types::intMask(1)];
         yield ['int-mask<1|2>', types::intMask(1, 2)];
