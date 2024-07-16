@@ -123,10 +123,10 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['array{a?: int}', types::arrayShape(['a' => types::optional(types::int)])];
         yield ['array{a: int, ...}', types::arrayShapeUnsealed(['a' => types::int], value: types::mixed)];
         yield ['array{...}', types::arrayShapeUnsealed(value: types::mixed)];
-        yield ['list{}', types::listShapeSealed()];
-        yield ['list{int}', types::listShapeSealed([types::int])];
-        yield ['list{int, 1?: string}', types::listShapeSealed([types::int, 1 => types::optional(types::string)])];
-        yield ['list{...}', types::listShape(value: types::mixed)];
+        yield ['list{}', types::listShape()];
+        yield ['list{int}', types::listShape([types::int])];
+        yield ['list{int, 1?: string}', types::listShape([types::int, 1 => types::optional(types::string)])];
+        yield ['list{...}', types::listShapeUnsealed(value: types::mixed)];
         yield ['iterable', types::iterable()];
         yield ['iterable<mixed>', types::iterable()];
         yield ['iterable<int>', types::iterable(value: types::int)];
