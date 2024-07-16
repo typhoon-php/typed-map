@@ -36,6 +36,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['bool', types::bool];
         yield ['literal-int', types::literalInt];
         yield ['int', types::int];
+        yield ['integer', types::int];
         yield ['?int', types::nullable(types::int)];
         yield ['positive-int', types::positiveInt];
         yield ['negative-int', types::negativeInt];
@@ -71,6 +72,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['\stdClass::class', types::classString(types::object(\stdClass::class))];
         yield ['class-string<\stdClass>', types::classString(types::object(\stdClass::class))];
         yield ['float', types::float];
+        yield ['double', types::float];
         yield ['lowercase-string', types::lowercaseString];
         yield ['non-empty-lowercase-string', types::intersection(types::nonEmptyString, types::lowercaseString)];
         yield ['literal-string', types::literalString];
