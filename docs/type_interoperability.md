@@ -31,23 +31,23 @@
 
 ## Numbers
 
-| PHPStan                   | Psalm                        | Typhoon                                                         |
-|---------------------------|------------------------------|-----------------------------------------------------------------|
-| `literal-int`             | `literal-int`                | `types::literalInt`                                             |
-| `123`                     | `123`                        | `types::int(123)`, `types::scalar(123)`                         |
-| `positive-int`            | `positive-int`               | `types::positiveInt`                                            |
-| `negative-int`            | `negative-int`               | `types::negativeInt`                                            |
-| `non-positive-int`        | `non-positive-int`           | `types::nonPositiveInt`                                         |
-| `non-negative-int`        | `non-negative-int`           | `types::nonNegativeInt`                                         |
-| `non-zero-int`            | `negative-int\|positive-int` | `types::nonZeroInt`                                             |
-| `int<-5, 6>`              | `int<-5, 6>`                 | `types::intRange(-5, 6)`                                        |
-| `int<min, 6>`             | `int<min, 6>`                | `types::intRange(max: 6)`                                       |
-| `int<-5, max>`            | `int<-5, max>`               | `types::intRange(min: -5)`                                      |
-| `int-mask<1, 2, 4>`       | `int-mask<1, 2, 4>`          | `types::intMask(1, 2, 4)`                                       |
-| `int-mask-of<Foo::INT_*>` | `int-mask-of<Foo::INT_*>`    | `types::intMaskOf(types::classConstantMask(Foo::class, 'INT_')` |
-| ❌                         | ❌                            | `types::literalFloat`                                           |
-| `12.5`                    | `12.5`                       | `types::int(12.5)`, `types::scalar(12.5)`                       |
-| `numeric`                 | `numeric`                    | `types::numeric`                                                |
+| PHPStan                   | Psalm                        | Typhoon                                                      |
+|---------------------------|------------------------------|--------------------------------------------------------------|
+| `literal-int`             | `literal-int`                | `types::literalInt`                                          |
+| `123`                     | `123`                        | `types::int(123)`, `types::scalar(123)`                      |
+| `positive-int`            | `positive-int`               | `types::positiveInt`                                         |
+| `negative-int`            | `negative-int`               | `types::negativeInt`                                         |
+| `non-positive-int`        | `non-positive-int`           | `types::nonPositiveInt`                                      |
+| `non-negative-int`        | `non-negative-int`           | `types::nonNegativeInt`                                      |
+| `non-zero-int`            | `negative-int\|positive-int` | `types::nonZeroInt`                                          |
+| `int<-5, 6>`              | `int<-5, 6>`                 | `types::intRange(-5, 6)`                                     |
+| `int<min, 6>`             | `int<min, 6>`                | `types::intRange(max: 6)`                                    |
+| `int<-5, max>`            | `int<-5, max>`               | `types::intRange(min: -5)`                                   |
+| `int-mask<1, 2, 4>`       | `int-mask<1, 2, 4>`          | `types::intMask(1, 2, 4)`                                    |
+| `int-mask-of<Foo::INT_*>` | `int-mask-of<Foo::INT_*>`    | `types::intMaskOf(types::classConstMask(Foo::class, 'INT_')` |
+| ❌                         | ❌                            | `types::literalFloat`                                        |
+| `12.5`                    | `12.5`                       | `types::int(12.5)`, `types::scalar(12.5)`                    |
+| `numeric`                 | `numeric`                    | `types::numeric`                                             |
 
 ## Strings
 
@@ -70,11 +70,11 @@
 
 ## Constants
 
-| PHPStan       | Psalm         | Typhoon                                                                                   |
-|---------------|---------------|-------------------------------------------------------------------------------------------|
-| `PHP_INT_MAX` | `PHP_INT_MAX` | `types::constant('PHP_INT_MAX')`                                                          |
-| `Foo::BAR`    | `Foo::BAR`    | `types::classConstant(Foo::class, 'BAR')`                                                 |
-| `Foo::IS_*`   | `Foo::IS_*`   | `types::classConstant(Foo::class, 'IS_*')`, `types::classConstantMask(Foo::class, 'IS_')` |
+| PHPStan       | Psalm         | Typhoon                                                                             |
+|---------------|---------------|-------------------------------------------------------------------------------------|
+| `PHP_INT_MAX` | `PHP_INT_MAX` | `types::const('PHP_INT_MAX')`                                                       |
+| `Foo::BAR`    | `Foo::BAR`    | `types::classConst(Foo::class, 'BAR')`                                              |
+| `Foo::IS_*`   | `Foo::IS_*`   | `types::classConst(Foo::class, 'IS_*')`, `types::classConstMask(Foo::class, 'IS_')` |
 
 ## Arrays and iterables
 
@@ -96,8 +96,8 @@
 | `array{int, a?: string}`                                         | `array{int, a?: string}`                  | `types::arrayShape([types::int, 'a' => types::optional(types::string)])`                                            |
 | `array{int, ...}`                                                | `array{int, ...}`                         | `types::unsealedArrayShape([types::int])`                                                                           |
 | ❌ ([issue](https://github.com/phpstan/phpdoc-parser/issues/245)) | `array{float, ...<int, string>}`          | `types::unsealedArrayShape([types::float], types::int, types::string)`                                              |
-| `key-of<Foo::ARRAY>`                                             | `key-of<Foo::ARRAY>`                      | `types::keyOf(types::classConstant(Foo::class, 'ARRAY'))`                                                           |
-| `value-of<Foo::ARRAY>`                                           | `value-of<Foo::ARRAY>`                    | `types::valueOf(types::classConstant(Foo::class, 'ARRAY'))`                                                         |
+| `key-of<Foo::ARRAY>`                                             | `key-of<Foo::ARRAY>`                      | `types::keyOf(types::classConst(Foo::class, 'ARRAY'))`                                                              |
+| `value-of<Foo::ARRAY>`                                           | `value-of<Foo::ARRAY>`                    | `types::valueOf(types::classConst(Foo::class, 'ARRAY'))`                                                            |
 | `TArray[TKey]`                                                   | `TArray[TKey]`                            | `types::offset($arrayType, $keyType)`                                                                               |
 | `iterable<object, string>`                                       | `iterable<object, string>`                | `types::iterable(types::object, types::string)`                                                                     |
 | `iterable<string>`                                               | `iterable<string>`                        | `types::iterable(value: types::string)`                                                                             |
@@ -130,11 +130,13 @@
 
 ## Other
 
-| PHPStan                           | Psalm                             | Typhoon                                                                           |
-|-----------------------------------|-----------------------------------|-----------------------------------------------------------------------------------|
-| `scalar`                          | `scalar`                          | `types::scalar`                                                                   |
-| `(T is string ? true : false)`    | `(T is string ? true : false)`    | `types::conditional($type, types::string, types::true, types::false)`             |
-| `($arg is string ? true : false)` | `($arg is string ? true : false)` | `types::conditional(types::arg('arg'), types::string, types::true, types::false)` |
-| `!null` (only in assertions)      | `!null` (only in assertions)      | `types::not(types::null)`                                                         |
-| `open-resource`                   | `open-resource`                   | ❌                                                                                 |
-| `closed-resource`                 | `closed-resource`                 | ❌                                                                                 |
+| PHPStan                           | Psalm                             | Typhoon                                                                                                                         |
+|-----------------------------------|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `scalar`                          | `scalar`                          | `types::scalar`                                                                                                                 |
+| Template `T`                      | Template `T`                      | `types::functionTemplate('foo', 'T')`, `types::classTemplate(Foo::class, 'T')`, `types::methodTemplate(Foo::class, 'bar', 'T')` |
+| Alias `X`                         | Alias `X`                         | `types::classAlias(Foo::class, 'X')`                                                                                            |
+| `(T is string ? true : false)`    | `(T is string ? true : false)`    | `types::conditional($type, types::string, types::true, types::false)`                                                           |
+| `($arg is string ? true : false)` | `($arg is string ? true : false)` | `types::conditional(types::arg('arg'), types::string, types::true, types::false)`                                               |
+| `!null` (only in assertions)      | `!null` (only in assertions)      | `types::not(types::null)`                                                                                                       |
+| `open-resource`                   | `open-resource`                   | ❌                                                                                                                               |
+| `closed-resource`                 | `closed-resource`                 | ❌                                                                                                                               |
