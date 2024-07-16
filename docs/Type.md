@@ -29,7 +29,7 @@ use Typhoon\Type\types;
 $type = types::unsealedArrayShape([
     'a' => types::nonEmptyString,
     'b' => types::optional(types::union(types::int, types::float)),
-    'c' => types::object(Traversable::class, types::numericString, types::false),
+    'c' => types::object(Traversable::class, [types::numericString, types::false]),
     'd' => types::callable(
         parameters: [
             types::classConstant(PDO::class, '*'),

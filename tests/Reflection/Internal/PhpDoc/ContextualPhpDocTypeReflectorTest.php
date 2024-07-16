@@ -136,7 +136,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['string[]', types::array(value: types::string)];
         yield ['\stdClass', types::object(\stdClass::class)];
         yield ['\Traversable', types::object(\Traversable::class)];
-        yield ['\stdClass<int, string>', types::object(\stdClass::class, types::int, types::string)];
+        yield ['\stdClass<int, string>', types::object(\stdClass::class, [types::int, types::string])];
         yield ['object{}', types::objectShape()];
         yield ['object{a: int}', types::objectShape(['a' => types::int])];
         yield ['object{a?: int}', types::objectShape(['a' => types::optional(types::int)])];

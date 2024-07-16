@@ -88,7 +88,7 @@ final class StringifyTest extends TestCase
         yield [types::unsealedArrayShape(['a' => types::float], key: types::int, value: types::string), 'array{a: float, ...<int, string>}'];
         yield [types::object, 'object'];
         yield [types::object(\ArrayObject::class), 'ArrayObject'];
-        yield [types::object(\ArrayObject::class, types::arrayKey, types::string), 'ArrayObject<int|string, string>'];
+        yield [types::object(\ArrayObject::class, [types::arrayKey, types::string]), 'ArrayObject<int|string, string>'];
         yield [types::union(types::int, types::string), 'int|string'];
         yield [types::union(types::int, types::union(types::string, types::float)), 'int|string|float'];
         yield [types::union(types::int, types::intersection(types::string, types::float)), 'int|(string&float)'];
@@ -134,8 +134,8 @@ final class StringifyTest extends TestCase
         yield [types::offset(types::classTemplate('A', 'T'), types::string('abc')), "T#A['abc']"];
         yield [types::alias(Id::alias('Some', 'A')), 'A@Some'];
         yield [types::static(), 'static'];
-        yield [types::static('X\Y'), 'static@X\Y'];
-        yield [types::static('X\Y', types::string), 'static@X\Y<string>'];
+        yield [types::static(resolvedClass: 'X\Y'), 'static@X\Y'];
+        yield [types::static([types::string], 'X\Y'), 'static@X\Y<string>'];
     }
 
     #[DataProvider('types')]

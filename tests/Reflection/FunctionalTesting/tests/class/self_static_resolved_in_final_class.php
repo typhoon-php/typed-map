@@ -22,6 +22,6 @@ return static function (TyphoonReflector $reflector): void {
             PHP,
     ))->reflectClass('A');
 
-    assertEquals(types::self('A'), $reflection->properties()['self']->type());
-    assertEquals(types::static('A'), $reflection->properties()['static']->type());
+    assertEquals(types::self(resolvedClass: 'A'), $reflection->properties()['self']->type());
+    assertEquals(types::static(resolvedClass: 'A'), $reflection->properties()['static']->type());
 };
