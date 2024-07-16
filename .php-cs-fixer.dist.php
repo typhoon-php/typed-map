@@ -11,7 +11,10 @@ $config = (new Config())
         Finder::create()
             ->in(__DIR__ . '/src')
             ->in(__DIR__ . '/tools/psalm/src')
-            ->append([__FILE__])
+            ->append([
+                __FILE__,
+                __DIR__ . '/.visitors.php-cs-fixer.dist.php',
+            ])
             ->append(
                 Finder::create()
                     ->in(__DIR__ . '/tests')
@@ -20,7 +23,7 @@ $config = (new Config())
                     ]),
             ),
     )
-    ->setCacheFile(__DIR__ . '/var/.php-cs-fixer.cache');
+    ->setCacheFile(__DIR__ . '/var/' . basename(__FILE__, '.dist.php') . '.cache');
 
 (new PhpCsFixerCodingStandard())->applyTo($config, [
     'final_public_method_for_abstract_class' => false,

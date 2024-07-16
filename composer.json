@@ -73,7 +73,10 @@
             "@composer install --working-dir=src/Type",
             "tools/composer-require-checker/vendor/bin/composer-require-checker check src/Type/composer.json"
         ],
-        "fixcs": "php-cs-fixer fix -v",
+        "fixcs": [
+            "php-cs-fixer fix -v --config=.visitors.php-cs-fixer.dist.php",
+            "php-cs-fixer fix -v"
+        ],
         "normalize-all": [
             "@composer normalize --diff",
             "@composer normalize --diff src/ChangeDetector/composer.json",
