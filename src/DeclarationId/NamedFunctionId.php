@@ -6,11 +6,12 @@ namespace Typhoon\DeclarationId;
 
 /**
  * @api
+ * @template-covariant TName of non-empty-string
  */
 final class NamedFunctionId extends Id
 {
     /**
-     * @param non-empty-string $name
+     * @param TName $name
      */
     protected function __construct(
         public readonly string $name,

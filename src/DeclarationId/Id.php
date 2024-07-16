@@ -31,7 +31,9 @@ abstract class Id implements \JsonSerializable
     }
 
     /**
-     * @param non-empty-string $name
+     * @template TName of non-empty-string
+     * @param TName $name
+     * @return NamedFunctionId<TName>
      */
     final public static function namedFunction(string $name): NamedFunctionId
     {
