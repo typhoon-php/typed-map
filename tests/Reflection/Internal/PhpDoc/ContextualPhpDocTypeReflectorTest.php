@@ -142,10 +142,10 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['object{a?: int}', types::objectShape(['a' => types::optional(types::int)])];
         yield ['\stdClass::C', types::classConstant(types::object(\stdClass::class), 'C')];
         yield ['\stdClass::C_*', types::classConstantMask(types::object(\stdClass::class), 'C_')];
-        yield ['key-of<array>', types::key(types::array())];
+        yield ['key-of<array>', types::keyOf(types::array())];
         yield ['key-of', new InvalidPhpDocType('key-of type should have 1 argument, got 0')];
         yield ['key-of<array, array>', new InvalidPhpDocType('key-of type should have 1 argument, got 2')];
-        yield ['value-of<array>', types::value(types::array())];
+        yield ['value-of<array>', types::valueOf(types::array())];
         yield ['value-of', new InvalidPhpDocType('value-of type should have 1 argument, got 0')];
         yield ['value-of<array, array>', new InvalidPhpDocType('value-of type should have 1 argument, got 2')];
         yield ['\Traversable&\Countable', types::intersection(types::object(\Traversable::class), types::object(\Countable::class))];
