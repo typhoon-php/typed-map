@@ -1,25 +1,32 @@
 # Typhoon Types Interoperability
 
-## Basic
+## PHP Native Types
 
-| PHPStan                     | Psalm      | Typhoon           |
-|-----------------------------|------------|-------------------|
-| `null`                      | `null`     | `types::null`     |
-| `void`                      | `void`     | `types::void`     |
-| `never`                     | `never`    | `types::never`    |
-| `true`                      | `true`     | `types::true`     |
-| `false`                     | `false`    | `types::false`    |
-| `bool`                      | `bool`     | `types::bool`     |
-| `int`                       | `int`      | `types::int`      |
-| `float`, `double`           | `float`    | `types::float`    |
-| `string`                    | `string`   | `types::string`   |
-| `scalar`                    | `scalar`   | `types::scalar`   |
-| `resource`                  | `resource` | `types::resource` |
-| `array`                     | `array`    | `types::array`    |
-| `iterable`                  | `iterable` | `types::iterable` |
-| `object`                    | `object`   | `types::object`   |
-| `callable`, `pure-callable` | `callable` | `types::callable` |
-| `mixed`                     | `mixed`    | `types::mixed`    |
+| PHPStan           | Psalm       | Typhoon                     |
+|-------------------|-------------|-----------------------------|
+| `null`            | `null`      | `types::null`               |
+| `void`            | `void`      | `types::void`               |
+| `never`           | `never`     | `types::never`              |
+| `true`            | `true`      | `types::true`               |
+| `false`           | `false`     | `types::false`              |
+| `bool`, `boolean` | `bool`      | `types::bool`               |
+| `int`, `integer`  | `int`       | `types::int`                |
+| `float`, `double` | `float`     | `types::float`              |
+| `string`          | `string`    | `types::string`             |
+| `scalar`          | `scalar`    | `types::scalar`             |
+| `numeric`         | `numeric`   | `types::numeric`            |
+| `resource`        | `resource`  | `types::resource`           |
+| `array`           | `array`     | `types::array`              |
+| `iterable`        | `iterable`  | `types::iterable`           |
+| `object`          | `object`    | `types::object`             |
+| `Foo`             | `Foo`       | `types::object(Foo::class)` |
+| `Closure`         | `Closure`   | `types::closure`            |
+| `Generator`       | `Generator` | `types::generator()`        |
+| `self`            | `self`      | `types::self()`             |
+| `parent`          | `parent`    | `types::parent()`           |
+| `static`          | `static`    | `types::static()`           |
+| `callable`        | `callable`  | `types::callable`           |
+| `mixed`           | `mixed`     | `types::mixed`              |
 
 ## Advanced Integers
 
@@ -42,7 +49,7 @@
 
 | PHPStan                | Psalm  | Typhoon                                   |
 |------------------------|--------|-------------------------------------------|
-|                        |        | `literal-float`                           |
+|                        |        | `types::literalFloat`                     |
 | `12.5` (float literal) | `12.5` | `types::int(12.5)`, `types::scalar(12.5)` |
 
 ## Advanced Strings
@@ -50,7 +57,7 @@
 | PHPStan                             | Psalm                               | Typhoon                                                                  |
 |-------------------------------------|-------------------------------------|--------------------------------------------------------------------------|
 | `non-empty-string`                  | `non-empty-string`                  | `types::nonEmptyString`                                                  |
-| `literal-string`                    | `literal-string`                    | `literal-string`                                                         |
+| `literal-string`                    | `literal-string`                    | `types::literalString`                                                   |
 | `'abc'` (string literal)            | `'abc'`                             | `types::string('abc')`                                                   |
 | `truthy-string`, `non-falsy-string` | `truthy-string`, `non-falsy-string` | `types::truthyString`, `types::nonFalsyString`                           |
 | `numeric-string`                    | `numeric-string`                    | `types::numericString`                                                   |
@@ -70,3 +77,4 @@
 |-------------------|-------------------|---------|
 | `open-resource`   | `open-resource`   |         |
 | `closed-resource` | `closed-resource` |         |
+| `pure-callable`   | `pure-callable`   |         |
