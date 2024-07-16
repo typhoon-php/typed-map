@@ -34,6 +34,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['false', types::false];
         yield ['true', types::true];
         yield ['bool', types::bool];
+        yield ['boolean', types::bool];
         yield ['literal-int', types::literalInt];
         yield ['int', types::int];
         yield ['integer', types::int];
@@ -79,7 +80,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['literal-float', types::literalFloat];
         yield ['numeric-string', types::numericString];
         yield ['class-string', types::classString];
-        yield ['callable-string', types::intersection(types::callable(), types::string)];
+        yield ['callable-string', types::callableString];
         yield ['interface-string', types::classString];
         yield ['enum-string', types::classString];
         yield ['trait-string', types::classString];
