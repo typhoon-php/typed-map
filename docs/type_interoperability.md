@@ -18,8 +18,8 @@
 | `iterable`              | `iterable`              | `types::iterable`                                                                         |
 | `object`                | `object`                | `types::object`                                                                           |
 | `Foo`                   | `Foo`                   | `types::object(Foo::class)`                                                               |
-| `Closure`               | `Closure`               | `types::closure` (a shorthand for `types::object(Closure::class)`)                        |
-| `Generator`             | `Generator`             | `types::generator()` (a shorthand for `types::object(Generator::class)`)                  |
+| `Closure`               | `Closure`               | `types::closure` (an alias for `types::object(Closure::class)`)                           |
+| `Generator`             | `Generator`             | `types::generator()` (an alias for `types::object(Generator::class)`)                     |
 | `self`                  | `self`                  | `types::self()`                                                                           |
 | `parent`                | `parent`                | `types::parent()`                                                                         |
 | `static`                | `static`                | `types::static()`                                                                         |
@@ -51,22 +51,21 @@
 
 ## Strings
 
-| PHPStan                             | Psalm                               | Typhoon                                                              |
-|-------------------------------------|-------------------------------------|----------------------------------------------------------------------|
-| `non-empty-string`                  | `non-empty-string`                  | `types::nonEmptyString`                                              |
-| `literal-string`                    | `literal-string`                    | `types::literalString`                                               |
-| `'abc'`                             | `'abc'`                             | `types::string('abc')`, `types::scalar('abc')`                       |
-| `truthy-string`, `non-falsy-string` | `truthy-string`, `non-falsy-string` | `types::truthyString`, `types::nonFalsyString`                       |
-| `numeric-string`                    | `numeric-string`                    | `types::numericString`                                               |
-| `callable-string`                   | `callable-string`                   | `types::callableString`                                              |
-| ❌                                   | `lowercase-string`                  | `types::lowercaseString`                                             |
-| ❌                                   | `non-empty-lowercase-string`        | `types::intersection(types::nonEmptyString, types::lowercaseString)` |
-| `Foo::class`                        | `Foo::class`                        | `types::class(Foo::class)`                                           |
-| `class-string`                      | `class-string`                      | `types::classString`                                                 |
-| ❌                                   | `interface-string`                  | ❌                                                                    |
-| ❌                                   | `trait-string`                      | ❌                                                                    |
-| ❌                                   | `enum-string`                       | ❌                                                                    |
-| `class-string<Foo>`                 | `class-string<Foo>`                 | `types::classString(types::object(Foo::class))`                      |
+| PHPStan                             | Psalm                               | Typhoon                                         |
+|-------------------------------------|-------------------------------------|-------------------------------------------------|
+| `non-empty-string`                  | `non-empty-string`                  | `types::nonEmptyString`                         |
+| `literal-string`                    | `literal-string`                    | `types::literalString`                          |
+| `'abc'`                             | `'abc'`                             | `types::string('abc')`, `types::scalar('abc')`  |
+| `truthy-string`, `non-falsy-string` | `truthy-string`, `non-falsy-string` | `types::truthyString`, `types::nonFalsyString`  |
+| `numeric-string`                    | `numeric-string`                    | `types::numericString`                          |
+| `callable-string`                   | `callable-string`                   | `types::callableString`                         |
+| `class-string<Foo>`                 | `class-string<Foo>`                 | `types::classString(types::object(Foo::class))` |
+| `Foo::class`                        | `Foo::class`                        | `types::class(Foo::class)`                      |
+| `class-string`                      | `class-string`                      | `types::classString`                            |
+| ❌                                   | `interface-string`                  | ❌                                               |
+| ❌                                   | `trait-string`                      | ❌                                               |
+| ❌                                   | `enum-string`                       | ❌                                               |
+| ❌                                   | `lowercase-string`                  | ❌                                               |
 
 ## Constants
 

@@ -74,8 +74,6 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['class-string<\stdClass>', types::classString(types::object(\stdClass::class))];
         yield ['float', types::float];
         yield ['double', types::float];
-        yield ['lowercase-string', types::lowercaseString];
-        yield ['non-empty-lowercase-string', types::intersection(types::nonEmptyString, types::lowercaseString)];
         yield ['literal-string', types::literalString];
         yield ['literal-float', types::literalFloat];
         yield ['numeric-string', types::numericString];

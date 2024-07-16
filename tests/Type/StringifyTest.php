@@ -49,7 +49,6 @@ final class StringifyTest extends TestCase
         yield [types::string("a'bcd"), "'a\\'bcd'"];
         yield [types::string("a\\\\'bcd"), "'a\\\\\\\\\\'bcd'"];
         yield [types::string("\n"), "'\\n'"];
-        yield [types::lowercaseString, 'lowercase-string'];
         yield [types::scalar, 'scalar'];
         yield [types::union(types::bool, types::int, types::float, types::string), 'scalar'];
         yield [types::resource, 'resource'];
