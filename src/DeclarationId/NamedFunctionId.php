@@ -12,7 +12,7 @@ final class NamedFunctionId extends Id
     /**
      * @param non-empty-string $name
      */
-    public function __construct(
+    protected function __construct(
         public readonly string $name,
     ) {}
 
