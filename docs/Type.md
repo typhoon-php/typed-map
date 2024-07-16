@@ -26,7 +26,7 @@ use Typhoon\Type\types;
  *     ...
  * }
  */
-$type = types::arrayShapeUnsealed([
+$type = types::unsealedArrayShape([
     'a' => types::nonEmptyString,
     'b' => types::optional(types::union(types::int, types::float)),
     'c' => types::object(Traversable::class, types::numericString, types::false),
