@@ -70,7 +70,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['"str"', types::string('str')];
         yield ["'str'", types::string('str')];
         yield ["'\\n'", types::string('\n')];
-        yield ['\stdClass::class', types::classString(types::object(\stdClass::class))];
+        yield ['\stdClass::class', types::class(\stdClass::class)];
         yield ['class-string<\stdClass>', types::classString(types::object(\stdClass::class))];
         yield ['float', types::float];
         yield ['double', types::float];
