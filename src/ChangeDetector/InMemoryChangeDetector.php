@@ -9,20 +9,25 @@ namespace Typhoon\ChangeDetector;
  */
 final class InMemoryChangeDetector implements ChangeDetector
 {
-    private bool $inMemory = true;
+    private bool $changed = false;
 
     public function changed(): bool
     {
-        return !$this->inMemory;
+        return $this->changed;
     }
 
     public function deduplicate(): array
     {
-        return [($this->inMemory ? 'true' : 'false') . '#in-memory' => $this];
+        return [($this->changed ? 'changed' : 'unchanged') . '#in-memory' => $this];
     }
 
     public function __serialize(): array
     {
-        return ['inMemory' => false];
+        return [];
+    }
+
+    public function __unserialize(array $_data): void
+    {
+        $this->changed = true;
     }
 }
