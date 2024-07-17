@@ -27,11 +27,6 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
 {
     private const PACKAGE = 'jetbrains/phpstorm-stubs';
 
-    /**
-     * @var ?non-empty-string
-     */
-    private static ?string $directory = null;
-
     private static null|false|ComposerPackageChangeDetector $packageChangeDetector = false;
 
     private static function packageChangeDetector(): ?ChangeDetector
@@ -41,25 +36,6 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
         }
 
         return self::$packageChangeDetector;
-    }
-
-    /**
-     * @return non-empty-string
-     */
-    private static function directory(): string
-    {
-        if (self::$directory !== null) {
-            return self::$directory;
-        }
-
-        if (\defined(PhpStormStubsMap::class . '::DIR')) {
-            return self::$directory = PhpStormStubsMap::DIR;
-        }
-
-        $file = (new \ReflectionClass(PhpStormStubsMap::class))->getFileName();
-        \assert($file !== false, sprintf('Failed to locate class %s', PhpStormStubsMap::class));
-
-        return self::$directory = \dirname($file);
     }
 
     public function locate(ConstantId|NamedFunctionId|NamedClassId $id): ?Resource
@@ -74,9 +50,8 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
             return null;
         }
 
-        $file = self::directory() . '/' . $relativePath;
-        $code = Resource::readFile(self::directory() . '/' . $relativePath);
-        $packageChangeDetector = self::packageChangeDetector();
+        $file = PhpStormStubsMap::DIR . '/' . $relativePath;
+        $code = Resource::readFile($file);
 
         return new Resource(
             code: $code,
@@ -84,7 +59,7 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
                 ->set(Data::PhpExtension, \dirname($relativePath))
                 ->set(Data::InternallyDefined, true)
                 ->set(Data::UnresolvedChangeDetectors, [
-                    $packageChangeDetector ?? FileChangeDetector::fromFileAndContents($file, $code),
+                    self::packageChangeDetector() ?? FileChangeDetector::fromFileAndContents($file, $code),
                 ]),
             hooks: [
                 new ApplyTentativeTypeAttribute(),
