@@ -33,13 +33,12 @@ return static function (TyphoonReflector $reflector): void {
             PHP,
     ))->reflectClass('A');
 
-    // TODO
-    // $constructor = $reflection->methods()['__construct'];
+    $constructor = $reflection->methods()['__construct'];
 
     assertEquals(types::nonEmptyString, $reflection->properties()['onlyParam']->type());
-    // assertEquals(types::nonEmptyString, $constructor->parameters()['onlyParam']->type());
+    assertEquals(types::nonEmptyString, $constructor->parameters()['onlyParam']->type());
     assertEquals(types::positiveInt, $reflection->properties()['onlyVar']->type());
-    // assertEquals(types::nonEmptyString, $constructor->parameters()['onlyVar']->type());
+    assertEquals(types::positiveInt, $constructor->parameters()['onlyVar']->type());
     assertEquals(types::classString, $reflection->properties()['paramAndVar']->type());
-    // assertEquals(types::scalar, $constructor->parameters()['paramAndVar']->type());
+    assertEquals(types::classString, $constructor->parameters()['paramAndVar']->type());
 };
