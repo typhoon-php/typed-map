@@ -56,9 +56,9 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
         return new Resource(
             code: $code,
             baseData: (new TypedMap())
-                ->set(Data::PhpExtension, \dirname($relativePath))
-                ->set(Data::InternallyDefined, true)
-                ->set(Data::UnresolvedChangeDetectors, [
+                ->with(Data::PhpExtension, \dirname($relativePath))
+                ->with(Data::InternallyDefined, true)
+                ->with(Data::UnresolvedChangeDetectors, [
                     self::packageChangeDetector() ?? FileChangeDetector::fromFileAndContents($file, $code),
                 ]),
             hooks: [

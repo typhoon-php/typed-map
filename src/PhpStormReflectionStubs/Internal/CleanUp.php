@@ -27,20 +27,20 @@ final class CleanUp implements ConstantReflectionHook, FunctionReflectionHook, C
     public function process(ConstantId|NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap
     {
         if ($id instanceof NamedClassId && $id->name === \Traversable::class) {
-            $data = $data->unset(Data::UnresolvedInterfaces);
+            $data = $data->without(Data::UnresolvedInterfaces);
         }
 
         return $this->cleanUp($data)
-            ->modifyIfSet(Data::ClassConstants, fn(array $constants): array => array_map($this->cleanUp(...), $constants))
-            ->modifyIfSet(Data::Properties, fn(array $properties): array => array_map($this->cleanUp(...), $properties))
-            ->modifyIfSet(Data::Methods, fn(array $methods): array => array_map($this->cleanUp(...), $methods));
+            ->withModifiedIfSet(Data::ClassConstants, fn(array $constants): array => array_map($this->cleanUp(...), $constants))
+            ->withModifiedIfSet(Data::Properties, fn(array $properties): array => array_map($this->cleanUp(...), $properties))
+            ->withModifiedIfSet(Data::Methods, fn(array $methods): array => array_map($this->cleanUp(...), $methods));
     }
 
     private function cleanUp(TypedMap $data): TypedMap
     {
         return $data
-            ->unset(Data::StartLine, Data::EndLine, Data::PhpDoc)
-            ->modifyIfSet(Data::Attributes, static fn(array $attributes): array => array_values(array_filter(
+            ->without(Data::StartLine, Data::EndLine, Data::PhpDoc)
+            ->withModifiedIfSet(Data::Attributes, static fn(array $attributes): array => array_values(array_filter(
                 $attributes,
                 static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClassName], self::ATTRIBUTE_PREFIX),
             )));

@@ -13,8 +13,8 @@ return static function (TyphoonReflector $reflector, TestCase $test): void {
     $reflector = $reflector->withResource(new Resource(
         '<?php new class {}; new class {};',
         (new TypedMap())
-            ->set(Data::File, 'some.php')
-            ->set(Data::UnresolvedChangeDetectors, [new InMemoryChangeDetector()]),
+            ->with(Data::File, 'some.php')
+            ->with(Data::UnresolvedChangeDetectors, [new InMemoryChangeDetector()]),
     ));
 
     $test->expectExceptionMessage('because 2 anonymous classes are declared at columns 11, 25');

@@ -21,7 +21,7 @@ final class ApplyTentativeTypeAttribute implements ClassReflectionHook
 
     public function process(NamedClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap
     {
-        return $data->set(Data::Methods, array_map(
+        return $data->with(Data::Methods, array_map(
             static function (TypedMap $method): TypedMap {
                 $type = $method[Data::Type];
 
@@ -29,7 +29,7 @@ final class ApplyTentativeTypeAttribute implements ClassReflectionHook
                     return $method;
                 }
 
-                return $method->set(Data::Type, $type->withTentative($type->native)->withNative(null));
+                return $method->with(Data::Type, $type->withTentative($type->native)->withNative(null));
             },
             $data[Data::Methods],
         ));
