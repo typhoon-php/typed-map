@@ -19,9 +19,16 @@ final class FileChangeDetectorTest extends TestCase
         $this->root = vfsStream::setup();
     }
 
-    public function testItThrowsIfFileDoesNotExist(): void
+    public function testFromFileThrowsIfFileDoesNotExist(): void
     {
-        $this->expectExceptionObject(new \RuntimeException('File "a.txt" does not exist or is not readable'));
+        $this->expectExceptionObject(new FileNotReadable('a.txt'));
+
+        FileChangeDetector::fromFile('a.txt');
+    }
+
+    public function testFromFileAndContentsThrowsIfFileDoesNotExist(): void
+    {
+        $this->expectExceptionObject(new FileNotReadable('a.txt'));
 
         FileChangeDetector::fromFileAndContents('a.txt', 'a');
     }
@@ -29,9 +36,8 @@ final class FileChangeDetectorTest extends TestCase
     public function testItConsidersTouchedFileNotChanged(): void
     {
         $file = $this->root->url() . '/test.txt';
-        $contents = 'test';
-        file_put_contents($file, $contents);
-        $detector = FileChangeDetector::fromFileAndContents($file, $contents);
+        file_put_contents($file, 'content');
+        $detector = FileChangeDetector::fromFile($file);
 
         touch($file);
 
@@ -41,9 +47,8 @@ final class FileChangeDetectorTest extends TestCase
     public function testItDetectsContentsChange(): void
     {
         $file = $this->root->url() . '/test.txt';
-        $contents = 'test';
-        file_put_contents($file, $contents);
-        $detector = FileChangeDetector::fromFileAndContents($file, $contents);
+        file_put_contents($file, 'content');
+        $detector = FileChangeDetector::fromFile($file);
 
         file_put_contents($file, 'new');
 

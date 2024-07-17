@@ -40,10 +40,6 @@ final class ComposerPackageChangeDetector implements ChangeDetector
      */
     private static function tryGetReference(string $name): ?string
     {
-        if (!class_exists(InstalledVersions::class)) {
-            return null;
-        }
-
         try {
             /** @var non-empty-string */
             return InstalledVersions::getReference($name);
