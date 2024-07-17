@@ -73,7 +73,10 @@ abstract class Id implements \JsonSerializable
     final public static function namedClass(string $name): NamedClassId
     {
         if (str_contains($name, '@')) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException(sprintf(
+                'Cannot create NamedClassId from anonymous class name %s',
+                AnonymousClassId::normalizeClassNameForException($name),
+            ));
         }
 
         return new NamedClassId($name);

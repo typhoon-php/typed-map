@@ -19,8 +19,6 @@ final class NamedFunctionId extends Id
 
     protected static function doFromReflection(\ReflectionFunction $reflection): self
     {
-        \assert($reflection->name !== '');
-
         return new self($reflection->name);
     }
 

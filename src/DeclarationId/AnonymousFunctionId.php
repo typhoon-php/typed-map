@@ -23,10 +23,10 @@ final class AnonymousFunctionId extends Id
     protected static function doFromReflection(\ReflectionFunction $reflection): self
     {
         $file = $reflection->getFileName();
-        \assert($file !== false, 'Anonymous function reflection should return non-false file');
+        \assert($file !== false, 'Anonymous function reflection should not return false file');
 
         $line = $reflection->getStartLine();
-        \assert($line !== false, 'Anonymous function reflection should return non-false line');
+        \assert($line !== false, 'Anonymous function reflection should not return false line');
 
         return new self($file, $line);
     }

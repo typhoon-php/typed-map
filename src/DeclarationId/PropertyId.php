@@ -19,7 +19,10 @@ final class PropertyId extends Id
 
     protected static function doFromReflection(\ReflectionProperty $property): self
     {
-        \assert($property->name !== '');
+        if ($property->name === '') {
+            // https://github.com/vimeo/psalm/pull/10091#issuecomment-1670027553
+            throw new \InvalidArgumentException('Dynamic property identification is not supported');
+        }
 
         return new self(self::fromReflection($property->getDeclaringClass()), $property->name);
     }

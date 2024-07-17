@@ -14,7 +14,7 @@ final class AnonymousClassId extends Id
      * @param non-empty-string $name
      * @return non-empty-string
      */
-    private static function normalizeClassNameForException(string $name): string
+    protected static function normalizeClassNameForException(string $name): string
     {
         /** @var non-empty-string */
         return str_replace("\x00", '\0', $name);
@@ -51,10 +51,10 @@ final class AnonymousClassId extends Id
     protected static function doFromReflection(\ReflectionClass $reflection): self
     {
         $file = $reflection->getFileName();
-        \assert($file !== false, 'Anonymous class reflection should return non-false file');
+        \assert($file !== false, 'Anonymous class reflection should not return false file');
 
         $line = $reflection->getStartLine();
-        \assert($line !== false, 'Anonymous class reflection should return non-false line');
+        \assert($line !== false, 'Anonymous class reflection should not return false line');
 
         return new self(
             file: $file,
