@@ -26,7 +26,6 @@ return (new Config())
     ->setCacheFile(__DIR__ . '/var/' . basename(__FILE__, '.dist.php') . '.cache')
     ->setRules([
         'ordered_class_elements' => ['order' => [
-            'use_trait',
             'case',
             'constant',
             'property',
