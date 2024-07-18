@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Reflection\FunctionalTesting;
+namespace Typhoon\Reflection;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Finder\Finder;
-use Typhoon\Reflection\TyphoonReflector;
 
 #[CoversNothing]
 final class TyphoonReflectorFunctionalTest extends TestCase
@@ -20,7 +19,7 @@ final class TyphoonReflectorFunctionalTest extends TestCase
      */
     public static function files(): \Generator
     {
-        foreach (Finder::create()->in(__DIR__ . '/tests')->name('*.php') as $file) {
+        foreach (Finder::create()->in(__DIR__ . '/functional_tests')->name('*.php') as $file) {
             yield substr($file->getRelativePathname(), 0, -4) => [$file->getPathname()];
         }
     }
