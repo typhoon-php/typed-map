@@ -21,14 +21,14 @@ final class FileChangeDetectorTest extends TestCase
 
     public function testFromFileThrowsIfFileDoesNotExist(): void
     {
-        $this->expectExceptionObject(new FileNotReadable('a.txt'));
+        $this->expectExceptionObject(new FileIsNotReadable('a.txt'));
 
         FileChangeDetector::fromFile('a.txt');
     }
 
     public function testFromFileAndContentsThrowsIfFileDoesNotExist(): void
     {
-        $this->expectExceptionObject(new FileNotReadable('a.txt'));
+        $this->expectExceptionObject(new FileIsNotReadable('a.txt'));
 
         FileChangeDetector::fromFileAndContents('a.txt', 'a');
     }

@@ -7,7 +7,7 @@ namespace Typhoon\ChangeDetector;
 /**
  * @api
  */
-final class FileNotReadable extends \RuntimeException
+final class FileIsNotReadable extends \RuntimeException
 {
     public function __construct(string $file, ?\Throwable $previous = null)
     {
