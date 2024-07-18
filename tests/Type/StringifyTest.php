@@ -127,7 +127,7 @@ final class StringifyTest extends TestCase
         yield [types::classConstant(\stdClass::class, 'test'), 'stdClass::test'];
         yield [types::keyOf(types::list()), 'key-of<list>'];
         yield [types::valueOf(types::list()), 'list[key-of<list>]'];
-        yield [types::conditional(types::arg('a'), if: types::string, then: types::int, else: types::float), '($a is string ? int : float)'];
+        yield [types::conditional(types::functionArg('x', 'a'), if: types::string, then: types::int, else: types::float), '($a is string ? int : float)'];
         yield [types::conditional(types::functionTemplate('trim', 'T'), if: types::string, then: types::int, else: types::float), '(T#trim() is string ? int : float)'];
         yield [types::array(value: types::varianceAware(types::int, Variance::Covariant)), 'array<covariant int>'];
         yield [types::offset(types::classTemplate('A', 'T'), types::string('abc')), "T#A['abc']"];

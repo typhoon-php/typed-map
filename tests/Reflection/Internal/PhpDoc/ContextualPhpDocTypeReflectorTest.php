@@ -161,8 +161,6 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['\Closure(string, int): void', types::closure([types::string, types::int], return: types::void)];
         yield ['\Closure(string=, int): void', types::closure([types::param(types::string, true), types::int], return: types::void)];
         yield ['\Closure(string=, int...): void', types::closure([types::param(types::string, true), types::param(types::int, variadic: true)], return: types::void)];
-        yield ['($arg is true ? string : null)', types::conditional(types::arg('arg'), types::true, types::string, types::null)];
-        yield ['($arg is not true ? null : string)', types::conditional(types::arg('arg'), types::true, types::string, types::null)];
     }
 
     #[DataProvider('validTypesNamed')]

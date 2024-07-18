@@ -132,15 +132,15 @@
 
 ## Other
 
-| PHPStan                           | Psalm                             | Typhoon                                                                                                                         |
-|-----------------------------------|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| `scalar`                          | `scalar`                          | `types::scalar`                                                                                                                 |
-| Template `T`                      | Template `T`                      | `types::functionTemplate('foo', 'T')`, `types::classTemplate(Foo::class, 'T')`, `types::methodTemplate(Foo::class, 'bar', 'T')` |
-| Alias `X`                         | Alias `X`                         | `types::classAlias(Foo::class, 'X')`                                                                                            |
-| `(T is string ? true : false)`    | `(T is string ? true : false)`    | `types::conditional($type, types::string, types::true, types::false)`                                                           |
-| `($arg is string ? true : false)` | `($arg is string ? true : false)` | `types::conditional(types::arg('arg'), types::string, types::true, types::false)`                                               |
-| `!null` (only in assertions)      | `!null` (only in assertions)      | `types::not(types::null)`                                                                                                       |
-| ❌                                 | `properties-of<T>`                | ❌                                                                                                                               |
-| ❌                                 | `class-string-map<T of Foo, T>`   | ❌                                                                                                                               |
-| `open-resource`                   | `open-resource`                   | ❌                                                                                                                               |
-| `closed-resource`                 | `closed-resource`                 | ❌                                                                                                                               |
+| PHPStan                             | Psalm                               | Typhoon                                                                                                                         |
+|-------------------------------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `scalar`                            | `scalar`                            | `types::scalar`                                                                                                                 |
+| Template `T`                        | Template `T`                        | `types::functionTemplate('foo', 'T')`, `types::classTemplate(Foo::class, 'T')`, `types::methodTemplate(Foo::class, 'bar', 'T')` |
+| Alias `X`                           | Alias `X`                           | `types::classAlias(Foo::class, 'X')`                                                                                            |
+| `(T is string ? true : false)`      | `(T is string ? true : false)`      | `types::conditional($type, types::string, types::true, types::false)`                                                           |
+| `($return is true ? string : void)` | `($return is true ? string : void)` | `types::conditional(types::functionArg('var_export', 'return'), types::true, types::string, types::void)`                       |
+| `!null` (only in assertions)        | `!null` (only in assertions)        | `types::not(types::null)`                                                                                                       |
+| ❌                                   | `properties-of<T>`                  | ❌                                                                                                                               |
+| ❌                                   | `class-string-map<T of Foo, T>`     | ❌                                                                                                                               |
+| `open-resource`                     | `open-resource`                     | ❌                                                                                                                               |
+| `closed-resource`                   | `closed-resource`                   | ❌                                                                                                                               |
