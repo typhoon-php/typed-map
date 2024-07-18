@@ -13,29 +13,11 @@ use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Typhoon\Type\Variance;
 
 #[CoversClass(PhpDoc::class)]
 #[CoversClass(PhpDocParser::class)]
 final class PhpDocAndParserTest extends TestCase
 {
-    public function testPhpDocTemplateTagVariance(): void
-    {
-        $parser = new PhpDocParser(lines: false);
-        $templates = $parser->parse(
-            <<<'PHP'
-                /**
-                 * @template-covariant T
-                 */
-                PHP,
-        )->templates();
-        self::assertCount(1, $templates);
-
-        $actualVariance = PhpDoc::templateTagVariance($templates[0]);
-
-        self::assertSame(Variance::Covariant, $actualVariance);
-    }
-
     public function testHasDeprecatedReturnsFalseIfNoDeprecatedTag(): void
     {
         $parser = new PhpDocParser(lines: false);
@@ -267,15 +249,15 @@ final class PhpDocAndParserTest extends TestCase
     {
         $parser = new PhpDocParser(lines: false);
 
-        $templates = $parser->parse(
+        $templateTags = $parser->parse(
             <<<'PHP'
                 /**
                  * @example
                  */
                 PHP,
-        )->templates();
+        )->templateTags();
 
-        self::assertEmpty($templates);
+        self::assertEmpty($templateTags);
     }
 
     public function testItReturnsLatestPrioritizedTemplates(): void
@@ -293,38 +275,14 @@ final class PhpDocAndParserTest extends TestCase
                  * @psalm-template T of string
                  */
                 PHP,
-        )->templates();
+        )->templateTags();
 
         self::assertEquals(
             [
-                $this->createTemplateTagValueNode('T', new IdentifierTypeNode('string'), Variance::Invariant),
-                $this->createTemplateTagValueNode('T2', new IdentifierTypeNode('mixed'), Variance::Invariant),
+                new TemplateTagValueNode('T', new IdentifierTypeNode('string'), ''),
+                new TemplateTagValueNode('T2', new IdentifierTypeNode('mixed'), ''),
             ],
-            $templates,
-        );
-    }
-
-    public function testItAddsVarianceAttributeToTemplates(): void
-    {
-        $parser = new PhpDocParser(lines: false);
-
-        $templates = $parser->parse(
-            <<<'PHP'
-                /**
-                 * @template TInvariant
-                 * @template-covariant TCovariant
-                 * @template-contravariant TContravariant
-                 */
-                PHP,
-        )->templates();
-
-        self::assertEquals(
-            [
-                $this->createTemplateTagValueNode('TInvariant', null, Variance::Invariant),
-                $this->createTemplateTagValueNode('TCovariant', null, Variance::Covariant),
-                $this->createTemplateTagValueNode('TContravariant', null, Variance::Contravariant),
-            ],
-            $templates,
+            array_column($templates, 'value'),
         );
     }
 
@@ -577,7 +535,7 @@ final class PhpDocAndParserTest extends TestCase
                 PHP,
         );
         $tags = static fn(): array => [
-            $phpDoc->templates(),
+            $phpDoc->templateTags(),
             $phpDoc->implementedTypes(),
             $phpDoc->usedTypes(),
             $phpDoc->extendedTypes(),
@@ -593,17 +551,6 @@ final class PhpDocAndParserTest extends TestCase
         $second = $tags();
 
         self::assertSame($first, $second);
-    }
-
-    /**
-     * @param non-empty-string $name
-     */
-    private function createTemplateTagValueNode(string $name, ?TypeNode $bound, Variance $variance): TemplateTagValueNode
-    {
-        $template = new TemplateTagValueNode($name, $bound, '');
-        $template->setAttribute('variance', $variance);
-
-        return $template;
     }
 
     /**

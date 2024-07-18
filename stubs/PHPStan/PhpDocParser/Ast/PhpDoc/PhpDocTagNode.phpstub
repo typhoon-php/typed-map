@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace PHPStan\PhpDocParser\Ast\PhpDoc;
 
 /**
- * @template TValue of PhpDocTagValueNode
+ * @template-covariant TValue of PhpDocTagValueNode
  */
 class PhpDocTagNode implements PhpDocChildNode
 {
