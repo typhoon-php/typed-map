@@ -23,6 +23,7 @@ array{
     ...
 }
 ```
+
 ```php
 use Typhoon\Type\types;
 
@@ -32,7 +33,7 @@ $type = types::unsealedArrayShape([
     'c' => types::object(Traversable::class, [types::numericString, types::false]),
     'd' => types::callable(
         parameters: [
-            types::classConstMask(PDO::class),
+            types::classConstantMask(PDO::class),
             types::param(types::classTemplate('TSend', Generator::class), hasDefault: true),
             types::param(types::scalar, variadic: true),
         ],
