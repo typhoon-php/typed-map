@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Reflection\Internal\DeclarationId;
+namespace Typhoon\DeclarationId\Internal;
 
 use Typhoon\DeclarationId\Id;
 
 /**
  * @internal
- * @psalm-internal Typhoon\Reflection
+ * @psalm-internal Typhoon
  * @template-covariant TId of Id
  * @template-covariant TValue
  * @implements \ArrayAccess<TId, TValue>
