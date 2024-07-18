@@ -78,5 +78,5 @@ $isIntChecker = new /** @extends DefaultTypeVisitor<bool> */ class () extends De
 };
 
 var_dump(types::positiveInt->accept($isIntChecker)); // true
-var_dump(types::callableString->accept($isIntChecker)); // false
+var_dump(types::callableString()->accept($isIntChecker)); // false
 ```

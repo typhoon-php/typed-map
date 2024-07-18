@@ -58,7 +58,7 @@
 | `'abc'`                             | `'abc'`                             | `types::string('abc')`, `types::scalar('abc')`  |
 | `truthy-string`, `non-falsy-string` | `truthy-string`, `non-falsy-string` | `types::truthyString`, `types::nonFalsyString`  |
 | `numeric-string`                    | `numeric-string`                    | `types::numericString`                          |
-| `callable-string`                   | `callable-string`                   | `types::callableString`                         |
+| `callable-string`                   | `callable-string`                   | `types::callableString()`                       |
 | `class-string<Foo>`                 | `class-string<Foo>`                 | `types::classString(types::object(Foo::class))` |
 | `Foo::class`                        | `Foo::class`                        | `types::class(Foo::class)`                      |
 | `class-string`                      | `class-string`                      | `types::classString`                            |
@@ -101,6 +101,7 @@
 | `iterable<object, string>`                                       | `iterable<object, string>`                | `types::iterable(types::object, types::string)`                                                                     |
 | `iterable<string>`                                               | `iterable<string>`                        | `types::iterable(value: types::string)`                                                                             |
 | `Generator<TKey, TValue, TSend, TReturn>`                        | `Generator<TKey, TValue, TSend, TReturn>` | `types::object(Generator::class, [$key, $value, $send, $return])`, `types::generator($key, $value, $send, $return)` |
+| `callable&array`                                                 | `callable-array`                          | `types::callableArray()`                                                                                            |
 
 ## Objects
 
@@ -117,6 +118,8 @@
 
 | PHPStan                      | Psalm                        | Typhoon                                                             |
 |------------------------------|------------------------------|---------------------------------------------------------------------|
+| `callable-string`            | `callable-string`            | `types::callableString()`                                           |
+| `callable&array`             | `callable-array`             | `types::callableArray()`                                            |
 | `callable(string): void`     | `callable(string): void`     | `types::callable([types::string], types::void)`                     |
 | `callable(string=): mixed`   | `callable(string=): mixed`   | `types::callable([types::param(types::string, hasDefault: true)])`  |
 | `callable(...string): mixed` | `callable(...string): mixed` | `types::callable([types::param(types::string, variadic: true)])`    |
@@ -137,5 +140,7 @@
 | `(T is string ? true : false)`    | `(T is string ? true : false)`    | `types::conditional($type, types::string, types::true, types::false)`                                                           |
 | `($arg is string ? true : false)` | `($arg is string ? true : false)` | `types::conditional(types::arg('arg'), types::string, types::true, types::false)`                                               |
 | `!null` (only in assertions)      | `!null` (only in assertions)      | `types::not(types::null)`                                                                                                       |
+| ❌                                 | `properties-of<T>`                | ❌                                                                                                                               |
+| ❌                                 | `class-string-map<T of Foo, T>`   | ❌                                                                                                                               |
 | `open-resource`                   | `open-resource`                   | ❌                                                                                                                               |
 | `closed-resource`                 | `closed-resource`                 | ❌                                                                                                                               |
