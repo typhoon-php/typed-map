@@ -7,6 +7,8 @@ namespace Typhoon\Reflection\Internal\PhpDoc;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Typhoon\DeclarationId\Id;
+use Typhoon\Reflection\Internal\TypeContext\TypeContext;
 use Typhoon\Type\Type;
 use Typhoon\Type\types;
 
@@ -14,17 +16,7 @@ use Typhoon\Type\types;
 final class ContextualPhpDocTypeReflectorTest extends TestCase
 {
     /**
-     * @return \Generator<string, array{string, Type|InvalidPhpDocType}>
-     */
-    public static function validTypesNamed(): \Generator
-    {
-        foreach (self::validTypes() as [$phpDocStringType, $expectedTypeOrException]) {
-            yield $phpDocStringType => [$phpDocStringType, $expectedTypeOrException];
-        }
-    }
-
-    /**
-     * @return \Generator<array{string, Type|InvalidPhpDocType}>
+     * @return \Generator<list{0: string, 1: Type|InvalidPhpDocType, 2?: TypeContext}>
      */
     private static function validTypes(): \Generator
     {
@@ -132,22 +124,22 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['iterable<object, string>', types::iterable(types::object, types::string)];
         yield ['iterable<int, string, float>', new InvalidPhpDocType('iterable type should have at most 2 arguments, got 3')];
         yield ['string[]', types::array(value: types::string)];
-        yield ['\stdClass', types::object(\stdClass::class)];
-        yield ['\Traversable', types::object(\Traversable::class)];
-        yield ['\stdClass<int, string>', types::object(\stdClass::class, [types::int, types::string])];
+        yield ['stdClass', types::object(\stdClass::class)];
+        yield ['Traversable', types::object(\Traversable::class)];
+        yield ['stdClass<int, string>', types::object(\stdClass::class, [types::int, types::string])];
         yield ['object{}', types::objectShape()];
         yield ['object{a: int}', types::objectShape(['a' => types::int])];
         yield ['object{a?: int}', types::objectShape(['a' => types::optional(types::int)])];
-        yield ['\stdClass::C', types::classConstant(types::object(\stdClass::class), 'C')];
-        yield ['\stdClass::*', types::classConstantMask(types::object(\stdClass::class))];
-        yield ['\stdClass::C_*', types::classConstantMask(types::object(\stdClass::class), 'C_')];
+        yield ['stdClass::C', types::classConstant(types::object(\stdClass::class), 'C')];
+        yield ['stdClass::*', types::classConstantMask(types::object(\stdClass::class))];
+        yield ['stdClass::C_*', types::classConstantMask(types::object(\stdClass::class), 'C_')];
         yield ['key-of<array>', types::keyOf(types::array())];
         yield ['key-of', new InvalidPhpDocType('key-of type should have 1 argument, got 0')];
         yield ['key-of<array, array>', new InvalidPhpDocType('key-of type should have 1 argument, got 2')];
         yield ['value-of<array>', types::valueOf(types::array())];
         yield ['value-of', new InvalidPhpDocType('value-of type should have 1 argument, got 0')];
         yield ['value-of<array, array>', new InvalidPhpDocType('value-of type should have 1 argument, got 2')];
-        yield ['\Traversable&\Countable', types::intersection(types::object(\Traversable::class), types::object(\Countable::class))];
+        yield ['Traversable&\Countable', types::intersection(types::object(\Traversable::class), types::object(\Countable::class))];
         yield ['string|int', types::union(types::string, types::int)];
         yield ['callable', types::callable()];
         yield ['callable(): mixed', types::callable(return: types::mixed)];
@@ -155,29 +147,63 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['callable(string, int): void', types::callable([types::string, types::int], return: types::void)];
         yield ['callable(string=, int): void', types::callable([types::param(types::string, true), types::int], return: types::void)];
         yield ['callable(string=, int...): void', types::callable([types::param(types::string, true), types::param(types::int, variadic: true)], return: types::void)];
-        yield ['\Closure', types::closure()];
-        yield ['\Closure(): mixed', types::closure(return: types::mixed)];
-        yield ['\Closure(): void', types::closure(return: types::void)];
-        yield ['\Closure(string, int): void', types::closure([types::string, types::int], return: types::void)];
-        yield ['\Closure(string=, int): void', types::closure([types::param(types::string, true), types::int], return: types::void)];
-        yield ['\Closure(string=, int...): void', types::closure([types::param(types::string, true), types::param(types::int, variadic: true)], return: types::void)];
+        yield ['Closure', types::closure()];
+        yield ['Closure(): mixed', types::closure(return: types::mixed)];
+        yield ['Closure(): void', types::closure(return: types::void)];
+        yield ['Closure(string, int): void', types::closure([types::string, types::int], return: types::void)];
+        yield ['Closure(string=, int): void', types::closure([types::param(types::string, true), types::int], return: types::void)];
+        yield ['Closure(string=, int...): void', types::closure([types::param(types::string, true), types::param(types::int, variadic: true)], return: types::void)];
+        yield [
+            '($return is true ? string : void)',
+            types::conditional(types::functionArg('var_export', 'return'), types::true, types::string, types::void),
+            new TypeContext(id: Id::namedFunction('var_export')),
+        ];
+        yield [
+            '($return is not true ? void : string)',
+            types::conditional(types::functionArg('var_export', 'return'), types::true, types::string, types::void),
+            new TypeContext(id: Id::namedFunction('var_export')),
+        ];
+        yield [
+            '(T is true ? string : void)',
+            types::conditional(types::functionTemplate('x', 'T'), types::true, types::string, types::void),
+            new TypeContext(templates: [Id::template(Id::namedFunction('x'), 'T')]),
+        ];
+    }
+
+    /**
+     * @return \Generator<string, list{string, Type|InvalidPhpDocType, TypeContext}>
+     */
+    public static function validTypesNamed(): \Generator
+    {
+        $defaultTypeContext = new TypeContext();
+
+        foreach (self::validTypes() as $args) {
+            yield $args[0] => [$args[0], $args[1], $args[2] ?? $defaultTypeContext];
+        }
     }
 
     #[DataProvider('validTypesNamed')]
-    public function testValidTypes(string $phpDocStringType, Type|InvalidPhpDocType $expectedTypeOrException): void
+    public function testValidTypes(string $phpDoc, Type|InvalidPhpDocType $expected, TypeContext $typeContext): void
     {
         $parser = new PhpDocParser();
-        $phpDocType = $parser->parse("/** @var {$phpDocStringType} */")->varType();
-        \assert($phpDocType !== null);
+        $phpDocType = $parser->parse("/** @var {$phpDoc} */")->varType();
+        $reflector = new ContextualPhpDocTypeReflector($typeContext);
 
-        try {
-            $type = (new ContextualPhpDocTypeReflector())->reflectType($phpDocType);
-        } catch (InvalidPhpDocType $exception) {
-            self::assertEquals($expectedTypeOrException, $exception);
-
-            return;
+        if ($expected instanceof InvalidPhpDocType) {
+            $this->expectExceptionObject($expected);
         }
 
-        self::assertEquals($expectedTypeOrException, $type);
+        $type = $reflector->reflectType($phpDocType);
+
+        self::assertEquals($expected, $type);
+    }
+
+    public function testItReturnsNullTypeIfNullNodePassed(): void
+    {
+        $reflector = new ContextualPhpDocTypeReflector();
+
+        $result = $reflector->reflectType(null);
+
+        self::assertNull($result);
     }
 }
