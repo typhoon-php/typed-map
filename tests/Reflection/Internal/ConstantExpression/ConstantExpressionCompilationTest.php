@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(ClassConstantFetch::class)]
 #[CoversClass(ConstantFetch::class)]
 #[CoversClass(ConstantExpressionCompiler::class)]
-#[CoversClass(ConstantConstantExpressionCompilerVisitor::class)]
+#[CoversClass(ConstantExpressionCompilerVisitor::class)]
 #[CoversClass(Instantiation::class)]
 #[CoversClass(Ternary::class)]
 #[CoversClass(UnaryOperation::class)]
@@ -177,7 +177,7 @@ final class ConstantExpressionCompilationTest extends TestCase
 
         $traverser = new NodeTraverser();
         $traverser->addVisitor(new NameResolver());
-        $traverser->addVisitor($expressionVisitor = new ConstantConstantExpressionCompilerVisitor());
+        $traverser->addVisitor($expressionVisitor = new ConstantExpressionCompilerVisitor());
         $traverser->addVisitor($visitor = new class ($expressionVisitor) extends NodeVisitorAbstract {
             public ?Expression $expression = null;
 
