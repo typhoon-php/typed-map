@@ -13,7 +13,7 @@ use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\DeclarationId\NamedFunctionId;
 use Typhoon\PhpStormReflectionStubs\Internal\ApplyTentativeTypeAttribute;
 use Typhoon\PhpStormReflectionStubs\Internal\CleanUp;
-use Typhoon\Reflection\Internal\Data\Data;
+use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\TypedMap\TypedMap;
 use Typhoon\Reflection\Locator\ConstantLocator;
 use Typhoon\Reflection\Locator\NamedClassLocator;
@@ -62,8 +62,8 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
                     self::packageChangeDetector() ?? FileChangeDetector::fromFileAndContents($file, $code),
                 ]),
             hooks: [
-                new ApplyTentativeTypeAttribute(),
-                new CleanUp(),
+                ApplyTentativeTypeAttribute::Instance,
+                CleanUp::Instance,
             ],
         );
     }

@@ -6,8 +6,8 @@ namespace Typhoon\PhpStormReflectionStubs\Internal;
 
 use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\NamedClassId;
-use Typhoon\Reflection\Internal\Data\Data;
-use Typhoon\Reflection\Internal\ReflectionHook\ClassReflectionHook;
+use Typhoon\Reflection\Internal\ClassReflectionHook;
+use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\Reflector;
 use Typhoon\Reflection\Internal\TypedMap\TypedMap;
 
@@ -15,8 +15,9 @@ use Typhoon\Reflection\Internal\TypedMap\TypedMap;
  * @internal
  * @psalm-internal Typhoon\PhpStormReflectionStubs
  */
-final class ApplyTentativeTypeAttribute implements ClassReflectionHook
+enum ApplyTentativeTypeAttribute implements ClassReflectionHook
 {
+    case Instance;
     private const ATTRIBUTE = 'JetBrains\PhpStorm\Internal\TentativeType';
 
     public function process(NamedClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap

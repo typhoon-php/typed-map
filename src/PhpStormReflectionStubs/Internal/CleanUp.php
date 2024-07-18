@@ -9,10 +9,10 @@ use Typhoon\DeclarationId\AnonymousFunctionId;
 use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\DeclarationId\NamedFunctionId;
-use Typhoon\Reflection\Internal\Data\Data;
-use Typhoon\Reflection\Internal\ReflectionHook\ClassReflectionHook;
-use Typhoon\Reflection\Internal\ReflectionHook\ConstantReflectionHook;
-use Typhoon\Reflection\Internal\ReflectionHook\FunctionReflectionHook;
+use Typhoon\Reflection\Internal\ClassReflectionHook;
+use Typhoon\Reflection\Internal\ConstantReflectionHook;
+use Typhoon\Reflection\Internal\Data;
+use Typhoon\Reflection\Internal\FunctionReflectionHook;
 use Typhoon\Reflection\Internal\Reflector;
 use Typhoon\Reflection\Internal\TypedMap\TypedMap;
 
@@ -20,8 +20,9 @@ use Typhoon\Reflection\Internal\TypedMap\TypedMap;
  * @internal
  * @psalm-internal Typhoon\PhpStormReflectionStubs
  */
-final class CleanUp implements ConstantReflectionHook, FunctionReflectionHook, ClassReflectionHook
+enum CleanUp implements ConstantReflectionHook, FunctionReflectionHook, ClassReflectionHook
 {
+    case Instance;
     private const ATTRIBUTE_PREFIX = 'JetBrains\\';
 
     public function process(ConstantId|NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap

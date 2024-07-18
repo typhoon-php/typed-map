@@ -6,7 +6,7 @@ namespace Typhoon\Reflection;
 
 use PHPUnit\Framework\TestCase;
 use Typhoon\ChangeDetector\InMemoryChangeDetector;
-use Typhoon\Reflection\Internal\Data\Data;
+use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\TypedMap\TypedMap;
 
 return static function (TyphoonReflector $reflector, TestCase $test): void {
