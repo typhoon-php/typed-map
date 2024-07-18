@@ -26,22 +26,23 @@ final class CleanUp implements ConstantReflectionHook, FunctionReflectionHook, C
 
     public function process(ConstantId|NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap
     {
+        // https://github.com/JetBrains/phpstorm-stubs/pull/1528
         if ($id instanceof NamedClassId && $id->name === \Traversable::class) {
             $data = $data->without(Data::UnresolvedInterfaces);
         }
 
         return $this->cleanUp($data)
-            ->withModifiedIfSet(Data::ClassConstants, fn(array $constants): array => array_map($this->cleanUp(...), $constants))
-            ->withModifiedIfSet(Data::Properties, fn(array $properties): array => array_map($this->cleanUp(...), $properties))
-            ->withModifiedIfSet(Data::Methods, fn(array $methods): array => array_map($this->cleanUp(...), $methods));
+            ->with(Data::Constants, array_map($this->cleanUp(...), $data[Data::Constants]))
+            ->with(Data::Properties, array_map($this->cleanUp(...), $data[Data::Properties]))
+            ->with(Data::Methods, array_map($this->cleanUp(...), $data[Data::Methods]));
     }
 
     private function cleanUp(TypedMap $data): TypedMap
     {
         return $data
             ->without(Data::StartLine, Data::EndLine, Data::PhpDoc)
-            ->withModifiedIfSet(Data::Attributes, static fn(array $attributes): array => array_values(array_filter(
-                $attributes,
+            ->with(Data::Attributes, array_values(array_filter(
+                $data[Data::Attributes],
                 static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClassName], self::ATTRIBUTE_PREFIX),
             )));
     }

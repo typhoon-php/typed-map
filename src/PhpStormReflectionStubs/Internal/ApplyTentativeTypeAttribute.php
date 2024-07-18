@@ -17,7 +17,7 @@ use Typhoon\Reflection\Internal\TypedMap\TypedMap;
  */
 final class ApplyTentativeTypeAttribute implements ClassReflectionHook
 {
-    private const TENTATIVE_TYPE_ATTRIBUTE = 'JetBrains\PhpStorm\Internal\TentativeType';
+    private const ATTRIBUTE = 'JetBrains\PhpStorm\Internal\TentativeType';
 
     public function process(NamedClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap
     {
@@ -25,7 +25,7 @@ final class ApplyTentativeTypeAttribute implements ClassReflectionHook
             static function (TypedMap $method): TypedMap {
                 $type = $method[Data::Type];
 
-                if ($type->native === null || !self::hasTentativeAttribute($method[Data::Attributes] ?? [])) {
+                if ($type->native === null || !self::hasTentativeAttribute($method[Data::Attributes])) {
                     return $method;
                 }
 
@@ -40,12 +40,9 @@ final class ApplyTentativeTypeAttribute implements ClassReflectionHook
      */
     private static function hasTentativeAttribute(array $attributes): bool
     {
-        foreach ($attributes as $attribute) {
-            if ($attribute[Data::AttributeClassName] === self::TENTATIVE_TYPE_ATTRIBUTE) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(
+            $attributes,
+            static fn(TypedMap $attribute): bool => $attribute[Data::AttributeClassName] === self::ATTRIBUTE,
+        );
     }
 }
