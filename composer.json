@@ -28,7 +28,7 @@
         "phpstan/phpstan": "^1.11.7",
         "phpunit/phpunit": "^10.5.27",
         "phpyh/coding-standard": "^2.6.1",
-        "symfony/var-dumper": "^6.4.9 || ^7.0.7",
+        "symfony/var-dumper": "^6.4.9 || ^7.1.2",
         "typhoon/opcache": "^0.2.1"
     },
     "autoload": {
