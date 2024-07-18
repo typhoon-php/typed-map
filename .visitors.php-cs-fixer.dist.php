@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 use Typhoon\Reflection\Internal\NativeAdapter\ToNativeTypeConverter;
 use Typhoon\Type\TypeVisitor;
 use Typhoon\Type\Visitor\DefaultTypeVisitor;
@@ -21,6 +22,7 @@ return (new Config())
         (new ReflectionClass(TemplateTypeResolver::class))->getFileName(),
         (new ReflectionClass(TypeStringifier::class))->getFileName(),
     ]))
+    ->setParallelConfig(ParallelConfigFactory::detect())
     ->setCacheFile(__DIR__ . '/var/' . basename(__FILE__, '.dist.php') . '.cache')
     ->setRules([
         'ordered_class_elements' => ['order' => [
