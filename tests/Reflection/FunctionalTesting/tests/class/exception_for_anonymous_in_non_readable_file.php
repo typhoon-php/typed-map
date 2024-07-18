@@ -7,14 +7,13 @@ namespace Typhoon\Reflection;
 use PHPUnit\Framework\TestCase;
 use Typhoon\DeclarationId\Id;
 use Typhoon\Reflection\Exception\FileIsNotReadable;
-use Typhoon\Reflection\Exception\LocatorFailed;
-use Typhoon\Reflection\Locator\FileAnonymousLocator;
+use Typhoon\Reflection\Exception\LocatorErrored;
 
 return static function (TyphoonReflector $reflector, TestCase $test): void {
-    $file = 'some-wrong-file.php';
+    $file = __FILE__ . '.fake';
     $id = Id::anonymousClass($file, 10, 20);
 
-    $test->expectExceptionObject(new LocatorFailed(FileAnonymousLocator::class, $id, new FileIsNotReadable($file)));
+    $test->expectExceptionObject(new LocatorErrored($id, new FileIsNotReadable($file)));
 
     $reflector->reflect($id);
 };
