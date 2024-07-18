@@ -17,9 +17,13 @@ final class ClassConstantId extends Id
         public readonly string $name,
     ) {}
 
-    public function toString(): string
+    public function describe(): string
     {
-        return sprintf('%s::%s', $this->class->toString(), $this->name);
+        if ($this->class instanceof AnonymousClassId) {
+            return sprintf('constant %s of %s', $this->name, $this->class->describe());
+        }
+
+        return sprintf('constant %s::%s', $this->class->name, $this->name);
     }
 
     public function equals(mixed $value): bool
@@ -33,7 +37,7 @@ final class ClassConstantId extends Id
     {
         $class = $this->class->name ?? throw new \LogicException(sprintf(
             "Cannot reflect %s, because it's runtime name is not available",
-            $this->toString(),
+            $this->describe(),
         ));
 
         /** @psalm-suppress ArgumentTypeCoercion */

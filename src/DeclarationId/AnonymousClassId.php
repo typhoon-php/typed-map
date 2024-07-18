@@ -102,9 +102,9 @@ final class AnonymousClassId extends Id
         );
     }
 
-    public function toString(): string
+    public function describe(): string
     {
-        return sprintf('anonymous-class:%s:%d%s', $this->file, $this->line, $this->column === null ? '' : ':' . $this->column);
+        return sprintf('anonymous class at %s:%d%s', $this->file, $this->line, $this->column === null ? '' : ':' . $this->column);
     }
 
     public function equals(mixed $value): bool
@@ -120,7 +120,7 @@ final class AnonymousClassId extends Id
         if ($this->name === null) {
             throw new \LogicException(sprintf(
                 "Cannot reflect %s, because it's runtime name is not available",
-                $this->toString(),
+                $this->describe(),
             ));
         }
 

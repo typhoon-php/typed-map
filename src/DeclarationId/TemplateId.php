@@ -17,9 +17,9 @@ final class TemplateId extends Id
         public readonly string $name,
     ) {}
 
-    public function toString(): string
+    public function describe(): string
     {
-        return sprintf('%s#%s', $this->name, $this->site->toString());
+        return sprintf('template %s of %s', $this->name, $this->site->describe());
     }
 
     public function equals(mixed $value): bool

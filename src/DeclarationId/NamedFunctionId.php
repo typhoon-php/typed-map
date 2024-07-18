@@ -22,9 +22,9 @@ final class NamedFunctionId extends Id
         return new self($reflection->name);
     }
 
-    public function toString(): string
+    public function describe(): string
     {
-        return $this->name . '()';
+        return sprintf('function %s()', $this->name);
     }
 
     public function equals(mixed $value): bool

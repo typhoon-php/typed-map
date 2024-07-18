@@ -17,12 +17,9 @@ final class NamedClassId extends Id
         public readonly string $name,
     ) {}
 
-    /**
-     * @return TName
-     */
-    public function toString(): string
+    public function describe(): string
     {
-        return $this->name;
+        return 'class ' . $this->name;
     }
 
     public function equals(mixed $value): bool

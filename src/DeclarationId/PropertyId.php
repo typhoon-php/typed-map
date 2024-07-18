@@ -27,9 +27,13 @@ final class PropertyId extends Id
         return new self(self::fromReflection($property->getDeclaringClass()), $property->name);
     }
 
-    public function toString(): string
+    public function describe(): string
     {
-        return sprintf('%s::$%s', $this->class->toString(), $this->name);
+        if ($this->class instanceof AnonymousClassId) {
+            return sprintf('property $%s of %s', $this->name, $this->class->describe());
+        }
+
+        return sprintf('property %s::$%s', $this->class->name, $this->name);
     }
 
     public function equals(mixed $value): bool
@@ -43,7 +47,7 @@ final class PropertyId extends Id
     {
         $class = $this->class->name ?? throw new \LogicException(sprintf(
             "Cannot reflect %s, because it's runtime name is not available",
-            $this->toString(),
+            $this->describe(),
         ));
 
         /** @psalm-suppress ArgumentTypeCoercion */

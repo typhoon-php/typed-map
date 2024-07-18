@@ -526,7 +526,7 @@ final class AdapterCompatibilityTest extends TestCase
      */
     private static function reflectionToString(\ReflectionFunctionAbstract|\ReflectionClass|\ReflectionClassConstant|\ReflectionProperty|\ReflectionParameter $reflection): string
     {
-        return Id::fromReflection($reflection)->toString();
+        return Id::fromReflection($reflection)->describe();
     }
 
     private static function assertTypeEquals(?\ReflectionType $native, ?\ReflectionType $typhoon, string $messagePrefix): void

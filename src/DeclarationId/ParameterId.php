@@ -17,9 +17,9 @@ final class ParameterId extends Id
         public readonly string $name,
     ) {}
 
-    public function toString(): string
+    public function describe(): string
     {
-        return sprintf('%s$%s)', substr($this->function->toString(), 0, -1), $this->name);
+        return sprintf('parameter $%s of %s', $this->name, $this->function->describe());
     }
 
     public function equals(mixed $value): bool
@@ -36,12 +36,12 @@ final class ParameterId extends Id
         }
 
         if ($this->function instanceof AnonymousFunctionId) {
-            throw new \LogicException(sprintf('Cannot reflect %s', $this->toString()));
+            throw new \LogicException(sprintf('Cannot reflect %s', $this->describe()));
         }
 
         $class = $this->function->class->name ?? throw new \LogicException(sprintf(
             "Cannot reflect %s, because it's runtime name is not available",
-            $this->toString(),
+            $this->describe(),
         ));
 
         return new \ReflectionParameter([$class, $this->function->name], $this->name);

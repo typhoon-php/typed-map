@@ -219,13 +219,13 @@ abstract class Id implements \JsonSerializable
      */
     final public function __toString(): string
     {
-        return $this->toString();
+        return $this->describe();
     }
 
     /**
      * @return non-empty-string
      */
-    abstract public function toString(): string;
+    abstract public function describe(): string;
 
     /**
      * @return non-empty-string

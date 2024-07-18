@@ -17,9 +17,9 @@ final class AliasId extends Id
         public readonly string $name,
     ) {}
 
-    public function toString(): string
+    public function describe(): string
     {
-        return sprintf('%s@%s', $this->name, $this->class->toString());
+        return sprintf('type alias %s of %s', $this->name, $this->class->describe());
     }
 
     public function equals(mixed $value): bool
