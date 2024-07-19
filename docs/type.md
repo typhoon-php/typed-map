@@ -1,12 +1,13 @@
 # Typhoon Type
 
-Typhoon Type is an object abstraction over the PHP type system, inspired by two popular static analyzers: [Psalm](https://psalm.dev/)
-and [PHPStan](https://phpstan.org/). It's the main building block of the other Typhoon components.
+Typhoon Type is an object abstraction over the PHP type system, used to express any sophisticated PHP type. It is mostly
+inspired by two popular static analyzers: [Psalm](https://psalm.dev/) and [PHPStan](https://phpstan.org/). Typhoon Type is the main
+building block for the other Typhoon components.
 
 Unlike other solutions, Typhoon Type does not expose concrete type classes in its API. Instead, it provides only
 a [`Type`](../src/Type/Type.php) interface and a [`TypeVisitor`](../src/Type/TypeVisitor.php) with destructurization.
 This approach gives several advantages:
-1. Memory efficient enums can be used for all atomic types and aliases of commonly used compound types.
+1. Memory efficient enums can be used for all atomic types and for aliases of commonly used compound types.
 2. The visitor has only a minimal subset of type methods that must be implemented when describing a type algebra.
    Complexity of the other types is hidden and can be completely ignored.
 3. Using of downcasting via the `instanceof` operator is automatically discouraged, since all `Type` implementations are `@internal`. 
