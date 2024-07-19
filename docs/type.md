@@ -1,6 +1,15 @@
 # Typhoon Type
 
-Typhoon Type is an abstraction over the PHP static type system, inspired by two popular analyzers [Psalm](https://psalm.dev/) and [PHPStan](https://phpstan.org/).
+Typhoon Type is an object abstraction over the PHP type system, inspired by two popular static analyzers: [Psalm](https://psalm.dev/)
+and [PHPStan](https://phpstan.org/). It's the main building block of the other Typhoon components.
+
+Unlike other solutions, Typhoon Type does not expose concrete type classes in its API. Instead, it provides only
+a [`Type`](../src/Type/Type.php) interface and a [`TypeVisitor`](../src/Type/TypeVisitor.php) with destructurization.
+This approach gives several advantages:
+1. Memory efficient enums can be used for all atomic types and aliases of commonly used compound types.
+2. The visitor has only a minimal subset of type methods that must be implemented when describing a type algebra.
+   Complexity of the other types is hidden and can be completely ignored.
+3. Using of downcasting via the `instanceof` operator is automatically discouraged, since all `Type` implementations are `@internal`. 
 
 ## Installation
 
@@ -10,9 +19,8 @@ composer require typhoon/type
 
 ## Constructing types
 
-Types should be constructed via the [types](../src/Type/types.php) static factory.
-
-Here's how a monstrous type can be easily expressed in Typhoon:
+Typhoon types can be constructed via the `Typhoon\Type\types` static factory. Let's express this monstrous type via
+the Typhoon DSL:
 
 ```
 array{
@@ -42,43 +50,26 @@ $type = types::unsealedArrayShape([
 ]);
 ```
 
-_Note that all classes that implement `Type` (except `types` itself) are `@internal` and should not be accessed directly._
+As you can see, creating types in Typhoon is a lot of fun, especially if you work in IDE with autocompletion 😉
 
 ## Printing types
 
-To stringify any type, use the `stringify()` function:
+To cast any type to string, use the `Typhoon\Type\stringify()` function:
 
 ```php
 use Typhoon\Type\types;
 use function Typhoon\Type\stringify;
 
 echo stringify(
-    types::unsealedArrayShape([
-        'a' => types::nonEmptyString,
-        'b' => types::optional(types::union(types::int, types::float)),
-        'c' => types::object(Traversable::class, [types::numericString, types::false]),
-        'd' => types::callable(
-            parameters: [
-                types::classConstant(PDO::class, '*'),
-                types::param(types::classTemplate(Generator::class, 'TSend'), hasDefault: true),
-                types::param(types::scalar, variadic: true),
-            ],
-            return: types::void,
-        ),
-    ], sealed: false),
+    types::generator(
+        key: types::nonNegativeInt,
+        key: types::classTemplate(Foo::class, 'T'),
+        send: types::scalar,
+    ),
 );
-```
 
+// prints: Generator<int<0, max>, T#Foo, scalar, mixed>
 ```
-array{a: non-empty-string, b?: int|float, c: Traversable<numeric-string, false>, d: callable(PDO::*, TSend#Generator=, scalar...): void, ...}
-```
-
-## Analyzing types
-
-Typhoon types should be analyzed only via a [TypeVisitor](../src/Type/TypeVisitor.php): `$type->accept(new MyVisitor())`. Comparison operators and `instanceof`
-must not be used with for two reasons:
-1. equal types might be represented differently (`array-key = int|string`, `string = ''|non-empty-string`),
-2. type classes are internal and not subject to backward compatibility.
 
 ### Comparing types
 
