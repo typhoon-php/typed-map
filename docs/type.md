@@ -1,6 +1,118 @@
-# Typhoon Types Interoperability
+# Typhoon Type
 
-## Native PHP types
+Typhoon Type is an abstraction over the PHP static type system, inspired by two popular analyzers [Psalm](https://psalm.dev/) and [PHPStan](https://phpstan.org/).
+
+## Installation
+
+```
+composer require typhoon/type
+```
+
+## Constructing types
+
+Types should be constructed via the [types](../src/Type/types.php) static factory.
+
+Here's how a monstrous type can be easily expressed in Typhoon:
+
+```
+array{
+    a: non-empty-string,
+    b?: int|float,
+    c: Traversable<numeric-string, false>,
+    d: callable(PDO::*, TSend#Generator=, scalar...): void,
+    ...
+}
+```
+
+```php
+use Typhoon\Type\types;
+
+$type = types::unsealedArrayShape([
+    'a' => types::nonEmptyString,
+    'b' => types::optional(types::union(types::int, types::float)),
+    'c' => types::object(Traversable::class, [types::numericString, types::false]),
+    'd' => types::callable(
+        parameters: [
+            types::classConstantMask(PDO::class),
+            types::param(types::classTemplate(Generator::class, 'TSend'), hasDefault: true),
+            types::param(types::scalar, variadic: true),
+        ],
+        return: types::void,
+    ),
+]);
+```
+
+_Note that all classes that implement `Type` (except `types` itself) are `@internal` and should not be accessed directly._
+
+## Printing types
+
+To stringify any type, use the `stringify()` function:
+
+```php
+use Typhoon\Type\types;
+use function Typhoon\Type\stringify;
+
+echo stringify(
+    types::unsealedArrayShape([
+        'a' => types::nonEmptyString,
+        'b' => types::optional(types::union(types::int, types::float)),
+        'c' => types::object(Traversable::class, [types::numericString, types::false]),
+        'd' => types::callable(
+            parameters: [
+                types::classConstant(PDO::class, '*'),
+                types::param(types::classTemplate(Generator::class, 'TSend'), hasDefault: true),
+                types::param(types::scalar, variadic: true),
+            ],
+            return: types::void,
+        ),
+    ], sealed: false),
+);
+```
+
+```
+array{a: non-empty-string, b?: int|float, c: Traversable<numeric-string, false>, d: callable(PDO::*, TSend#Generator=, scalar...): void, ...}
+```
+
+## Analyzing types
+
+Typhoon types should be analyzed only via a [TypeVisitor](../src/Type/TypeVisitor.php): `$type->accept(new MyVisitor())`. Comparison operators and `instanceof`
+must not be used with for two reasons:
+1. equal types might be represented differently (`array-key = int|string`, `string = ''|non-empty-string`),
+2. type classes are internal and not subject to backward compatibility.
+
+### Comparing types
+
+Typhoon team is currently working on a type comparator. Until it is released, you can use [DefaultTypeVisitor](../src/Type/DefaultTypeVisitor.php) for simple checks:
+
+```php
+use Typhoon\Type\Type;
+use Typhoon\Type\types;
+use Typhoon\Type\Visitor\DefaultTypeVisitor;
+
+$isIntChecker = new /** @extends DefaultTypeVisitor<bool> */ class () extends DefaultTypeVisitor {
+    public function int(Type $type, ?int $min, ?int $max): bool
+    {
+        return true;
+    }
+
+    public function intMask(Type $type, Type $ofType): bool
+    {
+        return true;
+    }
+
+    protected function default(Type $type): bool
+    {
+        return false;
+    }
+};
+
+var_dump(types::positiveInt->accept($isIntChecker)); // true
+var_dump(types::callableString()->accept($isIntChecker)); // false
+```
+
+## Compatibility with Psalm and PHPStan
+
+### Native PHP types
 
 | PHPStan                 | Psalm                   | Typhoon                                                                                   |
 |-------------------------|-------------------------|-------------------------------------------------------------------------------------------|
@@ -29,7 +141,7 @@
 | `Countable&Traversable` | `Countable&Traversable` | `types::intersection(types::object(Countable::class), types::object(Traversable::class))` |
 | `mixed`                 | `mixed`                 | `types::mixed`                                                                            |
 
-## Numbers
+### Numbers
 
 | PHPStan                   | Psalm                        | Typhoon                                                         |
 |---------------------------|------------------------------|-----------------------------------------------------------------|
@@ -49,7 +161,7 @@
 | `12.5`                    | `12.5`                       | `types::int(12.5)`, `types::scalar(12.5)`                       |
 | `numeric`                 | `numeric`                    | `types::numeric`                                                |
 
-## Strings
+### Strings
 
 | PHPStan                             | Psalm                               | Typhoon                                         |
 |-------------------------------------|-------------------------------------|-------------------------------------------------|
@@ -67,7 +179,7 @@
 | ❌                                   | `enum-string`                       | ❌                                               |
 | ❌                                   | `lowercase-string`                  | ❌                                               |
 
-## Constants
+### Constants
 
 | PHPStan       | Psalm         | Typhoon                                                                                   |
 |---------------|---------------|-------------------------------------------------------------------------------------------|
@@ -75,7 +187,7 @@
 | `Foo::BAR`    | `Foo::BAR`    | `types::classConstant(Foo::class, 'BAR')`                                                 |
 | `Foo::IS_*`   | `Foo::IS_*`   | `types::classConstant(Foo::class, 'IS_*')`, `types::classConstantMask(Foo::class, 'IS_')` |
 
-## Arrays and iterables
+### Arrays and iterables
 
 | PHPStan                                                          | Psalm                                     | Typhoon                                                                                                             |
 |------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
@@ -103,7 +215,7 @@
 | `Generator<TKey, TValue, TSend, TReturn>`                        | `Generator<TKey, TValue, TSend, TReturn>` | `types::object(Generator::class, [$key, $value, $send, $return])`, `types::generator($key, $value, $send, $return)` |
 | `callable&array`                                                 | `callable-array`                          | `types::callableArray()`                                                                                            |
 
-## Objects
+### Objects
 
 | PHPStan                 | Psalm                   | Typhoon                                                     |
 |-------------------------|-------------------------|-------------------------------------------------------------|
@@ -114,7 +226,7 @@
 | `object{prop: string}`  | `object{prop: string}`  | `types::object(['prop' => types::string])`                  |
 | `object{prop?: string}` | `object{prop?: string}` | `types::object(['prop' => types::optional(types::string)])` |
 
-## Callables
+### Callables
 
 | PHPStan                      | Psalm                        | Typhoon                                                             |
 |------------------------------|------------------------------|---------------------------------------------------------------------|
@@ -130,7 +242,7 @@
 | `Closure(&string): mixed`    | `Closure(&string): mixed`    | `types::closure([types::param(types::string, byReference: true)])`  |
 | `pure-callable`              | `pure-callable`              | ❌                                                                   |
 
-## Other
+### Other
 
 | PHPStan                             | Psalm                               | Typhoon                                                                                                                         |
 |-------------------------------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|

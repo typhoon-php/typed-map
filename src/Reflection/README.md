@@ -1,4 +1,4 @@
-# Typhoon Declaration ID
+# Typhoon Reflection
 
 This repository is a readonly Typhoon monorepo subsplit.
 Please, open pull requests and issues in the [main repository](https://github.com/typhoon-php/typhoon).
