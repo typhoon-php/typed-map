@@ -103,6 +103,7 @@
         <file name="stubs/PhpParser/Node/Stmt/TraitUseAdaptation/Alias.phpstub"/>
         <file name="stubs/PhpParser/Node/UnionType.phpstub"/>
         <file name="stubs/PHPStan/PhpDocParser/Ast/ConstExpr/ConstFetchNode.phpstub"/>
+        <file name="stubs/PHPStan/PhpDocParser/Ast/PhpDoc/MethodTagValueNode.phpstub"/>
         <file name="stubs/PHPStan/PhpDocParser/Ast/PhpDoc/PhpDocTagNode.phpstub"/>
         <file name="stubs/PHPStan/PhpDocParser/Ast/PhpDoc/TemplateTagValueNode.phpstub"/>
         <file name="stubs/PHPStan/PhpDocParser/Ast/PhpDoc/TypeAliasImportTagValueNode.phpstub"/>
