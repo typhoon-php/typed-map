@@ -62,7 +62,7 @@
         }
     },
     "scripts": {
-        "check-require": [
+        "check-require-all": [
             "tools/composer-require-checker/vendor/bin/composer-require-checker check --config-file=composer-require-checker.json",
             "@composer install --working-dir=src/ChangeDetector",
             "tools/composer-require-checker/vendor/bin/composer-require-checker check src/ChangeDetector/composer.json --config-file=src/ChangeDetector/composer-require-checker.json",

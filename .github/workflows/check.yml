@@ -7,7 +7,7 @@ on:
   pull_request: ~
 
 jobs:
-  composer-validate-normalize:
+  composer:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,6 +21,7 @@ jobs:
           composer-options: --optimize-autoloader
       - run: composer validate-all
       - run: composer normalize-all -- --dry-run
+      - run: composer check-require-all
 
   lint:
     runs-on: ubuntu-latest
