@@ -159,6 +159,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield ['parent<int, string>', types::parent([types::int, types::string])];
         yield ['static', types::static()];
         yield ['static<int, string>', types::static([types::int, types::string])];
+        yield ['T[K]', types::offset(types::object('T'), types::object('K'))];
         yield [
             '($return is true ? string : void)',
             types::conditional(types::functionArg('var_export', 'return'), types::true, types::string, types::void),
