@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Typhoon\Reflection;
+
+use Typhoon\Type\types;
+use function PHPUnit\Framework\assertEquals;
+use function PHPUnit\Framework\assertNull;
+
+return static function (TyphoonReflector $reflector): void {
+    $method = $reflector
+        ->withResource(new Resource(
+            <<<'PHP'
+                <?php
+                abstract class A
+                {
+                    /** @return non-empty-string|int */
+                    abstract public function a(): string|int;
+                }
+                class B extends A
+                {
+                    public function a(): string { return '1'; }
+                }
+                PHP,
+        ))
+        ->reflectClass('B')
+        ->methods()['a'];
+
+    assertEquals(types::string, $method->returnType(DeclarationKind::Native));
+    assertNull($method->returnType(DeclarationKind::Annotated));
+    assertEquals(types::string, $method->returnType());
+};
