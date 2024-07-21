@@ -41,7 +41,7 @@ enum CleanUp implements ConstantReflectionHook, FunctionReflectionHook, ClassRef
     private function cleanUp(TypedMap $data): TypedMap
     {
         return $data
-            ->without(Data::StartLine, Data::EndLine, Data::PhpDoc)
+            ->without(Data::Location, Data::PhpDoc)
             ->with(Data::Attributes, array_values(array_filter(
                 $data[Data::Attributes],
                 static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClassName], self::ATTRIBUTE_PREFIX),

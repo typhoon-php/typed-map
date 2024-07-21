@@ -18,4 +18,10 @@ class PhpDocTagNode implements PhpDocChildNode
 	 * @var TValue
 	 */
 	public $value;
+
+	/**
+	 * @param non-empty-string $name
+	 * @param TValue $value
+	 */
+	public function __construct(string $name, PhpDocTagValueNode $value) {}
 }

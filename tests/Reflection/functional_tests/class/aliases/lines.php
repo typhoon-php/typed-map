@@ -19,8 +19,8 @@ return static function (TyphoonReflector $reflector): void {
         ->reflectClass('A')
         ->aliases();
 
-    assertSame(3, $aliases['First']->startLine());
-    assertSame(3, $aliases['First']->endLine());
-    assertSame(4, $aliases['Second']->startLine());
-    assertSame(4, $aliases['Second']->endLine());
+    assertSame(3, $aliases['First']->location()?->startLine);
+    assertSame(3, $aliases['First']->location()?->endLine);
+    assertSame(4, $aliases['Second']->location()?->startLine);
+    assertSame(4, $aliases['Second']->location()?->endLine);
 };

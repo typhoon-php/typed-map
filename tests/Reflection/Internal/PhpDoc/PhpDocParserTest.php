@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection\Internal\PhpDoc;
 
-use PHPStan\PhpDocParser\Ast\PhpDoc\TemplateTagValueNode;
-use PHPStan\PhpDocParser\Ast\PhpDoc\TypeAliasImportTagValueNode;
-use PHPStan\PhpDocParser\Ast\PhpDoc\TypeAliasTagValueNode;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -16,11 +13,11 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(PhpDoc::class)]
 #[CoversClass(PhpDocParser::class)]
-final class PhpDocAndParserTest extends TestCase
+final class PhpDocParserTest extends TestCase
 {
     public function testHasDeprecatedReturnsFalseIfNoDeprecatedTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $deprecated = $parser->parse(
             <<<'PHP'
@@ -35,7 +32,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testHasDeprecatedReturnsTrueIfDeprecated(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $deprecated = $parser->parse(
             <<<'PHP'
@@ -51,7 +48,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testHasFinalReturnsFalseIfNoFinalTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $final = $parser->parse(
             <<<'PHP'
@@ -66,7 +63,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testHasFinalReturnsTrueIfFinal(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $final = $parser->parse(
             <<<'PHP'
@@ -82,7 +79,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testHasReadonlyReturnsFalseIfNoReadonlyTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $readonly = $parser->parse(
             <<<'PHP'
@@ -97,7 +94,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testHasReadonlyReturnsTrueIfReadonly(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $readonly = $parser->parse(
             <<<'PHP'
@@ -113,7 +110,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsNullVarTypeWhenNoVarTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $varType = $parser->parse(
             <<<'PHP'
@@ -128,7 +125,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsLatestPrioritizedVarTagType(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $varType = $parser->parse(
             <<<'PHP'
@@ -146,7 +143,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsNullParamTypeWhenNoParamTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $paramTypes = $parser->parse(
             <<<'PHP'
@@ -161,7 +158,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsLatestPrioritizedParamTagType(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $paramTypes = $parser->parse(
             <<<'PHP'
@@ -187,7 +184,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsNullReturnTypeWhenNoReturnTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $returnType = $parser->parse(
             <<<'PHP'
@@ -202,7 +199,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsLatestPrioritizedReturnTagType(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $returnType = $parser->parse(
             <<<'PHP'
@@ -220,7 +217,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsAllThrowsTypes(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $throwsTypes = $parser->parse(
             <<<'PHP'
@@ -247,7 +244,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsEmptyTemplatesWhenNoTemplateTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $templateTags = $parser->parse(
             <<<'PHP'
@@ -262,7 +259,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsLatestPrioritizedTemplates(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $templates = $parser->parse(
             <<<'PHP'
@@ -279,16 +276,16 @@ final class PhpDocAndParserTest extends TestCase
 
         self::assertEquals(
             [
-                new TemplateTagValueNode('T', new IdentifierTypeNode('string'), ''),
-                new TemplateTagValueNode('T2', new IdentifierTypeNode('mixed'), ''),
+                '@psalm-template T of string',
+                '@template T2 of mixed',
             ],
-            array_column($templates, 'value'),
+            array_map(strval(...), $templates),
         );
     }
 
     public function testItReturnsEmptyExtendedTypesWhenNoExtendsTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $extendedTypes = $parser->parse(
             <<<'PHP'
@@ -303,7 +300,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsLatestPrioritizedExtendedTypes(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $extendedTypes = $parser->parse(
             <<<'PHP'
@@ -330,7 +327,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsEmptyImplementedTypesWhenNoImplementsTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $implementedTypes = $parser->parse(
             <<<'PHP'
@@ -345,7 +342,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsLatestPrioritizedImplementedTypes(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $implementedTypes = $parser->parse(
             <<<'PHP'
@@ -372,7 +369,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsEmptyUsedTypesWhenNoImplementsTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $usedTypes = $parser->parse(
             <<<'PHP'
@@ -387,7 +384,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsLatestPrioritizedUsedTypes(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $usedTypes = $parser->parse(
             <<<'PHP'
@@ -414,7 +411,7 @@ final class PhpDocAndParserTest extends TestCase
 
     public function testItReturnsEmptyTypeAliasesWhenNoTypeTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $typeAliases = $parser->parse(
             <<<'PHP'
@@ -422,14 +419,14 @@ final class PhpDocAndParserTest extends TestCase
                  * @example
                  */
                 PHP,
-        )->typeAliases();
+        )->typeAliasTags();
 
         self::assertEmpty($typeAliases);
     }
 
     public function testItReturnsLatestPrioritizedTypeAliases(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $typeAliases = $parser->parse(
             <<<'PHP'
@@ -443,20 +440,20 @@ final class PhpDocAndParserTest extends TestCase
                  * @psalm-type A float
                  */
                 PHP,
-        )->typeAliases();
+        )->typeAliasTags();
 
-        self::assertEquals(
+        self::assertSame(
             [
-                new TypeAliasTagValueNode('A', new IdentifierTypeNode('float')),
-                new TypeAliasTagValueNode('B', new IdentifierTypeNode('mixed')),
+                '@psalm-type A float',
+                '@phpstan-type B mixed',
             ],
-            $typeAliases,
+            array_map(strval(...), $typeAliases),
         );
     }
 
     public function testItReturnsEmptyTypeAliasImportsWhenNoTypeTag(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $typeAliasImports = $parser->parse(
             <<<'PHP'
@@ -464,14 +461,14 @@ final class PhpDocAndParserTest extends TestCase
                  * @example
                  */
                 PHP,
-        )->typeAliasImports();
+        )->typeAliasImportTags();
 
         self::assertEmpty($typeAliasImports);
     }
 
     public function testItReturnsLatestPrioritizedTypeAliasImports(): void
     {
-        $parser = new PhpDocParser(lines: false);
+        $parser = new PhpDocParser();
 
         $typeAliasImports = $parser->parse(
             <<<'PHP'
@@ -486,14 +483,14 @@ final class PhpDocAndParserTest extends TestCase
                  * @psalm-import-type C from bool as A
                  */
                 PHP,
-        )->typeAliasImports();
+        )->typeAliasImportTags();
 
-        self::assertEquals(
+        self::assertSame(
             [
-                new TypeAliasImportTagValueNode('C', new IdentifierTypeNode('bool'), 'A'),
-                new TypeAliasImportTagValueNode('B', new IdentifierTypeNode('mixed'), null),
+                '@psalm-import-type C from bool as A',
+                '@phpstan-import-type B from mixed',
             ],
-            $typeAliasImports,
+            array_map(strval(...), $typeAliasImports),
         );
     }
 
@@ -514,43 +511,60 @@ final class PhpDocAndParserTest extends TestCase
         )->paramTypes();
     }
 
-    public function testMethodsMemoized(): void
+    public function testItMovesLine(): void
     {
-        $phpDoc = (new PhpDocParser())->parse(
-            <<<'PHP'
-                /**
-                 * @template T
-                 * @implements Iterator
-                 * @use Iterator
-                 * @extends stdClass
-                 * @var string
-                 * @param int $x
-                 * @param float $y
-                 * @return array
-                 * @phpstan-type A int
-                 * @phpstan-import-type C from bool as A
-                 * @phpstan-throws RuntimeException
-                 * @throws LogicException
-                 */
-                PHP,
-        );
-        $tags = static fn(): array => [
-            $phpDoc->templateTags(),
-            $phpDoc->implementedTypes(),
-            $phpDoc->usedTypes(),
-            $phpDoc->extendedTypes(),
-            $phpDoc->varType(),
-            $phpDoc->paramTypes(),
-            $phpDoc->returnType(),
-            $phpDoc->typeAliases(),
-            $phpDoc->typeAliasImports(),
-            $phpDoc->throwsTypes(),
-        ];
+        $parser = new PhpDocParser();
 
-        $first = $tags();
-        $second = $tags();
+        $tag = $parser
+            ->parse(
+                phpDoc: <<<'PHP'
+                    /**
+                     * @psalm-type A = string
+                     */
+                    PHP,
+                startLine: 2,
+            )
+            ->typeAliasTags()[0];
 
-        self::assertSame($first, $second);
+        self::assertSame($tag->getAttribute('startLine'), 3);
+        self::assertSame($tag->getAttribute('endLine'), 3);
+    }
+
+    public function testItCalculatesPosition(): void
+    {
+        $parser = new PhpDocParser();
+
+        $tag = $parser
+            ->parse(
+                phpDoc: <<<'PHP'
+                    /**
+                     * @psalm-type A = string
+                     */
+                    PHP,
+            )
+            ->typeAliasTags()[0];
+
+        self::assertSame(PhpDocParser::startPosition($tag), 7);
+        self::assertSame(PhpDocParser::endPosition($tag), 29);
+    }
+
+    public function testItMovesPosition(): void
+    {
+        $parser = new PhpDocParser();
+
+        $tag = $parser
+            ->parse(
+                phpDoc: <<<'PHP'
+                    /**
+                     * @psalm-type A = string
+                     */
+                    PHP,
+                startPosition: 10,
+            )
+            ->typeAliasTags()[0];
+
+        self::assertSame(PhpDocParser::startPosition($tag), 17);
+        self::assertSame(PhpDocParser::endPosition($tag), 39);
     }
 
     /**

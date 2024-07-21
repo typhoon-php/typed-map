@@ -20,8 +20,13 @@ return static function (TyphoonReflector $reflector): void {
         ->reflectClass('A')
         ->templates();
 
-    assertSame(3, $templates['TSingleLine']->startLine());
-    assertSame(3, $templates['TSingleLine']->endLine());
-    assertSame(4, $templates['TMultiLine']->startLine());
-    assertSame(5, $templates['TMultiLine']->endLine());
+    assertSame(3, $templates['TSingleLine']->location()?->startLine);
+    assertSame(4, $templates['TSingleLine']->location()?->startColumn);
+    assertSame(3, $templates['TSingleLine']->location()?->endLine);
+    assertSame(25, $templates['TSingleLine']->location()?->endColumn);
+
+    assertSame(4, $templates['TMultiLine']->location()?->startLine);
+    assertSame(4, $templates['TMultiLine']->location()?->startColumn);
+    assertSame(5, $templates['TMultiLine']->location()?->endLine);
+    assertSame(43, $templates['TMultiLine']->location()?->endColumn);
 };
