@@ -7,8 +7,7 @@ namespace Typhoon\Reflection\Internal\PhpDoc;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Typhoon\DeclarationId\Id;
-use Typhoon\Reflection\Internal\TypeContext\TypeContext;
+use Typhoon\Reflection\Internal\Context\Context;
 use Typhoon\Type\Type;
 use Typhoon\Type\types;
 
@@ -16,7 +15,7 @@ use Typhoon\Type\types;
 final class ContextualPhpDocTypeReflectorTest extends TestCase
 {
     /**
-     * @return \Generator<list{0: string, 1: Type|InvalidPhpDocType, 2?: TypeContext}>
+     * @return \Generator<list{0: string, 1: Type|InvalidPhpDocType, 2?: Context}>
      */
     private static function validTypes(): \Generator
     {
@@ -163,38 +162,38 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
         yield [
             '($return is true ? string : void)',
             types::conditional(types::functionArg('var_export', 'return'), types::true, types::string, types::void),
-            new TypeContext(id: Id::namedFunction('var_export')),
+            Context::start()->enterFunction('var_export'),
         ];
         yield [
             '($return is not true ? void : string)',
             types::conditional(types::functionArg('var_export', 'return'), types::true, types::string, types::void),
-            new TypeContext(id: Id::namedFunction('var_export')),
+            Context::start()->enterFunction('var_export'),
         ];
         yield [
             '(T is true ? string : void)',
             types::conditional(types::functionTemplate('x', 'T'), types::true, types::string, types::void),
-            new TypeContext(templates: [Id::template(Id::namedFunction('x'), 'T')]),
+            Context::start()->enterFunction('x', templateNames: ['T']),
         ];
     }
 
     /**
-     * @return \Generator<string, list{string, Type|InvalidPhpDocType, TypeContext}>
+     * @return \Generator<string, list{string, Type|InvalidPhpDocType, Context}>
      */
     public static function validTypesNamed(): \Generator
     {
-        $defaultTypeContext = new TypeContext();
+        $defaultContext = Context::start();
 
         foreach (self::validTypes() as $args) {
-            yield $args[0] => [$args[0], $args[1], $args[2] ?? $defaultTypeContext];
+            yield $args[0] => [$args[0], $args[1], $args[2] ?? $defaultContext];
         }
     }
 
     #[DataProvider('validTypesNamed')]
-    public function testValidTypes(string $phpDoc, Type|InvalidPhpDocType $expected, TypeContext $typeContext): void
+    public function testValidTypes(string $phpDoc, Type|InvalidPhpDocType $expected, Context $context): void
     {
         $parser = new PhpDocParser();
         $phpDocType = $parser->parse("/** @var {$phpDoc} */")->varType();
-        $reflector = new ContextualPhpDocTypeReflector($typeContext);
+        $reflector = new ContextualPhpDocTypeReflector($context);
 
         if ($expected instanceof InvalidPhpDocType) {
             $this->expectExceptionObject($expected);
@@ -207,7 +206,7 @@ final class ContextualPhpDocTypeReflectorTest extends TestCase
 
     public function testItReturnsNullTypeIfNullNodePassed(): void
     {
-        $reflector = new ContextualPhpDocTypeReflector();
+        $reflector = new ContextualPhpDocTypeReflector(Context::start());
 
         $result = $reflector->reflectType(null);
 
