@@ -191,7 +191,7 @@ final class ConstantExpressionCompilationTest extends TestCase
             public function leaveNode(Node $node): ?int
             {
                 if ($node instanceof Return_) {
-                    $this->expression ??= (new ConstantExpressionCompiler($this->contextProvider->get()))->compile($node->expr);
+                    $this->expression ??= (new ConstantExpressionCompiler($this->contextProvider->current()))->compile($node->expr);
                 }
 
                 return null;
