@@ -12,6 +12,11 @@ class Name
     public function toString() {}
 
     /**
+     * @return non-empty-string
+     */
+    public function toCodeString() {}
+
+    /**
      * @psalm-assert-if-true class-string $this->toString()
      */
     public function isFullyQualified() {}
