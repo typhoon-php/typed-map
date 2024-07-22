@@ -10,13 +10,6 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(ComposerPackageChangeDetector::class)]
 final class PackageChangeDetectorTest extends TestCase
 {
-    public function testFromPackageReturnsNullForNonInstalledPackage(): void
-    {
-        $detector = ComposerPackageChangeDetector::tryFromName('a/b');
-
-        self::assertNull($detector);
-    }
-
     public function testItDetectsPackageRefChange(): void
     {
         $changeDetector = $this->newPackageDetector('nikic/php-parser', 'fake-ref');
@@ -30,8 +23,8 @@ final class PackageChangeDetectorTest extends TestCase
     {
         $detector = ChangeDetectors::from([
             $this->newPackageDetector('nikic/php-parser', '0.3.0'),
-            ComposerPackageChangeDetector::tryFromName('nikic/php-parser') ?? throw new \LogicException(),
-            ComposerPackageChangeDetector::tryFromName('psr/simple-cache') ?? throw new \LogicException(),
+            ComposerPackageChangeDetector::fromName('nikic/php-parser'),
+            ComposerPackageChangeDetector::fromName('psr/simple-cache'),
         ]);
 
         $deduplicated = $detector->deduplicate();

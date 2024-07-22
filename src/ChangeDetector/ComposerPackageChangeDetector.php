@@ -13,44 +13,47 @@ final class ComposerPackageChangeDetector implements ChangeDetector
 {
     /**
      * @param non-empty-string $name
-     * @param non-empty-string $reference
+     * @param ?non-empty-string $reference
      */
     private function __construct(
         private readonly string $name,
-        private readonly string $reference,
+        private readonly ?string $reference,
     ) {}
 
     /**
      * @param non-empty-string $name
      */
-    public static function tryFromName(string $name): ?self
+    public static function fromName(string $name): self
     {
-        $version = self::tryGetReference($name);
+        return new self($name, self::getReference($name));
+    }
 
-        if ($version === null) {
-            return null;
-        }
-
-        return new self($name, $version);
+    /**
+     * @param non-empty-string $name
+     * @throws PackageIsNotInstalled
+     */
+    public static function fromNameEnsureInstalled(string $name): self
+    {
+        return new self($name, self::getReference($name) ?? throw new PackageIsNotInstalled($name));
     }
 
     /**
      * @param non-empty-string $name
      * @return ?non-empty-string
      */
-    private static function tryGetReference(string $name): ?string
+    private static function getReference(string $name): ?string
     {
         try {
             /** @var non-empty-string */
             return InstalledVersions::getReference($name);
-        } catch (\Throwable) {
+        } catch (\OutOfBoundsException) {
             return null;
         }
     }
 
     public function changed(): bool
     {
-        return self::tryGetReference($this->name) !== $this->reference;
+        return self::getReference($this->name) !== $this->reference;
     }
 
     public function deduplicate(): array
@@ -63,6 +66,6 @@ final class ComposerPackageChangeDetector implements ChangeDetector
      */
     private function hash(): string
     {
-        return $this->reference . ':' . $this->name . ':composer-package';
+        return sprintf('%s:%s:composer-package', (string) $this->reference, $this->name);
     }
 }

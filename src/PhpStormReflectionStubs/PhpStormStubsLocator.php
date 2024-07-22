@@ -27,13 +27,11 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
 {
     private const PACKAGE = 'jetbrains/phpstorm-stubs';
 
-    private static ?ComposerPackageChangeDetector $packageChangeDetector = null;
+    private static ?ComposerPackageChangeDetector $changeDetector = null;
 
     private static function changeDetector(): ChangeDetector
     {
-        return self::$packageChangeDetector
-            ??= ComposerPackageChangeDetector::tryFromName(self::PACKAGE)
-            ?? throw new \LogicException(sprintf('Package %s is not installed via Composer', self::PACKAGE));
+        return self::$changeDetector ??= ComposerPackageChangeDetector::fromNameEnsureInstalled(self::PACKAGE);
     }
 
     public function locate(ConstantId|NamedFunctionId|NamedClassId $id): ?Resource

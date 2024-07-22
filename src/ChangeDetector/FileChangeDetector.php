@@ -11,50 +11,86 @@ final class FileChangeDetector implements ChangeDetector
 {
     /**
      * @param non-empty-string $file
-     * @param non-empty-string $md5
+     * @param false|non-empty-string $md5
      */
     public function __construct(
         private readonly string $file,
-        private readonly int $mtime,
-        private readonly string $md5,
+        private readonly false|int $mtime,
+        private readonly false|string $md5,
     ) {}
 
     /**
-     * @param non-empty-string $file
-     * @throws FileIsNotReadable
+     * @param non-empty-string $path
      */
-    public static function fromFile(string $file): self
+    public static function fromPath(string $path): self
     {
-        $handle = @fopen($file, 'r');
+        $handle = @fopen($path, 'r');
 
         if ($handle === false) {
-            throw new FileIsNotReadable($file);
+            return new self($path, false, false);
         }
 
-        if (!@flock($handle, LOCK_SH)) {
-            throw new \RuntimeException('Failed to acquire shared lock on file ' . $file);
+        try {
+            if (!@flock($handle, LOCK_SH)) {
+                throw new \RuntimeException('Failed to acquire a shared lock on ' . $path);
+            }
+
+            $mtime = @filemtime($path);
+
+            if ($mtime === false) {
+                return new self($path, false, false);
+            }
+
+            $md5 = @md5_file($path);
+
+            if ($md5 === false) {
+                return new self($path, false, false);
+            }
+
+            return new self($path, $mtime, $md5);
+        } finally {
+            @fclose($handle);
+        }
+    }
+
+    /**
+     * @param non-empty-string $path
+     */
+    public static function fromPathEnsureExists(string $path): self
+    {
+        $handle = @fopen($path, 'r');
+
+        if ($handle === false) {
+            throw new FileIsNotReadable($path);
         }
 
-        $mtime = @filemtime($file);
+        try {
+            if (!@flock($handle, LOCK_SH)) {
+                throw new \RuntimeException('Failed to acquire a shared lock on ' . $path);
+            }
 
-        if ($mtime === false) {
-            throw new FileIsNotReadable($file);
+            $mtime = @filemtime($path);
+
+            if ($mtime === false) {
+                throw new FileIsNotReadable($path);
+            }
+
+            $md5 = @md5_file($path);
+
+            if ($md5 === false) {
+                throw new FileIsNotReadable($path);
+            }
+
+            return new self($path, $mtime, $md5);
+        } finally {
+            @fclose($handle);
         }
-
-        $md5 = @md5_file($file);
-
-        if ($md5 === false) {
-            throw new FileIsNotReadable($file);
-        }
-
-        fclose($handle);
-
-        return new self($file, $mtime, $md5);
     }
 
     public function changed(): bool
     {
-        return filemtime($this->file) !== $this->mtime || md5_file($this->file) !== $this->md5;
+        return @filemtime($this->file) !== $this->mtime
+            || @md5_file($this->file) !== $this->md5;
     }
 
     public function deduplicate(): array
@@ -67,6 +103,6 @@ final class FileChangeDetector implements ChangeDetector
      */
     private function hash(): string
     {
-        return $this->mtime . ':' . $this->md5 . ':' . $this->file . ':file';
+        return sprintf('%d:%s:%s:file', (string) $this->mtime, (string) $this->md5, $this->file);
     }
 }

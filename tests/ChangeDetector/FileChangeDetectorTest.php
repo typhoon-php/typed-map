@@ -19,18 +19,18 @@ final class FileChangeDetectorTest extends TestCase
         $this->root = vfsStream::setup();
     }
 
-    public function testFromFileThrowsIfFileDoesNotExist(): void
+    public function testFromPathEnsureExistsThrowsIfFileDoesNotExist(): void
     {
         $this->expectExceptionObject(new FileIsNotReadable('a.txt'));
 
-        FileChangeDetector::fromFile('a.txt');
+        FileChangeDetector::fromPathEnsureExists('a.txt');
     }
 
     public function testItConsidersTouchedFileNotChanged(): void
     {
         $file = $this->root->url() . '/test.txt';
         file_put_contents($file, 'content');
-        $detector = FileChangeDetector::fromFile($file);
+        $detector = FileChangeDetector::fromPath($file);
 
         touch($file);
 
@@ -41,7 +41,7 @@ final class FileChangeDetectorTest extends TestCase
     {
         $file = $this->root->url() . '/test.txt';
         file_put_contents($file, 'content');
-        $detector = FileChangeDetector::fromFile($file);
+        $detector = FileChangeDetector::fromPath($file);
 
         file_put_contents($file, 'new');
 
