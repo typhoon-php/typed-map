@@ -597,3 +597,82 @@ namespace ParameterInheritedFromTraitAndClass
         public function z(string $z): void {}
     }
 }
+
+namespace TrickyConstantExpressions
+{
+    class ClassWithTrickyConstantExpressions extends \stdClass
+    {
+        const __LINE__ = __LINE__;
+        const __FILE__ = __FILE__;
+        const __DIR__ = __DIR__;
+        const __FUNCTION__ = __FUNCTION__;
+        const __CLASS__ = __CLASS__;
+        const __TRAIT__ = __TRAIT__;
+        const __METHOD__ = __METHOD__;
+        const __NAMESPACE__ = __NAMESPACE__;
+        const self = self::class;
+        const parent = parent::class;
+
+        public int $__LINE__ = __LINE__;
+        public string $__FILE__ = __FILE__;
+        public string $__DIR__ = __DIR__;
+        public string $__FUNCTION__ = __FUNCTION__;
+        public string $__CLASS__ = __CLASS__;
+        public string $__TRAIT__ = __TRAIT__;
+        public string $__METHOD__ = __METHOD__;
+        public string $__NAMESPACE__ = __NAMESPACE__;
+        public string $self = self::class;
+        public string $parent = parent::class;
+
+        public function method(
+            int $__LINE__ = __LINE__,
+            string $__FILE__ = __FILE__,
+            string $__DIR__ = __DIR__,
+            string $__FUNCTION__ = __FUNCTION__,
+            string $__CLASS__ = __CLASS__,
+            string $__TRAIT__ = __TRAIT__,
+            string $__METHOD__ = __METHOD__,
+            string $__NAMESPACE__ = __NAMESPACE__,
+            string $self = self::class,
+            string $parent = parent::class,
+        ) {}
+    }
+
+    class ClassExtendsClassWithTrickyConstantExpressions extends ClassWithTrickyConstantExpressions {}
+
+    trait TraitWithTrickyConstantExpressions
+    {
+        public int $__LINE__ = __LINE__;
+        public string $__FILE__ = __FILE__;
+        public string $__DIR__ = __DIR__;
+        public string $__FUNCTION__ = __FUNCTION__;
+        public string $__CLASS__ = __CLASS__;
+        public string $__TRAIT__ = __TRAIT__;
+        public string $__METHOD__ = __METHOD__;
+        public string $__NAMESPACE__ = __NAMESPACE__;
+        public string $self = self::class;
+
+        public function method(
+            int $__LINE__ = __LINE__,
+            string $__FILE__ = __FILE__,
+            string $__DIR__ = __DIR__,
+            string $__FUNCTION__ = __FUNCTION__,
+            // for some reason this exact parameter's default returns __CONSTANT__ in getDefaultValueConstantName()
+            // string $__CLASS__ = __CLASS__,
+            string $__TRAIT__ = __TRAIT__,
+            string $__METHOD__ = __METHOD__,
+            string $__NAMESPACE__ = __NAMESPACE__,
+            string $self = self::class,
+        ) {}
+    }
+
+    trait TraitUsesTraitWithTrickyConstantExpressions
+    {
+        use TraitWithTrickyConstantExpressions;
+    }
+
+    class ClassUsesTraitWithTrickyConstantExpressions
+    {
+        use TraitWithTrickyConstantExpressions;
+    }
+}

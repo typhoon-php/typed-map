@@ -404,7 +404,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertReflectionsEqual($native, $typhoon, $messagePrefix);
 
         foreach ($native as $index => $parameter) {
-            self::assertParameterEquals($parameter, $typhoon[$index], $messagePrefix . ".getParameter()[{$index} ({$parameter->name})]", $assertType);
+            self::assertParameterEquals($parameter, $typhoon[$index], $messagePrefix . "[{$index} ({$parameter->name})]", $assertType);
         }
     }
 

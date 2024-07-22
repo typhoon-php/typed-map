@@ -37,3 +37,26 @@ class ClassWith82Types
     public false $false;
     public null $null;
 }
+
+trait TraitWithTrickyConstantExpressions
+{
+    const __LINE__ = __LINE__;
+    const __FILE__ = __FILE__;
+    const __DIR__ = __DIR__;
+    const __FUNCTION__ = __FUNCTION__;
+    const __CLASS__ = __CLASS__;
+    const __TRAIT__ = __TRAIT__;
+    const __METHOD__ = __METHOD__;
+    const __NAMESPACE__ = __NAMESPACE__;
+    const self = self::class;
+}
+
+trait TraitUsesTraitWithTrickyConstantExpressions
+{
+    use TraitWithTrickyConstantExpressions;
+}
+
+class ClassUsesTraitWithTrickyConstantExpressions
+{
+    use TraitWithTrickyConstantExpressions;
+}
