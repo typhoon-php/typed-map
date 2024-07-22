@@ -26,13 +26,6 @@ final class FileChangeDetectorTest extends TestCase
         FileChangeDetector::fromFile('a.txt');
     }
 
-    public function testFromFileAndContentsThrowsIfFileDoesNotExist(): void
-    {
-        $this->expectExceptionObject(new FileIsNotReadable('a.txt'));
-
-        FileChangeDetector::fromFileAndContents('a.txt', 'a');
-    }
-
     public function testItConsidersTouchedFileNotChanged(): void
     {
         $file = $this->root->url() . '/test.txt';
@@ -58,13 +51,13 @@ final class FileChangeDetectorTest extends TestCase
     public function testItReturnsDeduplicatedDetectors(): void
     {
         $detector = ChangeDetectors::from([
-            FileChangeDetector::fromFileAndContents(__FILE__, 'test'),
-            FileChangeDetector::fromFileAndContents(__FILE__, 'test2'),
-            FileChangeDetector::fromFileAndContents(__DIR__ . '/PackageChangeDetectorTest.php', ''),
+            new FileChangeDetector('test1', 1, 'a'),
+            new FileChangeDetector('test2', 2, 'b'),
+            new FileChangeDetector('test1', 3, 'c'),
         ]);
 
         $deduplicated = $detector->deduplicate();
 
-        self::assertCount(2, $deduplicated);
+        self::assertCount(3, $deduplicated);
     }
 }

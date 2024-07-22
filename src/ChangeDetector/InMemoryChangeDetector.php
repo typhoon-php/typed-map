@@ -18,7 +18,15 @@ final class InMemoryChangeDetector implements ChangeDetector
 
     public function deduplicate(): array
     {
-        return [($this->changed ? 'changed' : 'unchanged') . '#in-memory' => $this];
+        return [$this->hash() => $this];
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    private function hash(): string
+    {
+        return $this->changed . ':in-memory';
     }
 
     public function __serialize(): array

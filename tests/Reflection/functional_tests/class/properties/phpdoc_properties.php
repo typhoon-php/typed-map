@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection;
 
+use Typhoon\Reflection\Locator\Resource;
 use Typhoon\Type\types;
 use function PHPUnit\Framework\assertFalse;
 use function PHPUnit\Framework\assertNull;
@@ -12,7 +13,7 @@ use function PHPUnit\Framework\assertTrue;
 
 return static function (TyphoonReflector $reflector): void {
     $properties = $reflector
-        ->withResource(new Resource(
+        ->withResource(Resource::fromCode(
             <<<'PHP'
                 <?php
                 /** 

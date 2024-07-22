@@ -7,18 +7,18 @@ namespace Typhoon\PhpStormReflectionStubs;
 use JetBrains\PHPStormStub\PhpStormStubsMap;
 use Typhoon\ChangeDetector\ChangeDetector;
 use Typhoon\ChangeDetector\ComposerPackageChangeDetector;
-use Typhoon\ChangeDetector\FileChangeDetector;
 use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\DeclarationId\NamedFunctionId;
 use Typhoon\PhpStormReflectionStubs\Internal\ApplyTentativeTypeAttribute;
 use Typhoon\PhpStormReflectionStubs\Internal\CleanUp;
+use Typhoon\Reflection\Exception\FileIsNotReadable;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\TypedMap\TypedMap;
 use Typhoon\Reflection\Locator\ConstantLocator;
 use Typhoon\Reflection\Locator\NamedClassLocator;
 use Typhoon\Reflection\Locator\NamedFunctionLocator;
-use Typhoon\Reflection\Resource;
+use Typhoon\Reflection\Locator\Resource;
 
 /**
  * @api
@@ -27,15 +27,13 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
 {
     private const PACKAGE = 'jetbrains/phpstorm-stubs';
 
-    private static null|false|ComposerPackageChangeDetector $packageChangeDetector = false;
+    private static ?ComposerPackageChangeDetector $packageChangeDetector = null;
 
-    private static function packageChangeDetector(): ?ChangeDetector
+    private static function changeDetector(): ChangeDetector
     {
-        if (self::$packageChangeDetector === false) {
-            return self::$packageChangeDetector = ComposerPackageChangeDetector::tryFromName(self::PACKAGE);
-        }
-
-        return self::$packageChangeDetector;
+        return self::$packageChangeDetector
+            ??= ComposerPackageChangeDetector::tryFromName(self::PACKAGE)
+            ?? throw new \LogicException(sprintf('Package %s is not installed via Composer', self::PACKAGE));
     }
 
     public function locate(ConstantId|NamedFunctionId|NamedClassId $id): ?Resource
@@ -51,16 +49,18 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
         }
 
         $file = PhpStormStubsMap::DIR . '/' . $relativePath;
-        $code = Resource::readFile($file);
+        $code = @file_get_contents($file);
 
-        return new Resource(
+        if ($code === false) {
+            throw new FileIsNotReadable($file);
+        }
+
+        return Resource::fromCode(
             code: $code,
-            baseData: (new TypedMap())
+            data: (new TypedMap())
                 ->with(Data::PhpExtension, \dirname($relativePath))
                 ->with(Data::InternallyDefined, true)
-                ->with(Data::UnresolvedChangeDetectors, [
-                    self::packageChangeDetector() ?? FileChangeDetector::fromFileAndContents($file, $code),
-                ]),
+                ->with(Data::ChangeDetector, self::changeDetector()),
             hooks: [
                 ApplyTentativeTypeAttribute::Instance,
                 CleanUp::Instance,

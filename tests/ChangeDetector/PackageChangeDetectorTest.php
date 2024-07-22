@@ -36,7 +36,7 @@ final class PackageChangeDetectorTest extends TestCase
 
         $deduplicated = $detector->deduplicate();
 
-        self::assertCount(2, $deduplicated);
+        self::assertCount(3, $deduplicated);
     }
 
     /**

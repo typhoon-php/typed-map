@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection;
 
+use Typhoon\Reflection\Locator\Resource;
 use Typhoon\Type\types;
 use function PHPUnit\Framework\assertEquals;
 
 return static function (TyphoonReflector $reflector): void {
     $method = $reflector
-        ->withResource(new Resource(
+        ->withResource(Resource::fromCode(
             <<<'PHP'
                 <?php
                 interface I1

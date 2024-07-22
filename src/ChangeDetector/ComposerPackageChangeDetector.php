@@ -55,6 +55,14 @@ final class ComposerPackageChangeDetector implements ChangeDetector
 
     public function deduplicate(): array
     {
-        return [$this->name . '#package' => $this];
+        return [$this->hash() => $this];
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    private function hash(): string
+    {
+        return $this->reference . ':' . $this->name . ':composer-package';
     }
 }

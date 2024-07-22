@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection;
 
+use Typhoon\Reflection\Locator\Resource;
 use function PHPUnit\Framework\assertSame;
 
 return static function (TyphoonReflector $reflector): void {
     $templates = $reflector
-        ->withResource(new Resource(<<<'PHP'
+        ->withResource(Resource::fromCode(<<<'PHP'
             <?php
             /** 
              * @template TSingleLine

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection;
 
+use Typhoon\Reflection\Locator\Resource;
 use Typhoon\Type\Variance;
 use function PHPUnit\Framework\assertSame;
 
 return static function (TyphoonReflector $reflector): void {
     $templates = $reflector
-        ->withResource(new Resource(<<<'PHP'
+        ->withResource(Resource::fromCode(<<<'PHP'
             <?php
             /** 
              * @template TInvariant

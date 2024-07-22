@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Typhoon\Reflection;
 
+use Typhoon\Reflection\Locator\Resource;
 use Typhoon\Type\types;
 use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertNull;
 
 return static function (TyphoonReflector $reflector): void {
     $reflection = $reflector
-        ->withResource(new Resource('<?php enum A { case X; }'))
+        ->withResource(Resource::fromCode('<?php enum A { case X; }'))
         ->reflectClass('A')
         ->enumCases()['X'];
 

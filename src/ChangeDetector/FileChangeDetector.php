@@ -11,12 +11,12 @@ final class FileChangeDetector implements ChangeDetector
 {
     /**
      * @param non-empty-string $file
-     * @param non-empty-string $hash
+     * @param non-empty-string $md5
      */
-    private function __construct(
+    public function __construct(
         private readonly string $file,
         private readonly int $mtime,
-        private readonly string $hash,
+        private readonly string $md5,
     ) {}
 
     /**
@@ -25,37 +25,48 @@ final class FileChangeDetector implements ChangeDetector
      */
     public static function fromFile(string $file): self
     {
-        $contents = @file_get_contents($file);
+        $handle = @fopen($file, 'r');
 
-        if ($contents === false) {
+        if ($handle === false) {
             throw new FileIsNotReadable($file);
         }
 
-        return self::fromFileAndContents($file, $contents);
-    }
+        if (!@flock($handle, LOCK_SH)) {
+            throw new \RuntimeException('Failed to acquire shared lock on file ' . $file);
+        }
 
-    /**
-     * @param non-empty-string $file
-     * @throws FileIsNotReadable
-     */
-    public static function fromFileAndContents(string $file, string $contents): self
-    {
         $mtime = @filemtime($file);
 
         if ($mtime === false) {
             throw new FileIsNotReadable($file);
         }
 
-        return new self(file: $file, mtime: $mtime, hash: md5($contents));
+        $md5 = @md5_file($file);
+
+        if ($md5 === false) {
+            throw new FileIsNotReadable($file);
+        }
+
+        fclose($handle);
+
+        return new self($file, $mtime, $md5);
     }
 
     public function changed(): bool
     {
-        return filemtime($this->file) !== $this->mtime || md5_file($this->file) !== $this->hash;
+        return filemtime($this->file) !== $this->mtime || md5_file($this->file) !== $this->md5;
     }
 
     public function deduplicate(): array
     {
-        return [$this->file . '#file' => $this];
+        return [$this->hash() => $this];
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    private function hash(): string
+    {
+        return $this->mtime . ':' . $this->md5 . ':' . $this->file . ':file';
     }
 }
