@@ -156,9 +156,9 @@ abstract class Id implements \JsonSerializable
     /**
      * @param non-empty-string $name
      */
-    final public static function template(NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId|MethodId $site, string $name): TemplateId
+    final public static function template(NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId|MethodId $declaration, string $name): TemplateId
     {
-        return new TemplateId($site, $name);
+        return new TemplateId($declaration, $name);
     }
 
     /**
