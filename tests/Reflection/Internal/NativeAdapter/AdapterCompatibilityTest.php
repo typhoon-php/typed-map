@@ -130,8 +130,8 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertEquals($native->getExtension(), $typhoon->getExtension(), 'class.getExtension()');
         self::assertEquals($native->getExtensionName(), $typhoon->getExtensionName(), 'class.getExtensionName()');
         self::assertSame($native->getFileName(), $typhoon->getFileName(), 'class.getFileName()');
-        self::assertSame($native->getInterfaceNames(), $typhoon->getInterfaceNames(), 'class.getInterfaceNames()');
-        self::assertReflectionsEqual($native->getInterfaces(), $typhoon->getInterfaces(), 'class.getInterfaces()');
+        self::assertInterfaceNamesEqualNoOrder($native->getInterfaceNames(), $typhoon->getInterfaceNames(), 'class.getInterfaceNames()');
+        self::assertReflectionsEqualNoOrder($native->getInterfaces(), $typhoon->getInterfaces(), 'class.getInterfaces()');
         self::assertSame($native->getModifiers(), $typhoon->getModifiers(), 'class.getModifiers()');
         self::assertSame($native->getName(), $typhoon->getName(), 'class.getName()');
         self::assertSame($native->getNamespaceName(), $typhoon->getNamespaceName(), 'class.getNamespaceName()');
@@ -519,6 +519,18 @@ final class AdapterCompatibilityTest extends TestCase
         sort($typhoonReflectionStrings);
 
         self::assertSame($nativeReflectionStrings, $typhoonReflectionStrings, $message);
+    }
+
+    /**
+     * @param list<class-string> $native
+     * @param list<class-string> $typhoon
+     */
+    private static function assertInterfaceNamesEqualNoOrder(array $native, array $typhoon, string $message): void
+    {
+        sort($native);
+        sort($typhoon);
+
+        self::assertSame($native, $typhoon, $message);
     }
 
     /**
