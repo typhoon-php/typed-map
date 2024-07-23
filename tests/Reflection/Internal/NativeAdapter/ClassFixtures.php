@@ -29,6 +29,13 @@ final class ClassFixtures
             \Stringable::class,
             \UnitEnum::class,
             \BackedEnum::class,
+            \Countable::class,
+            \Serializable::class,
+            \ArrayAccess::class,
+            \Throwable::class,
+            // \Error::class,
+            // \Exception::class,
+            \ArrayObject::class,
             ...self::loadFromFile(__DIR__ . '/Fixtures/classes.php'),
         ];
 
