@@ -10,6 +10,7 @@ use Typhoon\ChangeDetector\ComposerPackageChangeDetector;
 use Typhoon\DeclarationId\ConstantId;
 use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\DeclarationId\NamedFunctionId;
+use Typhoon\PhpStormReflectionStubs\Internal\ApplyLanguageLevelTypeAwareAttribute;
 use Typhoon\PhpStormReflectionStubs\Internal\ApplyTentativeTypeAttribute;
 use Typhoon\PhpStormReflectionStubs\Internal\CleanUp;
 use Typhoon\Reflection\Exception\FileIsNotReadable;
@@ -60,6 +61,7 @@ final class PhpStormStubsLocator implements ConstantLocator, NamedFunctionLocato
                 ->with(Data::InternallyDefined, true)
                 ->with(Data::ChangeDetector, self::changeDetector()),
             hooks: [
+                ApplyLanguageLevelTypeAwareAttribute::Instance,
                 ApplyTentativeTypeAttribute::Instance,
                 CleanUp::Instance,
             ],
