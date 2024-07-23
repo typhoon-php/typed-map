@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\PhpStormReflectionStubs\Internal;
+namespace Typhoon\Reflection\Internal\CompleteReflection;
 
 use Typhoon\DeclarationId\AnonymousClassId;
 use Typhoon\DeclarationId\AnonymousFunctionId;
@@ -18,25 +18,16 @@ use Typhoon\Reflection\Internal\TypedMap\TypedMap;
 
 /**
  * @internal
- * @psalm-internal Typhoon\PhpStormReflectionStubs
+ * @psalm-internal Typhoon\Reflection
  */
-enum CleanUp implements ConstantHook, FunctionHook, ClassHook
+enum CleanUpInternallyDefined implements ConstantHook, FunctionHook, ClassHook
 {
     case Instance;
-    private const ATTRIBUTE_PREFIX = 'JetBrains\\';
 
     public function process(ConstantId|NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, Reflector $reflector): TypedMap
     {
-        // https://github.com/JetBrains/phpstorm-stubs/pull/1528
-        if ($id instanceof NamedClassId && $id->name === \Traversable::class) {
-            $data = $data->without(Data::UnresolvedInterfaces);
-        }
-
-        // todo issue
-        if ($id instanceof NamedClassId && $id->name === \Throwable::class) {
-            $methods = $data[Data::Methods];
-            unset($methods['__toString']);
-            $data = $data->with(Data::Methods, $methods);
+        if (!$data[Data::InternallyDefined]) {
+            return $data;
         }
 
         return self::cleanUp($data)
@@ -48,10 +39,7 @@ enum CleanUp implements ConstantHook, FunctionHook, ClassHook
     private static function cleanUp(TypedMap $data): TypedMap
     {
         return $data
-            ->with(Data::Parameters, array_map(self::cleanUp(...), $data[Data::Parameters]))
-            ->with(Data::Attributes, array_values(array_filter(
-                $data[Data::Attributes],
-                static fn(TypedMap $attribute): bool => !str_starts_with($attribute[Data::AttributeClassName], self::ATTRIBUTE_PREFIX),
-            )));
+            ->without(Data::Location, Data::PhpDoc)
+            ->with(Data::Parameters, array_map(self::cleanUp(...), $data[Data::Parameters]));
     }
 }
