@@ -11,8 +11,8 @@ use Typhoon\Reflection\Internal\Context\Context;
 use Typhoon\Type\Type;
 use Typhoon\Type\types;
 
-#[CoversClass(TypeReflector::class)]
-final class TypeReflectorTest extends TestCase
+#[CoversClass(PhpDocTypeReflector::class)]
+final class PhpDocTypeReflectorTest extends TestCase
 {
     /**
      * @return \Generator<list{0: string, 1: Type|InvalidPhpDocType, 2?: Context}>
@@ -193,7 +193,7 @@ final class TypeReflectorTest extends TestCase
     {
         $parser = new PhpDocParser();
         $phpDocType = $parser->parse("/** @var {$phpDoc} */")->varType();
-        $reflector = new TypeReflector($context);
+        $reflector = new PhpDocTypeReflector($context);
 
         if ($expected instanceof InvalidPhpDocType) {
             $this->expectExceptionObject($expected);
@@ -206,7 +206,7 @@ final class TypeReflectorTest extends TestCase
 
     public function testItReturnsNullTypeIfNullNodePassed(): void
     {
-        $reflector = new TypeReflector(Context::start());
+        $reflector = new PhpDocTypeReflector(Context::start());
 
         $result = $reflector->reflectType(null);
 
