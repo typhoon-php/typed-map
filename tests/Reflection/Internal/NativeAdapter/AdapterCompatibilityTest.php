@@ -50,7 +50,7 @@ final class AdapterCompatibilityTest extends TestCase
     {
         $native = new \ReflectionFunction($name);
 
-        $typhoon = self::$typhoonReflector->reflectFunction($name)->native();
+        $typhoon = self::$typhoonReflector->reflectFunction($name)->toNativeReflection();
 
         self::assertFunctionEquals($native, $typhoon);
     }
@@ -64,7 +64,7 @@ final class AdapterCompatibilityTest extends TestCase
         $native = new \ReflectionClass($name);
         $native = $native->isEnum() ? new \ReflectionEnum($name) : $native;
 
-        $typhoon = self::$typhoonReflector->reflectClass($name)->native();
+        $typhoon = self::$typhoonReflector->reflectClass($name)->toNativeReflection();
 
         self::assertClassEquals($native, $typhoon);
     }

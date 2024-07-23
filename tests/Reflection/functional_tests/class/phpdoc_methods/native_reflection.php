@@ -21,6 +21,6 @@ return static function (TyphoonReflector $reflector): void {
         ))
         ->reflectClass('A');
 
-    assertEmpty($class->native()->getMethods());
-    assertFalse($class->native()->hasMethod('m'));
+    assertEmpty($class->toNativeReflection()->getMethods());
+    assertFalse($class->toNativeReflection()->hasMethod('m'));
 };

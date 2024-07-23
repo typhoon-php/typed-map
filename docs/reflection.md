@@ -77,8 +77,8 @@ $reflector = TyphoonReflector::build(
 
 ## Native reflection adapters
 
-All `*Reflection` classes have a `native()` method that can be used to obtain native PHP reflection adapters. These 
-adapters do not trigger autoloading except for most of the operations. See [native_reflection_compatibility.md](native_reflection_compatibility.md)
+All `*Reflection` classes have a `toNativeReflection()` method that can be used to obtain native PHP reflection adapters. These 
+adapters do not trigger autoloading for most of the operations. See [native_reflection_compatibility.md](native_reflection_compatibility.md)
 for details.
 
 ```php
@@ -86,6 +86,6 @@ use Typhoon\Reflection\TyphoonReflector;
 
 $isInstantiable = TyphoonReflector::build()
     ->reflectClass(MyClass::class)
-    ->native()
+    ->toNativeReflection()
     ->isInstantiable();
 ```
