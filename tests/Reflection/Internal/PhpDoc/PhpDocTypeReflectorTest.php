@@ -125,6 +125,11 @@ final class PhpDocTypeReflectorTest extends TestCase
         yield ['string[]', types::array(value: types::string)];
         yield ['stdClass', types::object(\stdClass::class)];
         yield ['Traversable', types::object(\Traversable::class)];
+        yield ['Traversable<string>', types::object(\Traversable::class, [types::mixed, types::string])];
+        yield ['Iterator<string>', types::object(\Iterator::class, [types::mixed, types::string])];
+        yield ['IteratorAggregate<string>', types::object(\IteratorAggregate::class, [types::mixed, types::string])];
+        yield ['Generator', types::generator()];
+        yield ['Generator<string>', types::generator(value: types::string)];
         yield ['stdClass<int, string>', types::object(\stdClass::class, [types::int, types::string])];
         yield ['object{}', types::objectShape()];
         yield ['object{a: int}', types::objectShape(['a' => types::int])];
