@@ -9,7 +9,7 @@ use Typhoon\Type\types;
 use function PHPUnit\Framework\assertEquals;
 
 return static function (TyphoonReflector $reflector): void {
-    $reflection = $reflector->withResource(Resource::fromCode(
+    $reflector = $reflector->withResource(Resource::fromCode(
         <<<'PHP'
             <?php
 
@@ -31,15 +31,26 @@ return static function (TyphoonReflector $reflector): void {
                     public $paramAndVar,
                 ) {}
             }
+
+            final class B
+            {
+                public function __construct(
+                    /** @var positive-int */
+                    public $noMethodPhpDocProperty,
+                ) {}
+            }
             PHP,
-    ))->reflectClass('A');
+    ));
 
-    $constructor = $reflection->methods()['__construct'];
+    $classA = $reflector->reflectClass('A');
+    $constructor = $classA->methods()['__construct'];
 
-    assertEquals(types::nonEmptyString, $reflection->properties()['onlyParam']->type());
+    assertEquals(types::nonEmptyString, $classA->properties()['onlyParam']->type());
     assertEquals(types::nonEmptyString, $constructor->parameters()['onlyParam']->type());
-    assertEquals(types::positiveInt, $reflection->properties()['onlyVar']->type());
+    assertEquals(types::positiveInt, $classA->properties()['onlyVar']->type());
     assertEquals(types::positiveInt, $constructor->parameters()['onlyVar']->type());
-    assertEquals(types::classString, $reflection->properties()['paramAndVar']->type());
+    assertEquals(types::classString, $classA->properties()['paramAndVar']->type());
     assertEquals(types::classString, $constructor->parameters()['paramAndVar']->type());
+
+    assertEquals(types::positiveInt, $reflector->reflectClass('B')->properties()['noMethodPhpDocProperty']->type());
 };
