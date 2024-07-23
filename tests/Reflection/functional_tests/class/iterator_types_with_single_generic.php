@@ -15,6 +15,9 @@ return static function (TyphoonReflector $reflector): void {
 
             final class A
             {
+                /** @var array<string> */
+                public $array;
+                
                 /** @var iterable<string> */
                 public $iterable;
                 
@@ -33,6 +36,7 @@ return static function (TyphoonReflector $reflector): void {
             PHP,
     ))->reflectClass('A');
 
+    assertEquals(types::array(value: types::string), $reflection->properties()['array']->type());
     assertEquals(types::iterable(value: types::string), $reflection->properties()['iterable']->type());
     assertEquals(types::object(\Traversable::class, [types::mixed, types::string]), $reflection->properties()['Traversable']->type());
     assertEquals(types::object(\Iterator::class, [types::mixed, types::string]), $reflection->properties()['Iterator']->type());
