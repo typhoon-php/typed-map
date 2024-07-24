@@ -657,8 +657,7 @@ namespace TrickyConstantExpressions
             string $__FILE__ = __FILE__,
             string $__DIR__ = __DIR__,
             string $__FUNCTION__ = __FUNCTION__,
-            // for some reason this exact parameter's default returns __CONSTANT__ in getDefaultValueConstantName()
-            // string $__CLASS__ = __CLASS__,
+            string $__CLASS__ = __CLASS__,
             string $__TRAIT__ = __TRAIT__,
             string $__METHOD__ = __METHOD__,
             string $__NAMESPACE__ = __NAMESPACE__,
