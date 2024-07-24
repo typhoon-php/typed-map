@@ -125,6 +125,17 @@ final class IdMap implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
+     * @return self<TId, TValue>
+     */
+    public function slice(int $offset = 0, ?int $limit = null): self
+    {
+        $copy = clone $this;
+        $copy->values = \array_slice($this->values, $offset, $limit);
+
+        return $copy;
+    }
+
+    /**
      * @return \Generator<TId, TValue>
      */
     public function getIterator(): \Generator
