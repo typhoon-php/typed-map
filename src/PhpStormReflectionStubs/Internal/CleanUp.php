@@ -14,6 +14,7 @@ use Typhoon\Reflection\Internal\ConstantHook;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\FunctionHook;
 use Typhoon\Reflection\Internal\TypedMap\TypedMap;
+use Typhoon\Reflection\TyphoonReflector;
 
 /**
  * @internal
@@ -24,7 +25,7 @@ enum CleanUp implements ConstantHook, FunctionHook, ClassHook
     case Instance;
     private const ATTRIBUTE_PREFIX = 'JetBrains\\';
 
-    public function process(ConstantId|NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data): TypedMap
+    public function process(ConstantId|NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, TyphoonReflector $reflector): TypedMap
     {
         // https://github.com/JetBrains/phpstorm-stubs/pull/1528
         if ($id instanceof NamedClassId && $id->name === \Traversable::class) {

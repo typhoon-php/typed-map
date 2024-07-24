@@ -12,6 +12,7 @@ use Typhoon\Reflection\Internal\ClassHook;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\FunctionHook;
 use Typhoon\Reflection\Internal\TypedMap\TypedMap;
+use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Type;
 use Typhoon\Type\types;
 
@@ -24,7 +25,7 @@ enum ApplyLanguageLevelTypeAwareAttribute implements FunctionHook, ClassHook
     case Instance;
     private const ATTRIBUTE = 'JetBrains\PhpStorm\Internal\LanguageLevelTypeAware';
 
-    public function process(NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data): TypedMap
+    public function process(NamedFunctionId|AnonymousFunctionId|NamedClassId|AnonymousClassId $id, TypedMap $data, TyphoonReflector $reflector): TypedMap
     {
         return $data
             ->with(Data::Parameters, array_map(self::apply(...), $data[Data::Parameters]))

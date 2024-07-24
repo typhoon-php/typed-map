@@ -9,6 +9,7 @@ use Typhoon\DeclarationId\NamedClassId;
 use Typhoon\Reflection\Internal\ClassHook;
 use Typhoon\Reflection\Internal\Data;
 use Typhoon\Reflection\Internal\TypedMap\TypedMap;
+use Typhoon\Reflection\TyphoonReflector;
 
 /**
  * @internal
@@ -19,7 +20,7 @@ enum ApplyTentativeTypeAttribute implements ClassHook
     case Instance;
     private const ATTRIBUTE = 'JetBrains\PhpStorm\Internal\TentativeType';
 
-    public function process(NamedClassId|AnonymousClassId $id, TypedMap $data): TypedMap
+    public function process(NamedClassId|AnonymousClassId $id, TypedMap $data, TyphoonReflector $reflector): TypedMap
     {
         return $data->with(Data::Methods, array_map(
             static function (TypedMap $method): TypedMap {
