@@ -33,6 +33,7 @@ $config = (new Config())
     /** @see TypeInheritance */
     'strict_comparison' => false,
     'logical_operators' => false,
+    'no_multiline_whitespace_around_double_arrow' => false,
     'ordered_class_elements' => ['order' => ['use_trait']],
     'class_attributes_separation' => ['elements' => [
         'trait_import' => 'only_if_meta',

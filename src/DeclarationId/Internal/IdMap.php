@@ -57,30 +57,30 @@ final class IdMap implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
-     * @template TNewId of Id
-     * @template TNewValue
-     * @param iterable<TNewId, TNewValue> $values
-     * @return self<TId|TNewId, TValue|TNewValue>
+     * @param TId $id
+     * @return self<TId, TValue>
      */
-    public function withMultiple(iterable $values): self
+    public function without(Id $id): self
     {
-        /** @var self<TId|TNewId, TValue|TNewValue> */
         $copy = clone $this;
-
-        foreach ($values as $id => $value) {
-            $copy->values[$id->encode()] = [$id, $value];
-        }
+        unset($copy->values[$id->encode()]);
 
         return $copy;
     }
 
     /**
-     * @return self<TId, TValue>
+     * @template TNewId of Id
+     * @template TNewValue
+     * @param IdMap<TNewId, TNewValue> $idMap
+     * @return self<TId|TNewId, TValue|TNewValue>
      */
-    public function toEmpty(): self
+    public function withMap(self $idMap): self
     {
-        /** @var self<TId, TValue> */
-        return new self();
+        /** @var self<TId|TNewId, TValue|TNewValue> */
+        $copy = clone $this;
+        $copy->values = [...$copy->values, ...$idMap->values];
+
+        return $copy;
     }
 
     public function offsetExists(mixed $offset): bool
