@@ -39,6 +39,7 @@ final class StringifyTest extends TestCase
         yield [types::float, 'float'];
         yield [types::float(0.234), '0.234'];
         yield [types::float(-0.234), '-0.234'];
+        yield [types::floatRange(-0.99999, 1.232111111), 'float<-0.99999, 1.232111111>'];
         yield [types::numeric, 'numeric'];
         yield [types::arrayKey, 'int|string'];
         yield [types::numericString, 'numeric-string'];

@@ -1,16 +1,18 @@
 # Typhoon Type
 
 Typhoon Type is an object abstraction over the PHP type system, used to express any sophisticated PHP type. It is mostly
-inspired by two popular static analyzers: [Psalm](https://psalm.dev/) and [PHPStan](https://phpstan.org/). Typhoon Type is the main
-building block for the other Typhoon components.
+inspired by two popular static analyzers: [Psalm](https://psalm.dev/) and [PHPStan](https://phpstan.org/). Typhoon Type
+is the main building block for the other Typhoon components.
 
 Unlike other solutions, Typhoon Type does not expose concrete type classes in its API. Instead, it provides only
 a [`Type`](../src/Type/Type.php) interface and a [`TypeVisitor`](../src/Type/TypeVisitor.php) with destructurization.
 This approach gives several advantages:
+
 1. Memory efficient enums can be used for all atomic types and for aliases of commonly used compound types.
 2. The visitor has only a minimal subset of type methods that must be implemented when describing a type algebra.
    Complexity of the other types is hidden and can be completely ignored.
-3. Using of downcasting via the `instanceof` operator is automatically discouraged, since all `Type` implementations are `@internal`. 
+3. Using of downcasting via the `instanceof` operator is automatically discouraged, since all `Type` implementations
+   are `@internal`.
 
 ## Installation
 
@@ -74,7 +76,8 @@ echo stringify(
 
 ### Comparing types
 
-Typhoon team is currently working on a type comparator. Until it is released, you can use [DefaultTypeVisitor](../src/Type/DefaultTypeVisitor.php) for simple checks:
+Typhoon team is currently working on a type comparator. Until it is released, you can
+use [DefaultTypeVisitor](../src/Type/DefaultTypeVisitor.php) for simple checks:
 
 ```php
 use Typhoon\Type\Type;
@@ -150,7 +153,8 @@ var_dump(types::callableString()->accept($isIntChecker)); // false
 | `int-mask<1, 2, 4>`       | `int-mask<1, 2, 4>`          | `types::intMask(1, 2, 4)`                                       |
 | `int-mask-of<Foo::INT_*>` | `int-mask-of<Foo::INT_*>`    | `types::intMaskOf(types::classConstantMask(Foo::class, 'INT_')` |
 | ❌                         | ❌                            | `types::literalFloat`                                           |
-| `12.5`                    | `12.5`                       | `types::int(12.5)`, `types::scalar(12.5)`                       |
+| ❌                         | ❌                            | `types::floatRange(-0.001, 2.344)`                              |
+| `12.5`                    | `12.5`                       | `types::float(12.5)`, `types::scalar(12.5)`                     |
 | `numeric`                 | `numeric`                    | `types::numeric`                                                |
 
 ### Strings

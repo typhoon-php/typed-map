@@ -65,6 +65,16 @@ final class PhpDocTypeReflectorTest extends TestCase
         yield ['class-string<\stdClass>', types::classString(types::object(\stdClass::class))];
         yield ['float', types::float];
         yield ['double', types::float];
+        yield ['float<10.0002, 231.00002>', types::floatRange(10.0002, 231.00002)];
+        yield ['float<min, 123>', types::floatRange(max: 123)];
+        yield ['float<-99, max>', types::floatRange(min: -99)];
+        yield ['float<max>', new InvalidPhpDocType('float range type should have 2 type arguments, got 1')];
+        yield ['float<max, 0>', new InvalidPhpDocType('Invalid float range min type argument: max')];
+        yield ['float<test, 0>', new InvalidPhpDocType('Invalid float range min type argument: test')];
+        yield ["float<'test', 0>", new InvalidPhpDocType('Invalid float range min type argument: test')];
+        yield ['float<0, min>', new InvalidPhpDocType('Invalid float range max type argument: min')];
+        yield ['float<0, test>', new InvalidPhpDocType('Invalid float range max type argument: test')];
+        yield ["float<0, 'test'>", new InvalidPhpDocType('Invalid float range max type argument: test')];
         yield ['literal-string', types::literalString];
         yield ['literal-float', types::literalFloat];
         yield ['numeric-string', types::numericString];
