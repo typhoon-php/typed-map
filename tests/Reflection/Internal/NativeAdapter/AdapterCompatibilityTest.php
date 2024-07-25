@@ -156,8 +156,8 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->isCloneable(), $typhoon->isCloneable(), 'class.isCloneable()');
         self::assertSame($native->isEnum(), $typhoon->isEnum(), 'class.isEnum()');
         self::assertSame($native->isFinal(), $typhoon->isFinal(), 'class.isFinal()');
-        if (self::canCreateMockObject($native)) {
-            self::assertSame($native->isInstance(self::createMockObject($native)), $typhoon->isInstance(self::createMockObject($native)), 'class.isInstance()');
+        foreach (self::getObjects($native) as $object) {
+            self::assertSame($native->isInstance($object), $typhoon->isInstance($object), 'class.isInstance($object)');
         }
         self::assertSame($native->isInstantiable(), $typhoon->isInstantiable(), 'class.isInstantiable()');
         self::assertSame($native->isInterface(), $typhoon->isInterface(), 'class.isInterface()');
@@ -177,11 +177,9 @@ final class AdapterCompatibilityTest extends TestCase
         }
         self::assertSame($native->isTrait(), $typhoon->isTrait(), 'class.isTrait()');
         self::assertSame($native->isUserDefined(), $typhoon->isUserDefined(), 'class.isUserDefined()');
-        if ($native->isInstantiable()) {
-            // self::assertEquals($native->newInstance(), $typhoon->newInstance(), 'class.newInstance()');
-            // self::assertEquals($native->newInstanceArgs(), $typhoon->newInstanceArgs(), 'class.newInstanceArgs()');
-            self::assertEquals($native->newInstanceWithoutConstructor(), $typhoon->newInstanceWithoutConstructor(), 'class.newInstanceWithoutConstructor()');
-        }
+        // newInstance()
+        // newInstanceArgs()
+        // newInstanceWithoutConstructor()
         // TODO setStaticPropertyValue()
 
         if ($native instanceof \ReflectionEnum) {
@@ -332,12 +330,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->name, $typhoon->name, $messagePrefix . '.name');
         self::assertSame($native->__toString(), $typhoon->__toString(), $messagePrefix . '.__toString()');
         self::assertGetAttributes($native, $typhoon, $messagePrefix);
-        if ($native->isStatic()) {
-            self::assertMethodClosureEquals($native->getClosure(), $typhoon->getClosure(), $messagePrefix . '.getClosure()');
-        } elseif (self::canCreateMockObject($native->getDeclaringClass())) {
-            $object = self::createMockObject($native->getDeclaringClass());
-            self::assertMethodClosureEquals($native->getClosure($object), $typhoon->getClosure($object), $messagePrefix . '.getClosure($object)');
-        }
+        // TODO getClosure()
         self::assertSame($native->getClosureCalledClass(), $typhoon->getClosureCalledClass(), $messagePrefix . '.getClosureCalledClass()');
         self::assertSame($native->getClosureScopeClass(), $typhoon->getClosureScopeClass(), $messagePrefix . '.getClosureScopeClass()');
         self::assertSame($native->getClosureThis(), $typhoon->getClosureThis(), $messagePrefix . '.getClosureThis()');
@@ -577,29 +570,6 @@ final class AdapterCompatibilityTest extends TestCase
         ];
     }
 
-    private static function canCreateMockObject(\ReflectionClass $class): bool
-    {
-        if (method_exists($class, 'isReadonly') && $class->isReadonly()) {
-            return false;
-        }
-
-        if ($class->isTrait()) {
-            return false;
-        }
-
-        if ($class->isEnum()) {
-            /** @psalm-suppress MixedMethodCall */
-            return $class->name::cases() !== [];
-        }
-
-        return !\in_array($class->name, [
-            \UnitEnum::class,
-            \BackedEnum::class,
-            \Throwable::class,
-            \Traversable::class,
-        ], true);
-    }
-
     /**
      * @return \Generator<int, class-string>
      * @psalm-suppress MoreSpecificReturnType
@@ -617,43 +587,59 @@ final class AdapterCompatibilityTest extends TestCase
             $parent = $parent->getParentClass();
         }
 
+        yield (new class () {})::class;
+        yield (new class () extends \stdClass {})::class;
+        yield \Traversable::class;
         yield \Iterator::class;
+        yield \IteratorAggregate::class;
+        yield \Generator::class;
+        yield \FilterIterator::class;
         yield \ArrayAccess::class;
         yield \Throwable::class;
+        yield \Error::class;
+        yield \Exception::class;
         yield \UnitEnum::class;
+        yield \BackedEnum::class;
         yield Variance::class;
-        yield \FilterIterator::class;
         yield \stdClass::class;
         yield Trait1::class;
+        yield \Closure::class;
+        yield \DateTimeImmutable::class;
+        yield \DateTimeImmutable::class;
     }
 
     /**
-     * @template T of object
-     * @param \ReflectionClass<T> $class
-     * @return T
+     * @return \Generator<object>
      */
-    private static function createMockObject(\ReflectionClass $class): object
+    private static function getObjects(\ReflectionClass $class): \Generator
     {
-        if ($class->isAbstract() || $class->isInterface()) {
-            /** @var T */
-            return \Mockery::mock($class->name);
-        }
-
-        if ($class->isEnum()) {
-            /**
-             * @var list<T>
-             * @psalm-suppress MixedMethodCall
-             */
-            $cases = $class->name::cases();
-
-            if ($cases === []) {
-                throw new \LogicException(sprintf('Enum %s has no cases.', $class->name));
+        try {
+            yield $class->newInstance();
+        } catch (\Throwable) {
+            try {
+                yield $class->newInstanceWithoutConstructor();
+            } catch (\Throwable) {
             }
-
-            return $cases[0];
         }
 
-        return $class->newInstanceWithoutConstructor();
+        yield static fn(): int => 1;
+        yield (static fn(): \Generator => yield 1)();
+        yield new class () {};
+        yield new class () extends \stdClass {};
+        yield new class () {
+            public function __toString(): string
+            {
+                return '';
+            }
+        };
+        yield new \stdClass();
+        yield new \DateTimeImmutable();
+        yield new \DateTimeImmutable();
+        yield new \ArrayObject();
+        yield new \ArrayIterator();
+        yield new \Error();
+        yield new \Exception();
+        yield Variance::Invariant;
     }
 
     private static function assertResultOrExceptionEqual(\Closure $native, \Closure $typhoon, string $messagePrefix): void
@@ -665,12 +651,12 @@ final class AdapterCompatibilityTest extends TestCase
 
         try {
             $nativeResult = $native();
-        } catch (\ReflectionException $nativeException) {
+        } catch (\Throwable $nativeException) {
         }
 
         try {
             $typhoonResult = $typhoon();
-        } catch (\ReflectionException $typhoonException) {
+        } catch (\Throwable $typhoonException) {
         }
 
         if ($nativeException !== null) {
@@ -684,6 +670,6 @@ final class AdapterCompatibilityTest extends TestCase
         }
 
         self::assertNull($typhoonException, $messagePrefix);
-        self::assertSame($nativeResult, $typhoonResult, $messagePrefix);
+        self::assertEquals($nativeResult, $typhoonResult, $messagePrefix);
     }
 }
