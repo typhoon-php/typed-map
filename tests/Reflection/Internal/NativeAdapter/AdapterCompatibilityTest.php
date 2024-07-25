@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Traits\Trait1;
 use Typhoon\DeclarationId\Id;
+use Typhoon\PhpStormReflectionStubs\PhpStormStubsLocator;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Variance;
 
@@ -29,11 +30,17 @@ use Typhoon\Type\Variance;
 #[CoversClass(IntersectionTypeAdapter::class)]
 final class AdapterCompatibilityTest extends TestCase
 {
-    private static TyphoonReflector $typhoonReflector;
+    private static TyphoonReflector $defaultReflector;
+
+    private static TyphoonReflector $noStubsLocator;
 
     public static function setUpBeforeClass(): void
     {
-        self::$typhoonReflector = TyphoonReflector::build();
+        self::$defaultReflector = TyphoonReflector::build();
+        self::$noStubsLocator = TyphoonReflector::build(locators: array_filter(
+            TyphoonReflector::defaultLocators(),
+            static fn(object $locator): bool => !$locator instanceof PhpStormStubsLocator,
+        ));
     }
 
     /**
@@ -44,7 +51,20 @@ final class AdapterCompatibilityTest extends TestCase
     {
         $native = new \ReflectionFunction($name);
 
-        $typhoon = self::$typhoonReflector->reflectFunction($name)->toNativeReflection();
+        $typhoon = self::$defaultReflector->reflectFunction($name)->toNativeReflection();
+
+        self::assertFunctionEquals($native, $typhoon);
+    }
+
+    /**
+     * @param callable-string $name
+     */
+    #[DataProviderExternal(FunctionFixtures::class, 'internal')]
+    public function testInternalFunctionsViaNativeReflector(string $name): void
+    {
+        $native = new \ReflectionFunction($name);
+
+        $typhoon = self::$noStubsLocator->reflectFunction($name)->toNativeReflection();
 
         self::assertFunctionEquals($native, $typhoon);
     }
@@ -58,7 +78,21 @@ final class AdapterCompatibilityTest extends TestCase
         $native = new \ReflectionClass($name);
         $native = $native->isEnum() ? new \ReflectionEnum($name) : $native;
 
-        $typhoon = self::$typhoonReflector->reflectClass($name)->toNativeReflection();
+        $typhoon = self::$defaultReflector->reflectClass($name)->toNativeReflection();
+
+        self::assertClassEquals($native, $typhoon);
+    }
+
+    /**
+     * @param class-string $name
+     */
+    #[DataProviderExternal(ClassFixtures::class, 'internal')]
+    public function testInternalClassesViaNativeReflector(string $name): void
+    {
+        $native = new \ReflectionClass($name);
+        $native = $native->isEnum() ? new \ReflectionEnum($name) : $native;
+
+        $typhoon = self::$noStubsLocator->reflectClass($name)->toNativeReflection();
 
         self::assertClassEquals($native, $typhoon);
     }
@@ -151,7 +185,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->isEnum(), $typhoon->isEnum(), 'class.isEnum()');
         self::assertSame($native->isFinal(), $typhoon->isFinal(), 'class.isFinal()');
         foreach (self::getObjects($native) as $object) {
-            self::assertSame($native->isInstance($object), $typhoon->isInstance($object), 'class.isInstance($object)');
+            self::assertSame($native->isInstance($object), $typhoon->isInstance($object), sprintf('class.isInstance(%s)', $object::class));
         }
         self::assertSame($native->isInstantiable(), $typhoon->isInstantiable(), 'class.isInstantiable()');
         self::assertSame($native->isInterface(), $typhoon->isInterface(), 'class.isInterface()');

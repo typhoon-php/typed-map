@@ -48,6 +48,16 @@ final class FunctionFixtures
     }
 
     /**
+     * @return \Generator<callable-string, array{callable-string}>
+     */
+    public static function internal(): \Generator
+    {
+        foreach (get_defined_functions()['internal'] as $function) {
+            yield $function => [$function];
+        }
+    }
+
+    /**
      * @param non-empty-string $file
      * @return array<callable-string>
      */

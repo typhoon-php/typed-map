@@ -55,6 +55,31 @@ final class ClassFixtures
 
         return self::$classes;
     }
+    private const INTERNAL_CLASSES_TO_SKIP = [
+        // has a private constructor that is available only via ReflectionClass::getConstructor()
+        'IntlCodePointBreakIterator' => true,
+        // ReflectionClass::getModifiers() returns 0 instead of 32 (enums have IS_FINAL)
+        'Random\IntervalBoundary' => true,
+        // is iterable, but does not implement Traversable
+        'FFI\CData' => true,
+        // has parameters that canBePassedByValue() and isPassedByReference() at the same time
+        'FFI' => true,
+        // has a lot of problems with __invoke()
+        'Closure' => true,
+    ];
+
+    /**
+     * @return \Generator<string, array{class-string}>
+     */
+    public static function internal(): \Generator
+    {
+        foreach (self::allDeclaredClasses() as $class) {
+            /** @psalm-suppress InvalidArrayOffset */
+            if (!isset(self::INTERNAL_CLASSES_TO_SKIP[$class]) && (new \ReflectionClass($class))->isInternal()) {
+                yield $class => [$class];
+            }
+        }
+    }
 
     /**
      * @param non-empty-string $file
