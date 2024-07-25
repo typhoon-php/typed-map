@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Traits\Trait1;
 use Typhoon\DeclarationId\Id;
 use Typhoon\PhpStormReflectionStubs\PhpStormStubsLocator;
+use Typhoon\Reflection\Internal\NativeReflector\NativeReflector;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Variance;
 
@@ -28,6 +29,7 @@ use Typhoon\Type\Variance;
 #[CoversClass(NamedTypeAdapter::class)]
 #[CoversClass(UnionTypeAdapter::class)]
 #[CoversClass(IntersectionTypeAdapter::class)]
+#[CoversClass(NativeReflector::class)]
 final class AdapterCompatibilityTest extends TestCase
 {
     private static TyphoonReflector $defaultReflector;
