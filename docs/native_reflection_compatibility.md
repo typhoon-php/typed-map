@@ -161,31 +161,31 @@
 | `returnsReference()`              | ✅                                     |
 | `setAccessible()`                 | ✅                                     |
 
-| `ReflectionParameter`           | `Typhoon\Reflection\ParameterReflection` |
-|---------------------------------|------------------------------------------|
-| `$name`                         | ✅                                        |
-| `__construct()`                 | ❌ `@internal`                            |
-| `__toString()`                  | ⚠️ Via native reflection                 |
-| `allowsNull()`                  | ✅                                        |
-| `canBePassedByValue()`          | ✅                                        |
-| `getAttributes()`               | ✅                                        |
-| `getClass()`                    | ✅                                        |
-| `getDeclaringClass()`           | ✅                                        |
-| `getDeclaringFunction()`        | ✅                                        |
-| `getDefaultValue()`             | ✅                                        |
-| `getDefaultValueConstantName()` | ✅                                        |
-| `getName()`                     | ✅                                        |
-| `getPosition()`                 | ✅                                        |
-| `getType()`                     | ✅                                        |
-| `hasType()`                     | ✅                                        |
-| `isArray()`                     | ✅                                        |
-| `isCallable()`                  | ✅                                        |
-| `isDefaultValueAvailable()`     | ✅                                        |
-| `isDefaultValueConstant()`      | ✅                                        |
-| `isOptional()`                  | ✅                                        |
-| `isPassedByReference()`         | ✅                                        |
-| `isPromoted()`                  | ✅                                        |
-| `isVariadic()`                  | ✅                                        |
+| `ReflectionParameter`           | `Typhoon\Reflection\ParameterReflection`          |
+|---------------------------------|---------------------------------------------------|
+| `$name`                         | ✅                                                 |
+| `__construct()`                 | ❌ `@internal`                                     |
+| `__toString()`                  | ⚠️ Via native reflection                          |
+| `allowsNull()`                  | ✅                                                 |
+| `canBePassedByValue()`          | ✅                                                 |
+| `getAttributes()`               | ✅                                                 |
+| `getClass()`                    | ⚠️ Via native reflection (it's deprecated anyway) |
+| `getDeclaringClass()`           | ✅                                                 |
+| `getDeclaringFunction()`        | ✅                                                 |
+| `getDefaultValue()`             | ✅                                                 |
+| `getDefaultValueConstantName()` | ✅                                                 |
+| `getName()`                     | ✅                                                 |
+| `getPosition()`                 | ✅                                                 |
+| `getType()`                     | ✅                                                 |
+| `hasType()`                     | ✅                                                 |
+| `isArray()`                     | ⚠️ Via native reflection (it's deprecated anyway) |
+| `isCallable()`                  | ⚠️ Via native reflection (it's deprecated anyway) |
+| `isDefaultValueAvailable()`     | ✅                                                 |
+| `isDefaultValueConstant()`      | ✅                                                 |
+| `isOptional()`                  | ✅                                                 |
+| `isPassedByReference()`         | ✅                                                 |
+| `isPromoted()`                  | ✅                                                 |
+| `isVariadic()`                  | ✅                                                 |
 
 | `ReflectionAttribute` | `Typhoon\Reflection\AttributeReflection` |
 |-----------------------|------------------------------------------|

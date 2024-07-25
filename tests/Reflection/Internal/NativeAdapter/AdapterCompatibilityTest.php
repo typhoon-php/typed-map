@@ -438,7 +438,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->allowsNull(), $typhoon->allowsNull(), $messagePrefix . '.allowsNull()');
         self::assertSame($native->canBePassedByValue(), $typhoon->canBePassedByValue(), $messagePrefix . '.canBePassedByValue()');
         self::assertGetAttributes($native, $typhoon, $messagePrefix);
-        self::assertSame($native->getClass()?->name, $typhoon->getClass()?->name, $messagePrefix . '.getClass().name');
+        // getClass() deprecated
         self::assertSame(self::reflectionToString($native->getDeclaringFunction()), self::reflectionToString($typhoon->getDeclaringFunction()), $messagePrefix . '.getDeclaringFunction()');
         self::assertSame($native->getDeclaringClass()?->name, $typhoon->getDeclaringClass()?->name, $messagePrefix . '.getDeclaringClass().name');
         if ($native->isDefaultValueAvailable()) {
@@ -450,8 +450,8 @@ final class AdapterCompatibilityTest extends TestCase
             self::assertTypeEquals($native->getType(), $typhoon->getType(), $messagePrefix . '.getType()');
         }
         self::assertSame($native->hasType(), $typhoon->hasType(), $messagePrefix . '.hasType()');
-        self::assertSame($native->isArray(), $typhoon->isArray(), $messagePrefix . '.isArray()');
-        self::assertSame($native->isCallable(), $typhoon->isCallable(), $messagePrefix . '.isCallable()');
+        // isArray() deprecated
+        // isCallable() deprecated
         self::assertSame($native->isDefaultValueAvailable(), $typhoon->isDefaultValueAvailable(), $messagePrefix . '.isDefaultValueAvailable()');
         if ($native->isDefaultValueAvailable()) {
             self::assertEquals($native->getDefaultValue(), $typhoon->getDefaultValue(), $messagePrefix . '.getDefaultValue()');
