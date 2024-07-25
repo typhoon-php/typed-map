@@ -66,6 +66,6 @@ final class ComposerPackageChangeDetector implements ChangeDetector
      */
     private function hash(): string
     {
-        return sprintf('%s:%s:composer-package', (string) $this->reference, $this->name);
+        return \sprintf('%s:%s:composer-package', (string) $this->reference, $this->name);
     }
 }

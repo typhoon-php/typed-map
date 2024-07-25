@@ -19,7 +19,7 @@ final class AliasId extends Id
 
     public function describe(): string
     {
-        return sprintf('type alias %s of %s', $this->name, $this->class->describe());
+        return \sprintf('type alias %s of %s', $this->name, $this->class->describe());
     }
 
     public function equals(mixed $value): bool

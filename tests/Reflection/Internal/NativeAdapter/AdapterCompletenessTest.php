@@ -32,7 +32,7 @@ final class AdapterCompletenessTest extends TestCase
             self::assertSame(
                 $class,
                 $method->class,
-                sprintf('Method %s::%s() is not overridden in %s', $method->class, $method->name, $class),
+                \sprintf('Method %s::%s() is not overridden in %s', $method->class, $method->name, $class),
             );
         }
     }

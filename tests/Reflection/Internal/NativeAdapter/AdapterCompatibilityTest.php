@@ -187,7 +187,7 @@ final class AdapterCompatibilityTest extends TestCase
         self::assertSame($native->isEnum(), $typhoon->isEnum(), 'class.isEnum()');
         self::assertSame($native->isFinal(), $typhoon->isFinal(), 'class.isFinal()');
         foreach (self::getObjects($native) as $object) {
-            self::assertSame($native->isInstance($object), $typhoon->isInstance($object), sprintf('class.isInstance(%s)', $object::class));
+            self::assertSame($native->isInstance($object), $typhoon->isInstance($object), \sprintf('class.isInstance(%s)', $object::class));
         }
         self::assertSame($native->isInstantiable(), $typhoon->isInstantiable(), 'class.isInstantiable()');
         self::assertSame($native->isInterface(), $typhoon->isInterface(), 'class.isInterface()');

@@ -103,6 +103,6 @@ final class FileChangeDetector implements ChangeDetector
      */
     private function hash(): string
     {
-        return sprintf('%d:%s:%s:file', (string) $this->mtime, (string) $this->md5, $this->file);
+        return \sprintf('%d:%s:%s:file', (string) $this->mtime, (string) $this->md5, $this->file);
     }
 }

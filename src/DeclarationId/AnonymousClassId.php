@@ -28,7 +28,7 @@ final class AnonymousClassId extends Id
     protected static function fromName(string $name): self
     {
         if (preg_match('/@anonymous\x00(.+):(\d+)/', $name, $matches) !== 1) {
-            throw new \InvalidArgumentException(sprintf('Invalid anonymous class name "%s"', self::normalizeClassNameForException($name)));
+            throw new \InvalidArgumentException(\sprintf('Invalid anonymous class name "%s"', self::normalizeClassNameForException($name)));
         }
 
         /** @var non-empty-string $file */
@@ -36,7 +36,7 @@ final class AnonymousClassId extends Id
         $line = (int) $matches[2];
 
         if ($line <= 0) {
-            throw new \InvalidArgumentException(sprintf('Invalid anonymous class name "%s"', self::normalizeClassNameForException($name)));
+            throw new \InvalidArgumentException(\sprintf('Invalid anonymous class name "%s"', self::normalizeClassNameForException($name)));
         }
 
         if (class_exists($name, autoload: false)) {
@@ -104,7 +104,7 @@ final class AnonymousClassId extends Id
 
     public function describe(): string
     {
-        return sprintf('anonymous class at %s:%d%s', $this->file, $this->line, $this->column === null ? '' : ':' . $this->column);
+        return \sprintf('anonymous class at %s:%d%s', $this->file, $this->line, $this->column === null ? '' : ':' . $this->column);
     }
 
     public function equals(mixed $value): bool
@@ -118,7 +118,7 @@ final class AnonymousClassId extends Id
     public function reflect(): \ReflectionClass
     {
         if ($this->name === null) {
-            throw new \LogicException(sprintf(
+            throw new \LogicException(\sprintf(
                 "Cannot reflect %s, because it's runtime name is not available",
                 $this->describe(),
             ));

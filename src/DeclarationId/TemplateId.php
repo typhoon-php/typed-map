@@ -19,7 +19,7 @@ final class TemplateId extends Id
 
     public function describe(): string
     {
-        return sprintf('template %s of %s', $this->name, $this->declaration->describe());
+        return \sprintf('template %s of %s', $this->name, $this->declaration->describe());
     }
 
     public function equals(mixed $value): bool

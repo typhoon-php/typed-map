@@ -30,10 +30,10 @@ final class PropertyId extends Id
     public function describe(): string
     {
         if ($this->class instanceof AnonymousClassId) {
-            return sprintf('property $%s of %s', $this->name, $this->class->describe());
+            return \sprintf('property $%s of %s', $this->name, $this->class->describe());
         }
 
-        return sprintf('property %s::$%s', $this->class->name, $this->name);
+        return \sprintf('property %s::$%s', $this->class->name, $this->name);
     }
 
     public function equals(mixed $value): bool
@@ -45,7 +45,7 @@ final class PropertyId extends Id
 
     public function reflect(): \ReflectionProperty
     {
-        $class = $this->class->name ?? throw new \LogicException(sprintf(
+        $class = $this->class->name ?? throw new \LogicException(\sprintf(
             "Cannot reflect %s, because it's runtime name is not available",
             $this->describe(),
         ));

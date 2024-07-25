@@ -24,7 +24,7 @@ final class NamedFunctionId extends Id
 
     public function describe(): string
     {
-        return sprintf('function %s()', $this->name);
+        return \sprintf('function %s()', $this->name);
     }
 
     public function equals(mixed $value): bool

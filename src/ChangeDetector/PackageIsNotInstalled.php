@@ -14,6 +14,6 @@ final class PackageIsNotInstalled extends \RuntimeException
      */
     public function __construct(string $name, ?\Throwable $previous = null)
     {
-        parent::__construct(sprintf('Package "%s" is not installed via Composer', $name), previous: $previous);
+        parent::__construct(\sprintf('Package "%s" is not installed via Composer', $name), previous: $previous);
     }
 }
