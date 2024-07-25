@@ -39,8 +39,7 @@ final class FunctionFixtures
         self::$functions = [];
 
         foreach ($functions as $function) {
-            /** @var callable-string */
-            $realFunctionName = (new \ReflectionFunction($function))->name;
+            $realFunctionName = self::getRealFunctionName($function);
             self::$functions[$realFunctionName] = [$realFunctionName];
         }
 
@@ -53,8 +52,19 @@ final class FunctionFixtures
     public static function internal(): \Generator
     {
         foreach (get_defined_functions()['internal'] as $function) {
-            yield $function => [$function];
+            $realFunctionName = self::getRealFunctionName($function);
+            yield $realFunctionName => [$realFunctionName];
         }
+    }
+
+    /**
+     * @param callable-string $name
+     * @return callable-string
+     */
+    private static function getRealFunctionName(string $name): string
+    {
+        /** @var callable-string */
+        return (new \ReflectionFunction($name))->name;
     }
 
     /**
@@ -63,10 +73,10 @@ final class FunctionFixtures
      */
     private static function loadFromFile(string $file): array
     {
-        $declared = get_defined_functions()['user'];
+        $defined = get_defined_functions()['user'];
         /** @psalm-suppress UnresolvableInclude */
         require_once $file;
 
-        return array_diff(get_defined_functions()['user'], $declared);
+        return array_diff(get_defined_functions()['user'], $defined);
     }
 }
