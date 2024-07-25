@@ -19,6 +19,7 @@ final class PhpDocTypeReflectorTest extends TestCase
      */
     private static function validTypes(): \Generator
     {
+        yield ['int<min, 12312>', types::intRange(max: 123)];
         yield ['never', types::never];
         yield ['void', types::void];
         yield ['null', types::null];
