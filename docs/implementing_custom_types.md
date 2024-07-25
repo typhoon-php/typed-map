@@ -8,16 +8,6 @@ use Typhoon\Type\Type;
 use Typhoon\Type\TypeVisitor;
 use function Typhoon\Type\stringify;
 
-final readonly class Message
-{
-    /**
-     * @param list<int16> $some16bitIntegers
-     */
-    public function __construct(
-        public array $some16bitIntegers,
-    ) {}
-}
-
 /**
  * @implements Type<int|float>
  */
@@ -50,9 +40,22 @@ enum binaryTypes: string implements Type, CustomTypeResolver
     }
 }
 
+final readonly class Message
+{
+    /**
+     * @param list<int16> $some16bitIntegers
+     */
+    public function __construct(
+        public array $some16bitIntegers,
+    ) {}
+}
+
 $reflector = TyphoonReflector::build(customTypeResolver: binaryTypes::int16);
 
-$type = $reflector->reflectClass(Message::class)->properties()['some16bitIntegers']->type();
+$propertyType = $reflector
+    ->reflectClass(Message::class)
+    ->properties()['some16bitIntegers']
+    ->type();
 
-echo stringify($type), PHP_EOL; // list<int<-32768, 32767>>
+echo stringify($propertyType), PHP_EOL; // list<int<-32768, 32767>>
 ```
