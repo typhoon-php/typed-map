@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Typhoon\Reflection\Internal\NativeAdapter;
 
 use Attributes\Attr;
-use Mockery\Loader\RequireLoader;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Filesystem\Filesystem;
 use Traits\Trait1;
 use Typhoon\DeclarationId\Id;
 use Typhoon\Reflection\TyphoonReflector;
@@ -31,14 +29,10 @@ use Typhoon\Type\Variance;
 #[CoversClass(IntersectionTypeAdapter::class)]
 final class AdapterCompatibilityTest extends TestCase
 {
-    private const MOCKS_DIR = __DIR__ . '/../../../../var/mocks';
-
     private static TyphoonReflector $typhoonReflector;
 
     public static function setUpBeforeClass(): void
     {
-        (new Filesystem())->mkdir(self::MOCKS_DIR);
-        \Mockery::setLoader(new RequireLoader(self::MOCKS_DIR));
         self::$typhoonReflector = TyphoonReflector::build();
     }
 
