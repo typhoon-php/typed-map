@@ -5,6 +5,7 @@ use Typhoon\Reflection\Annotated\CustomTypeResolver;
 use Typhoon\Reflection\Annotated\TypeContext;
 use Typhoon\Reflection\TyphoonReflector;
 use Typhoon\Type\Type;
+use Typhoon\Type\types;
 use Typhoon\Type\TypeVisitor;
 use function Typhoon\Type\stringify;
 
@@ -15,9 +16,9 @@ enum binaryTypes: string implements Type, CustomTypeResolver
 {
     case int16 = 'int16';
     case int32 = 'int32';
-    case int64 = 'int64';
+    const int64 = types::int;
     case float32 = 'float32';
-    case float64 = 'float64';
+    const float64 = types::float;
 
     public function accept(TypeVisitor $visitor): mixed
     {
@@ -28,9 +29,7 @@ enum binaryTypes: string implements Type, CustomTypeResolver
         return match ($this) {
             self::int16 => $visitor->int($this, -32768, 32767),
             self::int32 => $visitor->int($this, -2147483648, 2147483647),
-            self::int64 => $visitor->int($this, null, null),
             self::float32 => $visitor->float($this, -3.40282347E+38, 3.40282347E+38),
-            self::float64 => $visitor->float($this, null, null),
         };
     }
 
