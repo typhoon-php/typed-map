@@ -62,14 +62,12 @@ final class ClassFixtures
         'Random\IntervalBoundary' => true,
         // is iterable, but does not implement Traversable
         'FFI\CData' => true,
-        // has parameters that canBePassedByValue() and isPassedByReference() at the same time
-        'FFI' => true,
         // has a lot of problems with __invoke()
         'Closure' => true,
     ];
 
     /**
-     * @return \Generator<string, array{class-string}>
+     * @return \Generator<class-string, array{class-string}>
      */
     public static function internal(): \Generator
     {
