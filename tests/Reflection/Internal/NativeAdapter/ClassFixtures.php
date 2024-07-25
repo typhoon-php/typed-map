@@ -64,6 +64,10 @@ final class ClassFixtures
         'FFI\CData' => true,
         // has a lot of problems with __invoke()
         'Closure' => true,
+        // getMethod(ispersistent).getNumberOfRequiredParameters(): failed asserting that 0 is identical to 2
+        'ZMQContext' => true,
+        // getMethod(remove).getNumberOfRequiredParameters(): failed asserting that 1 is identical to 2
+        'ZMQPoll' => true,
     ];
 
     /**
