@@ -1,8 +1,6 @@
-# Typhoon
+# Typhoon Typed Map
 
-The ultimate type system and reflection for PHP.
+This repository is a readonly Typhoon monorepo subsplit.
+Please, open pull requests and issues in the [main repository](https://github.com/typhoon-php/typhoon).
 
-## Components
-
-- [Type](docs/type.md)
-- [Reflection](docs/reflection.md)
+Read [documentation](https://github.com/typhoon-php/typhoon/tree/0.4.x).
