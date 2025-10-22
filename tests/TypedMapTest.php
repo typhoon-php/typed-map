@@ -66,7 +66,6 @@ final class TypedMapTest extends TestCase
         self::assertNotSame($map2, $merged);
     }
 
-    public function testItRemovesKeyViaWithout(): void
     public function testWithoutCalledWithNoKeysReturnsSameMap(): void
     {
         $map = TypedMap::one(Keys::A, 123);
@@ -76,6 +75,7 @@ final class TypedMapTest extends TestCase
         self::assertSame($map, $newMap);
     }
 
+    public function testWithoutReturnsNewMapWithoutKeys(): void
     {
         $map = TypedMap::one(Keys::A, 123);
         $initialMapCopy = clone $map;
@@ -107,6 +107,18 @@ final class TypedMapTest extends TestCase
         self::assertCount(1, $map2);
     }
 
+    public function testToPairs(): void
+    {
+        $map = TypedMap::one(Keys::A, 1)->with(Keys::B, 'a');
+
+        $pairs = $map->toPairs();
+
+        self::assertEquals(
+            [new Pair(Keys::A, 1), new Pair(Keys::B, 'a')],
+            $pairs,
+        );
+    }
+
     public function testOffsetSetThrows(): void
     {
         $map = new TypedMap();
@@ -125,7 +137,7 @@ final class TypedMapTest extends TestCase
         unset($map[Keys::A]);
     }
 
-    public function testItDeserializesCorrectly(): void
+    public function testItUnserializesCorrectly(): void
     {
         $map = TypedMap::one(Keys::A, 'a')->with(Keys::B, new \stdClass());
 
@@ -142,5 +154,23 @@ final class TypedMapTest extends TestCase
             'O:25:"Typhoon\TypedMap\TypedMap":2:{s:31:"E:23:"Typhoon\TypedMap\Keys:A";";s:1:"a";s:31:"E:23:"Typhoon\TypedMap\Keys:B";";i:123;}',
             serialize($map),
         );
+    }
+
+    public function testUnserializeThrowsIfKeyIsNotUnserializable(): void
+    {
+        $map = new TypedMap();
+
+        $this->expectExceptionObject(new \LogicException("Failed to unserialize key `''`"));
+
+        $map->__unserialize(['' => 1]);
+    }
+
+    public function testUnserializeChecksKey(): void
+    {
+        $map = new TypedMap();
+
+        $this->expectExceptionObject(new \LogicException("Expected unserialized key to be an instance of `Typhoon\\TypedMap\\Key`, got: `''`"));
+
+        $map->__unserialize([serialize('') => 1]);
     }
 }

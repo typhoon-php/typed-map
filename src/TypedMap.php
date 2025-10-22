@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Typhoon\TypedMap;
 
+use function Typhoon\Formatter\format;
+
 /**
  * @api
  * @implements \ArrayAccess<Key, mixed>
@@ -147,9 +149,23 @@ final class TypedMap implements \ArrayAccess, \Countable
 
     private static function unserializeKey(string $serializedKey): Key
     {
-        $key = unserialize($serializedKey);
-        \assert($key instanceof Key);
+        $key = @unserialize($serializedKey);
 
-        return $key;
+        if ($key instanceof Key) {
+            return $key;
+        }
+
+        if ($key === false) {
+            throw new \LogicException(\sprintf(
+                'Failed to unserialize key `%s`',
+                format($serializedKey)
+            ));
+        }
+
+        throw new \LogicException(\sprintf(
+            'Expected unserialized key to be an instance of `%s`, got: `%s`',
+            Key::class,
+            format($key),
+        ));
     }
 }

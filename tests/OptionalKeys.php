@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Typhoon\TypedMap;
 
 /**
- * @implements OptionalKey<string>
+ * @implements OptionalKey<mixed>
  */
 enum OptionalKeys implements OptionalKey
 {
