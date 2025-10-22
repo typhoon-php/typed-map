@@ -67,6 +67,15 @@ final class TypedMapTest extends TestCase
     }
 
     public function testItRemovesKeyViaWithout(): void
+    public function testWithoutCalledWithNoKeysReturnsSameMap(): void
+    {
+        $map = TypedMap::one(Keys::A, 123);
+
+        $newMap = $map->without();
+
+        self::assertSame($map, $newMap);
+    }
+
     {
         $map = TypedMap::one(Keys::A, 123);
         $initialMapCopy = clone $map;

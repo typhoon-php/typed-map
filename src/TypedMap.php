@@ -51,6 +51,10 @@ final class TypedMap implements \ArrayAccess, \Countable
 
     public function without(Key ...$keys): self
     {
+        if ($keys === []) {
+            return $this;
+        }
+
         $copy = clone $this;
 
         foreach ($keys as $key) {
