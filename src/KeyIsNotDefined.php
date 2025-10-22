@@ -13,6 +13,6 @@ final class KeyIsNotDefined extends \RuntimeException
 {
     public function __construct(Key $key)
     {
-        parent::__construct(\sprintf('Key %s is not defined in the TypedMap', format($key)));
+        parent::__construct(\sprintf('Key `%s` is not defined in the TypedMap', format($key)));
     }
 }

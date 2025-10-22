@@ -14,6 +14,6 @@ final class KeyIsNotDefinedTest extends TestCase
     {
         $exception = new KeyIsNotDefined(Keys::A);
 
-        self::assertSame('Key Typhoon\TypedMap\Keys::A is not defined in the TypedMap', $exception->getMessage());
+        self::assertSame('Key `Typhoon\TypedMap\Keys::A` is not defined in the TypedMap', $exception->getMessage());
     }
 }
