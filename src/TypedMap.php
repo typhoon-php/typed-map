@@ -6,7 +6,7 @@ namespace Typhoon\TypedMap;
 
 /**
  * @api
- * @implements \ArrayAccess<Key<*>, mixed>
+ * @implements \ArrayAccess<Key, mixed>
  */
 final class TypedMap implements \ArrayAccess, \Countable
 {
@@ -49,9 +49,6 @@ final class TypedMap implements \ArrayAccess, \Countable
         return $copy;
     }
 
-    /**
-     * @param Key<*> ...$keys
-     */
     public function without(Key ...$keys): self
     {
         $copy = clone $this;
@@ -71,9 +68,8 @@ final class TypedMap implements \ArrayAccess, \Countable
     /**
      * @template TValue
      * @param Key<TValue> $offset
-     * @throws KeyIsNotDefined
      * @return TValue
-     * @phpstan-ignore method.childParameterType
+     * @throws KeyIsNotDefined
      */
     public function offsetGet(mixed $offset): mixed
     {
