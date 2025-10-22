@@ -99,6 +99,29 @@ final class TypedMap implements \ArrayAccess, \Countable
     }
 
     /**
+     * @return non-negative-int
+     */
+    public function count(): int
+    {
+        return \count($this->values);
+    }
+
+    /**
+     * @return list<Pair>
+     */
+    public function toPairs(): array
+    {
+        return array_map(
+            static fn(string $serializedKey, mixed $value): Pair => new Pair(
+                key: self::unserializeKey($serializedKey),
+                value: $value,
+            ),
+            array_keys($this->values),
+            $this->values,
+        );
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function __serialize(): array
@@ -112,16 +135,17 @@ final class TypedMap implements \ArrayAccess, \Countable
     public function __unserialize(array $data): void
     {
         foreach ($data as $key => $value) {
-            \assert(\is_string($key) && unserialize($key) instanceof Key);
+            \assert(\is_string($key));
+            self::unserializeKey($key);
             $this->values[$key] = $value;
         }
     }
 
-    /**
-     * @return non-negative-int
-     */
-    public function count(): int
+    private static function unserializeKey(string $serializedKey): Key
     {
-        return \count($this->values);
+        $key = unserialize($serializedKey);
+        \assert($key instanceof Key);
+
+        return $key;
     }
 }
