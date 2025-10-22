@@ -158,7 +158,7 @@ final class TypedMap implements \ArrayAccess, \Countable
         if ($key === false) {
             throw new \LogicException(\sprintf(
                 'Failed to unserialize key `%s`',
-                format($serializedKey)
+                format($serializedKey),
             ));
         }
 
