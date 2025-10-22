@@ -6,7 +6,6 @@ namespace Typhoon\TypedMap;
 
 /**
  * @api
- * @psalm-immutable
- * @template-covariant TValue
+ * @template TValue
  */
-interface Key extends \UnitEnum {}
+interface Key {}

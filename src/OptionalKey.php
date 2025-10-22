@@ -6,8 +6,7 @@ namespace Typhoon\TypedMap;
 
 /**
  * @api
- * @psalm-immutable
- * @template-covariant TValue
+ * @template TValue
  * @extends Key<TValue>
  */
 interface OptionalKey extends Key

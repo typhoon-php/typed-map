@@ -6,27 +6,16 @@ namespace Typhoon\TypedMap;
 
 /**
  * @api
- * @psalm-immutable
- * @implements \ArrayAccess<Key, mixed>
+ * @implements \ArrayAccess<Key<*>, mixed>
  */
 final class TypedMap implements \ArrayAccess, \Countable
 {
     /**
-     * @var array<non-empty-string, mixed>
+     * @var array<string, mixed>
      */
     private array $values = [];
 
     /**
-     * @psalm-pure
-     * @return non-empty-string
-     */
-    private static function keyToString(Key $key): string
-    {
-        return $key::class . '::' . $key->name;
-    }
-
-    /**
-     * @psalm-immutable
      * @template T
      * @param Key<T> $key
      * @param T $value
@@ -34,7 +23,7 @@ final class TypedMap implements \ArrayAccess, \Countable
     public static function one(Key $key, mixed $value): self
     {
         $map = new self();
-        $map->values[self::keyToString($key)] = $value;
+        $map->values[serialize($key)] = $value;
 
         return $map;
     }
@@ -46,21 +35,8 @@ final class TypedMap implements \ArrayAccess, \Countable
      */
     public function with(Key $key, mixed $value): self
     {
-        $stringKey = self::keyToString($key);
-
-        if ($key instanceof OptionalKey && $value === $key->default($this)) {
-            if (isset($this->values[$stringKey])) {
-                $copy = clone $this;
-                unset($copy->values[$stringKey]);
-
-                return $copy;
-            }
-
-            return $this;
-        }
-
         $copy = clone $this;
-        $copy->values[$stringKey] = $value;
+        $copy->values[serialize($key)] = $value;
 
         return $copy;
     }
@@ -73,12 +49,15 @@ final class TypedMap implements \ArrayAccess, \Countable
         return $copy;
     }
 
+    /**
+     * @param Key<*> ...$keys
+     */
     public function without(Key ...$keys): self
     {
         $copy = clone $this;
 
         foreach ($keys as $key) {
-            unset($copy->values[self::keyToString($key)]);
+            unset($copy->values[serialize($key)]);
         }
 
         return $copy;
@@ -86,7 +65,7 @@ final class TypedMap implements \ArrayAccess, \Countable
 
     public function offsetExists(mixed $offset): bool
     {
-        return isset($this->values[self::keyToString($offset)]);
+        return isset($this->values[serialize($offset)]);
     }
 
     /**
@@ -94,12 +73,13 @@ final class TypedMap implements \ArrayAccess, \Countable
      * @param Key<T> $offset
      * @return T
      * @throws KeyIsNotDefined
+     * @phpstan-ignore method.childParameterType
      */
     public function offsetGet(mixed $offset): mixed
     {
-        $key = self::keyToString($offset);
+        $key = serialize($offset);
 
-        if (isset($this->values[$key])) {
+        if (\array_key_exists($key, $this->values)) {
             /** @var T */
             return $this->values[$key];
         }
@@ -122,19 +102,28 @@ final class TypedMap implements \ArrayAccess, \Countable
         throw new \BadMethodCallException(\sprintf('%s is immutable', self::class));
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function __serialize(): array
     {
         return $this->values;
     }
 
     /**
-     * @param array<non-empty-string, mixed> $data
+     * @param array<mixed> $data
      */
     public function __unserialize(array $data): void
     {
-        $this->values = $data;
+        foreach ($data as $key => $value) {
+            \assert(\is_string($key) && unserialize($key) instanceof Key);
+            $this->values[$key] = $value;
+        }
     }
 
+    /**
+     * @return non-negative-int
+     */
     public function count(): int
     {
         return \count($this->values);
