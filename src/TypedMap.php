@@ -16,9 +16,9 @@ final class TypedMap implements \ArrayAccess, \Countable
     private array $values = [];
 
     /**
-     * @template T
-     * @param Key<T> $key
-     * @param T $value
+     * @template TValue
+     * @param Key<TValue> $key
+     * @param TValue $value
      */
     public static function one(Key $key, mixed $value): self
     {
@@ -29,9 +29,9 @@ final class TypedMap implements \ArrayAccess, \Countable
     }
 
     /**
-     * @template T
-     * @param Key<T> $key
-     * @param T $value
+     * @template TValue
+     * @param Key<TValue> $key
+     * @param TValue $value
      */
     public function with(Key $key, mixed $value): self
     {
@@ -69,10 +69,10 @@ final class TypedMap implements \ArrayAccess, \Countable
     }
 
     /**
-     * @template T
-     * @param Key<T> $offset
-     * @return T
+     * @template TValue
+     * @param Key<TValue> $offset
      * @throws KeyIsNotDefined
+     * @return TValue
      * @phpstan-ignore method.childParameterType
      */
     public function offsetGet(mixed $offset): mixed
@@ -80,12 +80,12 @@ final class TypedMap implements \ArrayAccess, \Countable
         $key = serialize($offset);
 
         if (\array_key_exists($key, $this->values)) {
-            /** @var T */
+            /** @var TValue */
             return $this->values[$key];
         }
 
         if ($offset instanceof OptionalKey) {
-            /** @var OptionalKey<T> $offset */
+            /** @var OptionalKey<TValue> $offset */
             return $offset->default($this);
         }
 
