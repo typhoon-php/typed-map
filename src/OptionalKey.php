@@ -6,7 +6,7 @@ namespace Typhoon\TypedMap;
 
 /**
  * @api
- * @template-covariant TValue = mixed
+ * @template TValue = mixed
  * @extends Key<TValue>
  */
 interface OptionalKey extends Key

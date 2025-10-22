@@ -6,6 +6,6 @@ namespace Typhoon\TypedMap;
 
 /**
  * @api
- * @template-covariant TValue = mixed
+ * @template TValue = mixed
  */
 interface Key {}
